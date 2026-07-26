@@ -1,4 +1,11 @@
 export type CardSource = "starter" | "anki" | "manual" | "ai" | "import";
+export type LearningStage = "new" | "learning" | "uncertain" | "known" | "mastered";
+export type ReviewRating = "again" | "hard" | "good";
+export type ExerciseMode =
+  | "choice-de-pl"
+  | "choice-pl-de"
+  | "type-de-pl"
+  | "type-pl-de";
 
 export interface CardContent {
   id: string;
@@ -25,6 +32,33 @@ export interface Flashcard extends CardContent {
   dueAt: string;
   learned: boolean;
   lapses: number;
+  stage: LearningStage;
+  correctStreak: number;
+  successfulModes: ExerciseMode[];
+  firstActiveRecallAt: string | null;
+  lastActiveRecallAt: string | null;
+  lastReviewedAt: string | null;
+  typedAttempts: number;
+  typedSuccesses: number;
+}
+
+export interface SessionItem {
+  id: string;
+  kind: "introduction" | "exercise";
+  forcedMode?: ExerciseMode;
+  round: number;
+}
+
+export interface LearningSession {
+  version: 1;
+  mode: "learn" | "review" | "hard";
+  categoryId: string | null;
+  queue: SessionItem[];
+  index: number;
+  startedAt: string;
+  correct: number;
+  mistakes: number;
+  introduced: number;
 }
 
 export interface LearningMeta {
@@ -34,6 +68,7 @@ export interface LearningMeta {
   totalReviews: number;
   theme: "system" | "light" | "dark";
   contentVersion: number;
+  activeSession: LearningSession | null;
 }
 
 export interface BackupFile {

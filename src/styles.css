@@ -117,6 +117,15 @@ select {
   margin: 0 auto;
 }
 
+.offline-banner {
+  padding: calc(7px + env(safe-area-inset-top)) 16px 7px;
+  color: #704b12;
+  background: #f7dfa9;
+  font-size: 11px;
+  font-weight: 750;
+  text-align: center;
+}
+
 .topbar {
   position: sticky;
   z-index: 20;
@@ -256,6 +265,16 @@ h1 em {
   font-size: 29px;
 }
 
+.daily-category-german {
+  display: block;
+  max-width: 280px;
+  margin-top: 5px;
+  color: #b8c8c1;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
 .daily-card-head {
   display: flex;
   align-items: center;
@@ -387,6 +406,46 @@ h1 em {
   border: 1px solid var(--line);
   border-radius: 20px;
   text-align: left;
+}
+
+.focus-row {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  margin-top: 12px;
+  padding: 14px;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--cream) 62%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--orange) 30%, var(--line));
+  border-radius: 20px;
+  text-align: left;
+}
+
+.focus-row strong,
+.focus-row small {
+  display: block;
+}
+
+.focus-row strong {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.focus-row small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.focus-row .row-icon {
+  color: var(--orange);
+  background: var(--cream);
+}
+
+.review-focus {
+  margin: 0 0 16px;
 }
 
 .row-icon {
@@ -698,6 +757,53 @@ h1 em {
   margin-top: 4px;
 }
 
+.rating-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.rating-actions button {
+  display: flex;
+  min-width: 0;
+  min-height: 68px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 9px 5px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+}
+
+.rating-actions strong {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.rating-actions small {
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.2;
+}
+
+.rating-actions .rating-again {
+  color: var(--red);
+  border-color: color-mix(in srgb, var(--red) 42%, var(--line));
+}
+
+.rating-actions .rating-hard {
+  color: var(--orange);
+  border-color: color-mix(in srgb, var(--orange) 48%, var(--line));
+}
+
+.rating-actions .rating-good {
+  color: var(--green);
+  border-color: color-mix(in srgb, var(--green) 42%, var(--line));
+}
+
 .exercise-prompt {
   display: flex;
   min-height: 104px;
@@ -785,6 +891,21 @@ h1 em {
   gap: 13px;
 }
 
+.typing-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px;
+  gap: 9px;
+}
+
+.typing-submit {
+  min-width: 56px;
+  color: #fff;
+  background: var(--green);
+  border-radius: 16px;
+  font-size: 23px;
+  font-weight: 850;
+}
+
 .typing-hint {
   color: var(--muted);
   font-size: 11px;
@@ -869,6 +990,12 @@ h1 em {
   font-size: 10px;
 }
 
+.exercise-feedback .similarity-score {
+  margin-top: 4px;
+  color: currentColor;
+  font-weight: 750;
+}
+
 .context-example {
   margin-top: 11px;
   padding-top: 10px;
@@ -911,6 +1038,32 @@ h1 em {
 
 .session-progress strong {
   color: var(--ink);
+}
+
+.lesson-summary {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 20px 0 8px;
+}
+
+.lesson-summary span {
+  display: grid;
+  gap: 3px;
+  padding: 13px 5px;
+  background: var(--surface-2);
+  border-radius: 14px;
+}
+
+.lesson-summary strong {
+  color: var(--green);
+  font-size: 22px;
+}
+
+.lesson-summary small {
+  color: var(--muted);
+  font-size: 9px;
 }
 
 .progress-track {
@@ -1601,8 +1754,31 @@ h1 em {
     padding: 18px;
   }
 
+  .daily-card h2 {
+    font-size: 25px;
+  }
+
+  .goal-ring {
+    width: 56px;
+    height: 56px;
+    padding-top: 14px;
+    flex-basis: 56px;
+  }
+
   .bottom-nav button {
     font-size: 8px;
+  }
+
+  .rating-actions {
+    gap: 5px;
+  }
+
+  .rating-actions strong {
+    font-size: 11px;
+  }
+
+  .rating-actions small {
+    font-size: 7px;
   }
 
   .form-grid {
@@ -1611,6 +1787,32 @@ h1 em {
 
   .form-grid .full {
     grid-column: auto;
+  }
+}
+
+@media (max-height: 620px) {
+  .exercise-card {
+    margin-top: 12px;
+    padding: 15px;
+  }
+
+  .exercise-instruction {
+    margin-top: 15px;
+  }
+
+  .exercise-prompt {
+    min-height: 78px;
+    padding-bottom: 12px;
+  }
+}
+
+@supports selector(body:has(input:focus)) {
+  .app-shell:has(.typing-exercise input:focus) .bottom-nav {
+    display: none;
+  }
+
+  .app-shell:has(.typing-exercise input:focus) .content {
+    padding-bottom: calc(28px + env(safe-area-inset-bottom));
   }
 }
 

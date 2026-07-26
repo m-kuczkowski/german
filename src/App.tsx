@@ -8,16 +8,27 @@ import {
 } from "react";
 import { starterCards } from "./data/starterCards";
 import { isDuplicate, toFlashcard } from "./lib/cards";
-import { createExercise, isTypedAnswerCorrect } from "./lib/exercises";
+import { createExercise, evaluateTypedAnswer, type TypedAnswerResult } from "./lib/exercises";
 import {
   buildCategoryProgress,
   categoryTitle,
+  difficultCards,
   sessionCardsForCategory,
   suggestedCategory,
   type CategoryProgress,
 } from "./lib/learning";
 import { defaultMeta, recordReview } from "./lib/meta";
-import { isDue, reviewCard } from "./lib/srs";
+import {
+  isDue,
+  localDateKey,
+  reviewCard,
+  type ReviewEvidence,
+} from "./lib/srs";
+import {
+  createLearningSession,
+  scheduleSessionAnswer,
+  sessionComplete,
+} from "./lib/session";
 import { speakGerman } from "./lib/speech";
 import {
   clearDatabase,
@@ -28,7 +39,14 @@ import {
   saveMeta,
 } from "./lib/storage";
 import { hydrateRemoteState, loadRemoteState, saveRemoteState } from "./lib/remote";
-import type { CardContent, Flashcard, LearningMeta, TabId } from "./types";
+import type {
+  CardContent,
+  Flashcard,
+  LearningMeta,
+  ReviewRating,
+  SessionItem,
+  TabId,
+} from "./types";
 
 const navItems: Array<{ id: TabId; icon: string; label: string }> = [
   { id: "learn", icon: "◇", label: "Nauka" },
@@ -53,10 +71,8 @@ function App() {
   const [meta, setMeta] = useState<LearningMeta>(defaultMeta);
   const [tab, setTab] = useState<TabId>("learn");
   const [ready, setReady] = useState(false);
+  const [online, setOnline] = useState(navigator.onLine);
   const [toast, setToast] = useState<string | null>(null);
-  const [sessionIds, setSessionIds] = useState<string[]>([]);
-  const [sessionIndex, setSessionIndex] = useState(0);
-  const [sessionMode, setSessionMode] = useState<"learn" | "review">("learn");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [reviewCategoryId, setReviewCategoryId] = useState<string | null>(null);
 
@@ -101,7 +117,18 @@ function App() {
     void saveRemoteState(cards, meta).catch(() => {
       // Local persistence is the offline fallback; a later change retries syncing.
     });
-  }, [cards, meta, ready]);
+  }, [cards, meta, online, ready]);
+
+  useEffect(() => {
+    const connect = () => setOnline(true);
+    const disconnect = () => setOnline(false);
+    window.addEventListener("online", connect);
+    window.addEventListener("offline", disconnect);
+    return () => {
+      window.removeEventListener("online", connect);
+      window.removeEventListener("offline", disconnect);
+    };
+  }, []);
 
   useEffect(() => {
     document.documentElement.dataset.theme = meta.theme;
@@ -114,16 +141,22 @@ function App() {
   }, [toast]);
 
   const now = new Date();
-  const dueCards = useMemo(() => cards.filter((card) => isDue(card, now)), [cards]);
+  const dueCards = useMemo(
+    () => cards.filter((card) => card.stage !== "new" && isDue(card, now)),
+    [cards],
+  );
   const categories = useMemo(() => buildCategoryProgress(cards, now), [cards]);
   const suggestedCategoryId = suggestedCategory(categories);
   const activeCategoryId = selectedCategoryId ?? suggestedCategoryId;
   const selectedCategory = categories.find((category) => category.id === activeCategoryId);
-  const learnedCount = cards.filter((card) => card.learned).length;
-  const activeCard = sessionIds[sessionIndex]
-    ? cards.find((card) => card.id === sessionIds[sessionIndex])
+  const masteredCount = cards.filter((card) => card.stage === "mastered").length;
+  const uncertainCount = cards.filter((card) => card.stage === "uncertain").length;
+  const session = meta.activeSession;
+  const activeItem = session?.queue[session.index];
+  const activeCard = activeItem
+    ? cards.find((card) => card.id === activeItem.id)
     : undefined;
-  const sessionComplete = sessionIds.length > 0 && sessionIndex >= sessionIds.length;
+  const complete = sessionComplete(session);
 
   useEffect(() => {
     const selected = categories.find((category) => category.id === selectedCategoryId);
@@ -132,30 +165,49 @@ function App() {
     }
   }, [categories, selectedCategoryId]);
 
-  function startSession(mode: "learn" | "review", categoryId: string | null) {
-    if (!categoryId) return;
-    const pool = sessionCardsForCategory(cards, categoryId, mode);
-    setSessionMode(mode);
-    setSessionIds(pool.map((card) => card.id));
-    setSessionIndex(0);
-    setTab(mode);
+  function startSession(mode: "learn" | "review" | "hard", categoryId: string | null) {
+    if (mode !== "hard" && !categoryId) return;
+    const pool = mode === "hard"
+      ? difficultCards(cards)
+      : sessionCardsForCategory(cards, categoryId!, mode);
+    setMeta((current) => ({
+      ...current,
+      activeSession: createLearningSession(pool, mode, categoryId),
+    }));
+    setTab(mode === "learn" ? "learn" : "review");
     if (pool.length === 0) {
-      setToast(mode === "review" ? "W tej kategorii nie masz dziś kart do powtórki." : "Ta kategoria jest już opanowana.");
+      setToast(
+        mode === "hard"
+          ? "Nie masz jeszcze słów wymagających dodatkowej pracy."
+          : mode === "review"
+            ? "W tej kategorii nie masz dziś kart do powtórki."
+            : "Ta kategoria jest już opanowana.",
+      );
     }
   }
 
-  function answerCard(remembered: boolean) {
-    if (!activeCard) return;
+  function answerCard(rating: ReviewRating, evidence: ReviewEvidence) {
+    if (!activeCard || !activeItem || !session) return;
+    const updatedCard = reviewCard(activeCard, rating, evidence);
     setCards((current) =>
-      current.map((card) => (card.id === activeCard.id ? reviewCard(card, remembered) : card)),
+      current.map((card) => (card.id === activeCard.id ? updatedCard : card)),
     );
-    setMeta((current) => recordReview(current));
-    setSessionIndex((index) => index + 1);
+    setMeta((current) => ({
+      ...recordReview(current),
+      activeSession: current.activeSession
+        ? scheduleSessionAnswer(
+            current.activeSession,
+            updatedCard,
+            activeItem,
+            rating,
+            evidence.correct,
+          )
+        : null,
+    }));
   }
 
   function finishSession() {
-    setSessionIds([]);
-    setSessionIndex(0);
+    setMeta((current) => ({ ...current, activeSession: null }));
   }
 
   if (!ready) {
@@ -169,10 +221,15 @@ function App() {
 
   return (
     <div className="app-shell">
+      {!online && (
+        <div className="offline-banner" role="status">
+          Offline · uczysz się lokalnie, synchronizacja wróci z internetem
+        </div>
+      )}
       <header className="topbar">
         <button className="brand" onClick={() => setTab("learn")} aria-label="Przejdź do nauki">
           <span className="brand-mark" aria-hidden="true">W</span>
-          <span><strong>Wortschatz</strong><small>NIEMIECKI · A2 +</small></span>
+          <span><strong>Wortschatz</strong><small>NIEMIECKI · A2–B1</small></span>
         </button>
         <div className="streak-pill" aria-label={`${meta.streak} dni serii nauki`}>
           <span aria-hidden="true">✦</span> {meta.streak}
@@ -186,13 +243,15 @@ function App() {
             categories={categories}
             selectedCategory={selectedCategory}
             dueCount={dueCards.length}
+            uncertainCount={uncertainCount}
             meta={meta}
-            activeCard={sessionMode === "learn" ? activeCard : undefined}
-            sessionLength={sessionMode === "learn" ? sessionIds.length : 0}
-            sessionIndex={sessionIndex}
-            complete={sessionMode === "learn" && sessionComplete}
+            activeCard={session?.mode === "learn" ? activeCard : undefined}
+            activeItem={session?.mode === "learn" ? activeItem : undefined}
+            session={session?.mode === "learn" ? session : null}
+            complete={session?.mode === "learn" && complete}
             onAnswer={answerCard}
             onStart={() => startSession("learn", activeCategoryId)}
+            onStartHard={() => startSession("hard", null)}
             onSelectCategory={setSelectedCategoryId}
             onFinish={finishSession}
             onSpeak={(text) => {
@@ -208,12 +267,13 @@ function App() {
             dueCards={dueCards}
             categories={categories}
             selectedCategoryId={reviewCategoryId}
-            activeCard={sessionMode === "review" ? activeCard : undefined}
-            sessionLength={sessionMode === "review" ? sessionIds.length : 0}
-            sessionIndex={sessionIndex}
-            complete={sessionMode === "review" && sessionComplete}
+            activeCard={session?.mode !== "learn" ? activeCard : undefined}
+            activeItem={session?.mode !== "learn" ? activeItem : undefined}
+            session={session?.mode !== "learn" ? session : null}
+            complete={session?.mode !== "learn" && complete}
             onAnswer={answerCard}
             onStart={(categoryId) => startSession("review", categoryId)}
+            onStartHard={() => startSession("hard", null)}
             onSelectCategory={setReviewCategoryId}
             onFinish={finishSession}
             onSpeak={(text) => {
@@ -234,7 +294,7 @@ function App() {
           <ProgressView
             cards={cards}
             dueCount={dueCards.length}
-            learnedCount={learnedCount}
+            masteredCount={masteredCount}
             meta={meta}
           />
         )}
@@ -275,71 +335,106 @@ function App() {
 interface SessionProps {
   cards: Flashcard[];
   activeCard?: Flashcard;
-  sessionLength: number;
-  sessionIndex: number;
+  activeItem?: SessionItem;
+  session: LearningMeta["activeSession"];
   complete: boolean;
-  onAnswer: (remembered: boolean) => void;
+  onAnswer: (rating: ReviewRating, evidence: ReviewEvidence) => void;
   onFinish: () => void;
   onSpeak: (text: string) => void;
 }
 
 function FlashcardSession(props: SessionProps) {
   const card = props.activeCard ?? props.cards[0]!;
-  const isIntroduction = card.repetitions === 0;
+  const isIntroduction = props.activeItem?.kind === "introduction";
+  const sessionIndex = props.session?.index ?? 0;
+  const sessionLength = props.session?.queue.length ?? 0;
   const exercise = useMemo(
-    () => createExercise(card, props.cards, props.sessionIndex),
-    [card, props.cards, props.sessionIndex],
+    () => createExercise(card, props.cards, sessionIndex, props.activeItem?.forcedMode),
+    [card, props.cards, props.activeItem?.forcedMode, sessionIndex],
   );
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [typedAnswer, setTypedAnswer] = useState("");
-  const [typedResult, setTypedResult] = useState<boolean | null>(null);
+  const [typedResult, setTypedResult] = useState<TypedAnswerResult | null>(null);
   const [introRevealed, setIntroRevealed] = useState(false);
-  const [introAnswer, setIntroAnswer] = useState<boolean | null>(null);
+  const [introRating, setIntroRating] = useState<ReviewRating | null>(null);
   const isChoice = exercise.mode.startsWith("choice");
   const selectedOption = exercise.options.find((option) => option.cardId === selectedCardId);
   const exerciseAnswered = isChoice ? Boolean(selectedOption) : typedResult !== null;
-  const answered = isIntroduction ? introAnswer !== null : exerciseAnswered;
-  const correct = isIntroduction ? introAnswer === true : isChoice ? Boolean(selectedOption?.correct) : typedResult === true;
+  const answered = isIntroduction ? introRating !== null : exerciseAnswered;
+  const correct = isIntroduction
+    ? introRating !== "again"
+    : isChoice
+      ? Boolean(selectedOption?.correct)
+      : typedResult?.correct === true;
+  const rating: ReviewRating | null = isIntroduction
+    ? introRating
+    : answered
+      ? correct
+        ? typedResult && typedResult.score < 0.98
+          ? "hard"
+          : "good"
+        : "again"
+      : null;
 
   function checkTypedAnswer(event: FormEvent) {
     event.preventDefault();
     if (!typedAnswer.trim() || typedResult !== null) return;
-    setTypedResult(isTypedAnswerCorrect(typedAnswer, exercise.acceptedAnswers));
+    setTypedResult(evaluateTypedAnswer(typedAnswer, exercise.acceptedAnswers));
   }
 
   useEffect(() => {
-    if (!props.activeCard || !answered) return;
+    if (!props.activeCard || !answered || !rating) return;
     const timer = window.setTimeout(
-      () => props.onAnswer(correct),
-      isIntroduction ? 700 : 1100,
+      () => props.onAnswer(rating, {
+        mode: isIntroduction ? "introduction" : exercise.mode,
+        correct,
+        score: typedResult?.score,
+      }),
+      isIntroduction ? 760 : 1150,
     );
     return () => window.clearTimeout(timer);
-    // The answer itself is the only action that should advance this card.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [answered, correct, isIntroduction, props.activeCard?.id]);
+  }, [
+    answered,
+    correct,
+    exercise.mode,
+    isIntroduction,
+    props,
+    rating,
+    typedResult?.score,
+  ]);
 
   if (props.complete) {
+    const accuracy = props.session && props.session.correct + props.session.mistakes > 0
+      ? Math.round(
+          (props.session.correct / (props.session.correct + props.session.mistakes)) * 100,
+        )
+      : 0;
     return (
       <section className="completion-card" aria-live="polite">
         <div className="completion-icon" aria-hidden="true">✓</div>
-        <p className="eyebrow">Sesja ukończona</p>
-        <h2>Sehr gut!</h2>
-        <p>Każda krótka sesja utrwala niemiecki na dłużej.</p>
-        <button className="primary-button" onClick={props.onFinish}>Wróć do podsumowania</button>
+        <p className="eyebrow">Lekcja ukończona</p>
+        <h2>Dobra robota.</h2>
+        <div className="lesson-summary">
+          <span><strong>{props.session?.introduced ?? 0}</strong><small>nowych</small></span>
+          <span><strong>{props.session?.mistakes ?? 0}</strong><small>do utrwalenia</small></span>
+          <span><strong>{accuracy}%</strong><small>trafień</small></span>
+        </div>
+        <p>Trudniejsze słowa wrócą wcześniej. Nie musisz niczego planować.</p>
+        <button className="primary-button" onClick={props.onFinish}>Gotowe</button>
       </section>
     );
   }
 
-  if (!props.activeCard) return null;
+  if (!props.activeCard || !props.activeItem || !props.session) return null;
 
   return (
     <section className="session-wrap" aria-live="polite">
       <div className="session-progress">
-        <span>Dzisiejsza sesja</span>
-        <strong>{props.sessionIndex + 1} / {props.sessionLength}</strong>
+        <span>{props.session.mode === "hard" ? "Trudne słowa" : "Dzisiejsza lekcja"}</span>
+        <strong>{sessionIndex + 1} / {sessionLength}</strong>
       </div>
       <div className="progress-track" aria-hidden="true">
-        <span style={{ width: `${((props.sessionIndex + 1) / props.sessionLength) * 100}%` }} />
+        <span style={{ width: `${((sessionIndex + 1) / sessionLength) * 100}%` }} />
       </div>
 
       <article className="exercise-card">
@@ -372,10 +467,17 @@ function FlashcardSession(props: SessionProps) {
                   <p lang="de">{card.exampleGerman}</p>
                   <p>{card.examplePolish}</p>
                 </div>
-                {introAnswer === null && (
-                  <div className="intro-actions" role="group" aria-label="Czy pamiętasz to słowo?">
-                    <button className="secondary-button" onClick={() => setIntroAnswer(false)}>Jeszcze nie</button>
-                    <button className="primary-button" onClick={() => setIntroAnswer(true)}>Już rozumiem</button>
+                {introRating === null && (
+                  <div className="rating-actions" role="group" aria-label="Jak dobrze znasz to słowo?">
+                    <button className="rating-again" onClick={() => setIntroRating("again")}>
+                      <strong>Nie znam</strong><small>wróci za 3–5</small>
+                    </button>
+                    <button className="rating-hard" onClick={() => setIntroRating("hard")}>
+                      <strong>Niepewnie</strong><small>wróci za 6–8</small>
+                    </button>
+                    <button className="rating-good" onClick={() => setIntroRating("good")}>
+                      <strong>Znam</strong><small>sprawdzę pisaniem</small>
+                    </button>
                   </div>
                 )}
               </div>
@@ -423,22 +525,34 @@ function FlashcardSession(props: SessionProps) {
           </div>
         ) : (
           <form className="typing-exercise" onSubmit={checkTypedAnswer}>
-            <label>
-              <span className="sr-only">{exercise.instruction}</span>
-              <input
-                lang={exercise.answerLanguage}
-                value={typedAnswer}
-                onChange={(event) => setTypedAnswer(event.target.value)}
-                placeholder={exercise.answerLanguage === "de" ? "Wpisz po niemiecku…" : "Wpisz po polsku…"}
-                autoCapitalize="none"
-                autoComplete="off"
-                spellCheck={false}
-                enterKeyHint="done"
-                readOnly={typedResult !== null}
-                autoFocus
-              />
-            </label>
-            {typedResult === null && <small className="typing-hint">Naciśnij „Gotowe” na klawiaturze, aby przejść dalej.</small>}
+            <div className="typing-row">
+              <label>
+                <span className="sr-only">{exercise.instruction}</span>
+                <input
+                  lang={exercise.answerLanguage}
+                  value={typedAnswer}
+                  onChange={(event) => setTypedAnswer(event.target.value)}
+                  placeholder={exercise.answerLanguage === "de" ? "Wpisz po niemiecku…" : "Wpisz po polsku…"}
+                  autoCapitalize="none"
+                  autoComplete="off"
+                  spellCheck={false}
+                  enterKeyHint="done"
+                  readOnly={typedResult !== null}
+                  autoFocus
+                />
+              </label>
+              {typedResult === null && (
+                <button
+                  className="typing-submit"
+                  type="submit"
+                  disabled={!typedAnswer.trim()}
+                  aria-label="Sprawdź odpowiedź"
+                >
+                  <span aria-hidden="true">→</span>
+                </button>
+              )}
+            </div>
+            {typedResult === null && <small className="typing-hint">„Gotowe” na klawiaturze lub strzałka sprawdza odpowiedź.</small>}
           </form>
         )}
           </>
@@ -448,7 +562,24 @@ function FlashcardSession(props: SessionProps) {
           <div className={`exercise-feedback ${correct ? "correct" : "incorrect"}`} role="status">
             <span className="feedback-icon" aria-hidden="true">{correct ? "✓" : "×"}</span>
             <div>
-              <strong>{isIntroduction ? correct ? "Pierwsze spotkanie zapisane" : "Wróci za chwilę" : correct ? "Sehr gut!" : "Jeszcze raz następnym razem"}</strong>
+              <strong>
+                {isIntroduction
+                  ? introRating === "good"
+                    ? "Sprawdzę je aktywnie za kilka słów"
+                    : introRating === "hard"
+                      ? "Wróci jeszcze w tej lekcji"
+                      : "Pokażę je ponownie szybciej"
+                  : correct
+                    ? typedResult && typedResult.score < 0.98
+                      ? "Zaliczone, ale jeszcze poćwiczymy"
+                      : "Dobrze"
+                    : "Wraca do trudniejszych"}
+              </strong>
+              {typedResult && (
+                <small className="similarity-score">
+                  Zgodność odpowiedzi: {Math.round(typedResult.score * 100)}%
+                </small>
+              )}
               {!correct && !isIntroduction && <p>Poprawna odpowiedź: <b lang={exercise.answerLanguage}>{exercise.answerLabel}</b></p>}
               {card.plural && !isIntroduction && exercise.answerLanguage === "de" && <small>Liczba mnoga: die {card.plural}</small>}
               {!isIntroduction && card.exampleGerman && card.examplePolish && (
@@ -502,7 +633,7 @@ function CategoryPicker({
             <span className="category-number" aria-hidden="true">{complete ? "✓" : index + 1}</span>
             <span className="category-copy">
               <strong>{category.title}</strong>
-              <small>{category.mastered}/{category.total} opanowanych · {category.introduced} poznanych</small>
+              <small>{category.retained}/{category.total} znanych · {category.mastered} opanowanych</small>
               <span className="category-mini-progress"><i style={{ width: `${category.percent}%` }} /></span>
             </span>
             <span className="category-state">{complete ? "Gotowe" : category.due ? `${category.due} dziś` : "Kontynuuj"}</span>
@@ -518,8 +649,10 @@ function LearnView(props: SessionProps & {
   categories: CategoryProgress[];
   selectedCategory?: CategoryProgress;
   dueCount: number;
+  uncertainCount: number;
   meta: LearningMeta;
   onStart: () => void;
+  onStartHard: () => void;
   onSelectCategory: (id: string) => void;
   onGoToReviews: () => void;
 }) {
@@ -527,25 +660,32 @@ function LearnView(props: SessionProps & {
     return <FlashcardSession key={props.activeCard?.id ?? "complete"} {...props} />;
   }
   const category = props.selectedCategory;
-  const newCount = category?.cards.filter((card) => card.repetitions === 0).length ?? 0;
+  const newCount = category?.cards.filter((card) => card.stage === "new").length ?? 0;
   const categoryDue = category?.due ?? 0;
+  const completedToday = props.meta.lastStudyDate === localDateKey()
+    ? props.meta.completedToday
+    : 0;
+  const categoryParts = category?.title.match(/^(.+?) \((.+)\)$/);
+  const categoryPolish = categoryParts?.[1] ?? category?.title ?? "Wybierz lekcję";
+  const categoryGerman = categoryParts?.[2] ?? null;
 
   return (
     <>
       <section className="hero-copy">
         <p className="eyebrow">Twoja ścieżka</p>
         <h1>Jedna lekcja.<br /><em>Jeden krok naraz.</em></h1>
-        <p>Najpierw poznajesz słowo na fiszce. Przy kolejnym spotkaniu ćwiczysz je aktywnie.</p>
+        <p>Krótka porcja nowych słów i powtórek. Trudniejsze wrócą jeszcze w tej lekcji.</p>
       </section>
 
       <section className="daily-card">
         <div className="daily-card-head">
           <div>
             <p className="eyebrow">Aktualna kategoria</p>
-            <h2>{category?.title ?? "Wybierz lekcję"}</h2>
+            <h2>{categoryPolish}</h2>
+            {categoryGerman && <small className="daily-category-german" lang="de">{categoryGerman}</small>}
           </div>
-          <div className="goal-ring" aria-label={`${Math.min(100, props.meta.completedToday * 10)} procent dziennego celu`}>
-            <strong>{Math.min(10, props.meta.completedToday)}</strong><small>/10</small>
+          <div className="goal-ring" aria-label={`${Math.min(100, completedToday * 10)} procent dziennego celu`}>
+            <strong>{Math.min(10, completedToday)}</strong><small>/10</small>
           </div>
         </div>
         <div className="today-stats">
@@ -553,9 +693,20 @@ function LearnView(props: SessionProps & {
           <span><strong>{newCount}</strong> do poznania</span>
         </div>
         <button className="primary-button wide" onClick={props.onStart} disabled={!category || category.mastered === category.total}>
-          {category?.mastered === category?.total ? "Kategoria opanowana ✓" : "Ucz się tej lekcji"} <span aria-hidden="true">→</span>
+          {category?.mastered === category?.total ? "Kategoria opanowana ✓" : "Zacznij krótką lekcję"} <span aria-hidden="true">→</span>
         </button>
       </section>
+
+      {props.uncertainCount > 0 && (
+        <button className="focus-row" onClick={props.onStartHard}>
+          <span className="row-icon" aria-hidden="true">≈</span>
+          <span>
+            <strong>Trudne słowa</strong>
+            <small>{props.uncertainCount} słów wymaga spokojnej dogrywki</small>
+          </span>
+          <span aria-hidden="true">›</span>
+        </button>
+      )}
 
       <section className="section-block">
         <div className="section-heading"><div><p className="eyebrow">Kolejność nauki</p><h2>Twoje lekcje</h2></div></div>
@@ -589,6 +740,7 @@ function ReviewView(props: SessionProps & {
   categories: CategoryProgress[];
   selectedCategoryId: string | null;
   onStart: (categoryId: string) => void;
+  onStartHard: () => void;
   onSelectCategory: (id: string) => void;
 }) {
   if (props.activeCard || props.complete) {
@@ -608,6 +760,11 @@ function ReviewView(props: SessionProps & {
         <span className="big-number">{activeCategory?.due ?? 0}</span>
         <div><strong>w lekcji „{activeCategory?.title ?? "—"}”</strong><small>maksymalnie 10 w jednej sesji</small></div>
       </div>
+      <button className="focus-row review-focus" onClick={props.onStartHard}>
+        <span className="row-icon" aria-hidden="true">≈</span>
+        <span><strong>Najpierw trudne słowa</strong><small>Błędy i niepewne odpowiedzi ze wszystkich kategorii</small></span>
+        <span aria-hidden="true">›</span>
+      </button>
       {categoriesWithDue.length > 0 && (
         <CategoryPicker categories={categoriesWithDue} selectedId={activeCategoryId} onSelect={props.onSelectCategory} />
       )}
@@ -815,19 +972,26 @@ function CardEditor({
 function ProgressView({
   cards,
   dueCount,
-  learnedCount,
+  masteredCount,
   meta,
 }: {
   cards: Flashcard[];
   dueCount: number;
-  learnedCount: number;
+  masteredCount: number;
   meta: LearningMeta;
 }) {
   const categoryNames = [...new Set(cards.map((card) => card.category))];
   const categories = categoryNames.map((category) => {
     const all = cards.filter((card) => card.category === category);
-    const learned = all.filter((card) => card.learned).length;
-    return { category, all: all.length, learned, percent: all.length ? Math.round((learned / all.length) * 100) : 0 };
+    const mastered = all.filter((card) => card.stage === "mastered").length;
+    const known = all.filter((card) => card.stage === "known").length;
+    return {
+      category,
+      all: all.length,
+      mastered,
+      known,
+      percent: all.length ? Math.round((mastered / all.length) * 100) : 0,
+    };
   });
   return (
     <section>
@@ -838,7 +1002,7 @@ function ProgressView({
       </div>
       <div className="stat-grid">
         <article><span aria-hidden="true">✦</span><strong>{meta.streak}</strong><small>dni serii</small></article>
-        <article><span aria-hidden="true">✓</span><strong>{learnedCount}</strong><small>opanowanych</small></article>
+        <article><span aria-hidden="true">✓</span><strong>{masteredCount}</strong><small>opanowanych</small></article>
         <article><span aria-hidden="true">↻</span><strong>{dueCount}</strong><small>do powtórki</small></article>
         <article><span aria-hidden="true">◇</span><strong>{meta.totalReviews}</strong><small>odpowiedzi</small></article>
       </div>
@@ -847,7 +1011,7 @@ function ProgressView({
         <div className="category-progress-list">
           {categories.map((item) => (
             <div key={item.category}>
-              <span><strong>{categoryTitle(item.category)}</strong><small>{item.learned}/{item.all}</small></span>
+              <span><strong>{categoryTitle(item.category)}</strong><small>{item.mastered} opanowanych · {item.known} znanych</small></span>
               <div className="progress-track"><i style={{ width: `${item.percent}%` }} /></div>
             </div>
           ))}
@@ -929,7 +1093,7 @@ function SettingsView({
             <strong>Wortschatz A2</strong>
             <small>{cards.length} kart · Nicos Weg A2 z rozszerzeniem B1 · postęp synchronizowany z bazą</small>
           </span>
-          <span>1.1</span>
+          <span>2.0</span>
         </div>
       </section>
       <button

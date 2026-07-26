@@ -1,22 +1,26 @@
 # Wortschatz
 
-Mobilna aplikacja PWA do nauki niemieckiego po polsku. Zawiera statyczny zestaw kart z kursu Nicos Weg, ćwiczenia w obu kierunkach językowych, przykładowe zdania po niemiecku z polskim przekładem, lokalne powtórki rozłożone w czasie i wymowę przez Web Speech API.
+Mobilna aplikacja PWA do nauki niemieckiego po polsku. Łączy spokojny interfejs z aktywnym przypominaniem, adaptacyjnymi powtórkami i pełnym zestawem kart Nicos Weg. Działa przede wszystkim na iPhonie, zachowuje postęp offline i synchronizuje go przez Neon po odzyskaniu połączenia.
 
 Interfejs jest zaprojektowany przede wszystkim dla Safari na iPhonie. Po pierwszym otwarciu aplikacja działa również offline.
 
 ## Co działa
 
 - pełne 1856 kart A2 i 1182 karty B1;
-- wybór jednego tłumaczenia z trzech odpowiedzi (DE → PL i PL → DE);
-- wpisywanie tłumaczenia z klawiatury (DE → PL i PL → DE);
-- sesje po maksymalnie 10 ćwiczeń;
+- pierwsze spotkanie jako zwykła fiszka z trzema ocenami: „Nie znam”, „Niepewnie”, „Znam”;
+- adaptacyjne powroty w tej samej lekcji: po 3–5, 6–8 albo 8–11 innych kartach;
+- wybór jednego tłumaczenia z trzech odpowiedzi i wpisywanie w obu kierunkach;
+- ocena podobieństwa wpisanej odpowiedzi z progiem 90%, bez ignorowania rodzajników i umlautów;
+- pięć stanów znajomości: nowe, uczę się, niepewne, znane i opanowane;
+- opanowanie wymagające poprawnych aktywnych odpowiedzi w różnych formach oraz odstępu czasu;
+- tryb trudnych słów, dzienna krótka lekcja i spokojne podsumowanie;
 - powtórki po 1, 3 i 7 dniach, a później w rosnących odstępach;
-- priorytet dla kart zaległych i sprawiających trudność;
+- automatyczne obniżenie stanu karty po błędzie aktywnego przypominania;
 - kolekcja z wyszukiwaniem, filtrami, edycją i usuwaniem;
 - ręczne dodawanie własnych kart;
 - postępy, dzienna seria i statystyki poziomów;
 - wymowa `de-DE` przez Web Speech API;
-- zapis w IndexedDB oraz eksport i import kopii JSON;
+- zapis w IndexedDB, synchronizacja postępu w Neon oraz eksport i import kopii JSON;
 - jasny, ciemny i systemowy motyw;
 - instalacja na ekranie początkowym jako PWA.
 
@@ -29,17 +33,28 @@ Statyczny zestaw powstał z dwóch publicznych talii AnkiWeb:
 
 Aplikacja nie kopiuje plików audio, obrazów ani szablonów Anki. Przechowuje tekst haseł, polskie tłumaczenia przygotowane jednorazowo przez AI oraz odnośniki do oryginalnych talii.
 
+## Jak działa nauka
+
+Nowe słowo jest najpierw prezentowane bez testu. Ocena użytkownika ustala jego miejsce w bieżącej kolejce. „Znam” prowadzi do aktywnego wpisywania po kilku innych słowach, „Niepewnie” do prostszego quizu, a „Nie znam” do szybkiego ponownego pokazania fiszki.
+
+Kolejne odpowiedzi aktualizują odstęp, trudność, serię poprawnych odpowiedzi i zestaw zaliczonych typów ćwiczeń. Samo klikanie „Znam” nigdy nie wystarcza do stanu „opanowane”. Błąd w pisaniu natychmiast przenosi kartę do niepewnych i planuje wcześniejszy powrót.
+
 ## Architektura
 
-Projekt jest w pełni statyczną aplikacją Vite/React wdrażaną na GitHub Pages pod ścieżką `/german/`. Nie ma backendu, Workera Cloudflare, wywołań OpenAI ani sekretów wymaganych w środowisku produkcyjnym.
+- Vite, React i TypeScript po stronie klienta;
+- Vercel Function `api/learning.js` jako wąski interfejs do danych;
+- Neon Postgres dla katalogu 3038 kart i anonimowego postępu urządzenia;
+- IndexedDB jako pamięć lokalna i źródło działania offline;
+- service worker z dynamicznym zakresem dla Vercel i GitHub Pages;
+- Web Speech API do bezpłatnej wymowy `de-DE`.
 
-Fiszki i postępy są zapisywane wyłącznie w IndexedDB na urządzeniu użytkownika.
+Nie ma wywołań OpenAI ani Cloudflare w aplikacji produkcyjnej. Dane urządzenia są identyfikowane losowym tokenem przechowywanym lokalnie; do przeglądarki nie trafia adres bazy.
 
 ## Technologie
 
 - React 19 i TypeScript;
 - Vite;
-- natywne IndexedDB i Web Speech API;
+- Neon Serverless, natywne IndexedDB, service worker i Web Speech API;
 - Vitest oraz `fake-indexeddb`;
 - GitHub Actions i GitHub Pages.
 
@@ -54,6 +69,8 @@ npm run dev
 
 Strona będzie dostępna pod adresem podanym przez Vite, zazwyczaj `http://localhost:5173/german/`.
 
+Do lokalnego uruchomienia API pobierz zmienne projektu Vercel do `.env.local`. Plik jest ignorowany przez Git.
+
 ## Testy i build
 
 ```bash
@@ -62,11 +79,11 @@ npm run typecheck
 npm run build
 ```
 
-## Wdrożenie na GitHub Pages
+## Wdrożenie
 
-Workflow `.github/workflows/deploy-pages.yml` uruchamia testy, typecheck i build po każdym pushu do `main`, a następnie publikuje katalog `dist`.
+Produkcja działa na Vercel. Projekt wymaga `DATABASE_URL` z integracji Neon. Po zmianie katalogu kart uruchom `npm run db:push`, następnie wykonaj testy, build i wdrożenie produkcyjne.
 
-W ustawieniach repozytorium jako źródło Pages należy wybrać **GitHub Actions**.
+Workflow GitHub Pages pozostaje statycznym podglądem awaryjnym; bez Vercel Function korzysta z katalogu osadzonego w aplikacji i lokalnego IndexedDB.
 
 ## Aktualizacja danych z Anki
 
@@ -80,9 +97,10 @@ Tłumaczenia i pary zdań kontekstowych są przygotowywane jednorazowo przez mod
 
 ## Dane i prywatność
 
-- aplikacja nie posiada kont użytkowników ani zewnętrznej bazy danych;
-- podczas korzystania ze strony żadne treści nie są wysyłane do OpenAI ani Cloudflare;
-- usunięcie danych Safari może również usunąć postępy, dlatego warto regularnie eksportować kopię JSON.
+- aplikacja nie posiada kont użytkowników ani SSO;
+- katalog i postęp są synchronizowane z Neon przez API Vercel;
+- podczas nauki żadne treści nie są wysyłane do OpenAI ani Cloudflare;
+- wyczyszczenie danych Safari usuwa lokalny anonimowy identyfikator, dlatego warto okresowo eksportować kopię JSON.
 
 ## PWA na iPhonie
 
@@ -95,9 +113,10 @@ Tłumaczenia i pary zdań kontekstowych są przygotowywane jednorazowo przez mod
 ```text
 src/
   data/             3038 statycznych kart Nicos Weg A2/B1
-  lib/              ćwiczenia, SRS, IndexedDB, walidacja i wymowa
+  lib/              ćwiczenia, sesje, SRS, synchronizacja, IndexedDB i wymowa
   App.tsx           interfejs i przepływy aplikacji
 scripts/            odczyt źródłowych talii Anki
+api/                funkcja synchronizacji Vercel + Neon
 public/             manifest, service worker i ikony PWA
 tests/              testy logiki i pamięci
 .github/workflows/  testy, build i wdrożenie GitHub Pages

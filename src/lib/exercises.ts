@@ -1,10 +1,6 @@
-import type { Flashcard } from "../types";
+import type { ExerciseMode, Flashcard, LearningStage } from "../types";
 
-export type ExerciseMode =
-  | "choice-de-pl"
-  | "choice-pl-de"
-  | "type-de-pl"
-  | "type-pl-de";
+export type { ExerciseMode } from "../types";
 
 export interface ChoiceOption {
   cardId: string;
@@ -22,12 +18,11 @@ export interface Exercise {
   answerLanguage: "de" | "pl";
 }
 
-const modes: ExerciseMode[] = [
-  "choice-de-pl",
-  "type-pl-de",
-  "choice-pl-de",
-  "type-de-pl",
-];
+export interface TypedAnswerResult {
+  correct: boolean;
+  score: number;
+  bestMatch: string;
+}
 
 function germanLabel(card: Flashcard): string {
   return card.article ? `${card.article} ${card.german}` : card.german;
@@ -49,7 +44,7 @@ function polishAnswers(card: Flashcard): string[] {
 }
 
 function germanAnswers(card: Flashcard): string[] {
-  return [...new Set([card.german, germanLabel(card), card.exampleGerman].filter(Boolean))];
+  return [germanLabel(card)];
 }
 
 function hash(value: string): number {
@@ -70,7 +65,9 @@ function choiceOptions(
   const label = language === "de" ? germanLabel : (item: Flashcard) => item.polish;
   const correctLabel = label(card);
   const used = new Set([normalizeAnswer(correctLabel)]);
-  const distractors = cards
+  const sameCategory = cards.filter((candidate) => candidate.category === card.category);
+  const candidates = sameCategory.length >= 3 ? sameCategory : cards;
+  const distractors = candidates
     .filter((candidate) => candidate.id !== card.id)
     .sort(
       (left, right) =>
@@ -98,12 +95,27 @@ function choiceOptions(
     }));
 }
 
+const stageModes: Record<Exclude<LearningStage, "new">, ExerciseMode[]> = {
+  learning: ["choice-de-pl", "choice-pl-de"],
+  uncertain: ["choice-de-pl", "choice-pl-de", "type-de-pl"],
+  known: ["type-pl-de", "type-de-pl", "choice-pl-de"],
+  mastered: ["type-pl-de", "type-de-pl", "choice-de-pl", "choice-pl-de"],
+};
+
+export function preferredExerciseMode(card: Flashcard, sessionIndex: number): ExerciseMode {
+  const stage = card.stage === "new" ? "learning" : card.stage;
+  const candidates = stageModes[stage];
+  const unseen = candidates.find((mode) => !card.successfulModes.includes(mode));
+  return unseen ?? candidates[sessionIndex % candidates.length];
+}
+
 export function createExercise(
   card: Flashcard,
   cards: Flashcard[],
   sessionIndex: number,
+  forcedMode?: ExerciseMode,
 ): Exercise {
-  const mode = modes[sessionIndex % modes.length];
+  const mode = forcedMode ?? preferredExerciseMode(card, sessionIndex);
   const asksForGerman = mode.endsWith("pl-de");
   const isChoice = mode.startsWith("choice");
   const acceptedAnswers = asksForGerman ? germanAnswers(card) : polishAnswers(card);
@@ -112,8 +124,8 @@ export function createExercise(
     prompt: asksForGerman ? card.polish : germanLabel(card),
     instruction: isChoice
       ? asksForGerman
-        ? "Wybierz niemieckie tłumaczenie"
-        : "Wybierz polskie tłumaczenie"
+        ? "Wybierz po niemiecku"
+        : "Wybierz po polsku"
       : asksForGerman
         ? "Napisz po niemiecku"
         : "Napisz po polsku",
@@ -126,10 +138,50 @@ export function createExercise(
   };
 }
 
+function levenshtein(left: string, right: string): number {
+  const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+  for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
+    const current = [leftIndex];
+    for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
+      current[rightIndex] = Math.min(
+        current[rightIndex - 1] + 1,
+        previous[rightIndex] + 1,
+        previous[rightIndex - 1] + (left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1),
+      );
+    }
+    previous.splice(0, previous.length, ...current);
+  }
+  return previous[right.length];
+}
+
+export function answerSimilarity(answer: string, accepted: string): number {
+  const normalizedAnswer = normalizeAnswer(answer);
+  const normalizedAccepted = normalizeAnswer(accepted);
+  if (!normalizedAnswer || !normalizedAccepted) return 0;
+  if (normalizedAnswer === normalizedAccepted) return 1;
+  const longest = Math.max(normalizedAnswer.length, normalizedAccepted.length);
+  return Math.max(0, 1 - levenshtein(normalizedAnswer, normalizedAccepted) / longest);
+}
+
+export function evaluateTypedAnswer(
+  answer: string,
+  acceptedAnswers: string[],
+): TypedAnswerResult {
+  const results = acceptedAnswers.map((accepted) => ({
+    accepted,
+    score: answerSimilarity(answer, accepted),
+  }));
+  const best = results.sort((left, right) => right.score - left.score)[0] ?? {
+    accepted: acceptedAnswers[0] ?? "",
+    score: 0,
+  };
+  return {
+    correct: best.score >= 0.9,
+    score: best.score,
+    bestMatch: best.accepted,
+  };
+}
+
 export function isTypedAnswerCorrect(answer: string, acceptedAnswers: string[]): boolean {
-  const normalized = normalizeAnswer(answer);
-  return (
-    normalized.length > 0 &&
-    acceptedAnswers.some((accepted) => normalizeAnswer(accepted) === normalized)
-  );
+  return evaluateTypedAnswer(answer, acceptedAnswers).correct;
 }

@@ -1,9 +1,10 @@
-const CACHE_NAME = "wortschatz-a2-v1";
+const CACHE_NAME = "wortschatz-v2";
+const scopePath = new URL(self.registration.scope).pathname;
 const APP_SHELL = [
-  "/german/",
-  "/german/manifest.webmanifest",
-  "/german/icon-192.png",
-  "/german/icon-512.png",
+  scopePath,
+  `${scopePath}manifest.webmanifest`,
+  `${scopePath}icon-192.png`,
+  `${scopePath}icon-512.png`,
 ];
 
 self.addEventListener("install", (event) => {
@@ -31,10 +32,10 @@ self.addEventListener("fetch", (event) => {
       fetch(event.request)
         .then((response) => {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put("/german/", copy));
+          caches.open(CACHE_NAME).then((cache) => cache.put(scopePath, copy));
           return response;
         })
-        .catch(() => caches.match("/german/")),
+        .catch(() => caches.match(scopePath)),
     );
     return;
   }

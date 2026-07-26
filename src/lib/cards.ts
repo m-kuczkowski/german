@@ -1,4 +1,10 @@
-import type { CardContent, CardSource, Flashcard } from "../types";
+import type {
+  CardContent,
+  CardSource,
+  ExerciseMode,
+  Flashcard,
+  LearningStage,
+} from "../types";
 
 export function normalizeGerman(value: string): string {
   return value
@@ -33,6 +39,49 @@ export function toFlashcard(
     dueAt: now.toISOString(),
     learned: false,
     lapses: 0,
+    stage: "new",
+    correctStreak: 0,
+    successfulModes: [],
+    firstActiveRecallAt: null,
+    lastActiveRecallAt: null,
+    lastReviewedAt: null,
+    typedAttempts: 0,
+    typedSuccesses: 0,
+  };
+}
+
+const exerciseModes = new Set<ExerciseMode>([
+  "choice-de-pl",
+  "choice-pl-de",
+  "type-de-pl",
+  "type-pl-de",
+]);
+
+function legacyStage(card: Flashcard): LearningStage {
+  if (card.repetitions === 0) return "new";
+  return card.learned ? "known" : "learning";
+}
+
+export function withLearningDefaults(card: Flashcard): Flashcard {
+  const stage =
+    !card.stage || (card.stage === "new" && card.repetitions > 0)
+      ? legacyStage(card)
+      : card.stage;
+  return {
+    ...card,
+    stage,
+    learned: stage === "known" || stage === "mastered",
+    correctStreak: Number.isFinite(card.correctStreak)
+      ? Math.max(0, card.correctStreak)
+      : Math.max(0, card.repetitions),
+    successfulModes: Array.isArray(card.successfulModes)
+      ? [...new Set(card.successfulModes.filter((mode) => exerciseModes.has(mode)))]
+      : [],
+    firstActiveRecallAt: card.firstActiveRecallAt ?? null,
+    lastActiveRecallAt: card.lastActiveRecallAt ?? null,
+    lastReviewedAt: card.lastReviewedAt ?? null,
+    typedAttempts: Number.isFinite(card.typedAttempts) ? Math.max(0, card.typedAttempts) : 0,
+    typedSuccesses: Number.isFinite(card.typedSuccesses) ? Math.max(0, card.typedSuccesses) : 0,
   };
 }
 

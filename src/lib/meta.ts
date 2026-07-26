@@ -8,6 +8,7 @@ export const defaultMeta: LearningMeta = {
   totalReviews: 0,
   theme: "system",
   contentVersion: 0,
+  activeSession: null,
 };
 
 export function recordReview(meta: LearningMeta, now = new Date()): LearningMeta {

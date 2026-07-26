@@ -1,5 +1,5 @@
 import type { BackupFile, Flashcard, LearningMeta } from "../types";
-import { validateCardContent } from "./cards";
+import { validateCardContent, withLearningDefaults } from "./cards";
 import { defaultMeta } from "./meta";
 
 const DB_NAME = "wortschatz-a2";
@@ -7,7 +7,7 @@ const DB_VERSION = 1;
 const CARD_STORE = "cards";
 const META_STORE = "meta";
 const META_KEY = "learning";
-const CURRENT_CONTENT_VERSION = 4;
+const CURRENT_CONTENT_VERSION = 5;
 
 function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -49,7 +49,7 @@ export async function loadCards(): Promise<Flashcard[]> {
   const result = await requestToPromise(transaction.objectStore(CARD_STORE).getAll());
   await transactionDone(transaction);
   db.close();
-  return result as Flashcard[];
+  return (result as Flashcard[]).map(withLearningDefaults);
 }
 
 export async function saveCards(cards: Flashcard[]): Promise<void> {
@@ -126,7 +126,11 @@ export function parseBackup(value: unknown): BackupFile {
   ) {
     throw new Error("Plik nie jest prawidłową kopią Wortschatz A2.");
   }
-  return backup as BackupFile;
+  return {
+    ...backup,
+    cards: backup.cards.map((card) => withLearningDefaults(card)),
+    meta: { ...defaultMeta, ...backup.meta, activeSession: null },
+  } as BackupFile;
 }
 
 export async function loadOrSeed(seed: Flashcard[]): Promise<{
@@ -134,15 +138,16 @@ export async function loadOrSeed(seed: Flashcard[]): Promise<{
   meta: LearningMeta;
 }> {
   const [storedCards, meta] = await Promise.all([loadCards(), loadMeta()]);
-  const nextMeta = { ...meta, contentVersion: CURRENT_CONTENT_VERSION };
-  if (storedCards.length === 0) {
+  const normalizedStoredCards = storedCards.map(withLearningDefaults);
+  const nextMeta = { ...defaultMeta, ...meta, contentVersion: CURRENT_CONTENT_VERSION };
+  if (normalizedStoredCards.length === 0) {
     await Promise.all([saveCards(seed), saveMeta(nextMeta)]);
     return { cards: seed, meta: nextMeta };
   }
   if (meta.contentVersion < CURRENT_CONTENT_VERSION) {
-    const storedIds = new Set(storedCards.map((card) => card.id));
+    const storedIds = new Set(normalizedStoredCards.map((card) => card.id));
     const seedById = new Map(seed.map((card) => [card.id, card]));
-    const updatedStoredCards = storedCards.map((card) => {
+    const updatedStoredCards = normalizedStoredCards.map((card) => {
       const replacement = seedById.get(card.id);
       if (!replacement || card.source !== "anki") return card;
       return {
@@ -155,11 +160,19 @@ export async function loadOrSeed(seed: Flashcard[]): Promise<{
         dueAt: card.dueAt,
         learned: card.learned,
         lapses: card.lapses,
+        stage: card.stage,
+        correctStreak: card.correctStreak,
+        successfulModes: card.successfulModes,
+        firstActiveRecallAt: card.firstActiveRecallAt,
+        lastActiveRecallAt: card.lastActiveRecallAt,
+        lastReviewedAt: card.lastReviewedAt,
+        typedAttempts: card.typedAttempts,
+        typedSuccesses: card.typedSuccesses,
       };
     });
     const merged = [...updatedStoredCards, ...seed.filter((card) => !storedIds.has(card.id))];
     await Promise.all([saveCards(merged), saveMeta(nextMeta)]);
     return { cards: merged, meta: nextMeta };
   }
-  return { cards: storedCards, meta };
+  return { cards: normalizedStoredCards, meta: nextMeta };
 }

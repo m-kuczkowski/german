@@ -1,4 +1,4 @@
-import { toFlashcard } from "./cards";
+import { toFlashcard, withLearningDefaults } from "./cards";
 import { defaultMeta } from "./meta";
 import type { CardContent, Flashcard, LearningMeta } from "../types";
 
@@ -46,7 +46,9 @@ export function hydrateRemoteState(
   const progressById = new Map(remote.progress.map((card) => [card.id, card]));
   const catalogCards = remote.cards.map((content) => {
     const local = localById.get(content.id) ?? toFlashcard(content, "anki");
-    return { ...local, ...content, ...progressById.get(content.id) } as Flashcard;
+    return withLearningDefaults(
+      { ...local, ...content, ...progressById.get(content.id) } as Flashcard,
+    );
   });
   const personalCards = localCards.filter((card) => card.source !== "anki");
   return {
@@ -66,12 +68,16 @@ export async function loadRemoteState(): Promise<RemoteState | null> {
 }
 
 export async function saveRemoteState(cards: Flashcard[], meta: LearningMeta): Promise<void> {
-  const identity = deviceIdentity();
+  let identity = deviceIdentity();
+  if (!identity) {
+    await loadRemoteState();
+    identity = deviceIdentity();
+  }
   if (!identity) return;
   const progress = cards
     .filter((card) => card.source === "anki")
-    .filter((card) => card.repetitions > 0 || card.lapses > 0 || card.learned)
-    .map(({ id, repetitions, intervalDays, ease, dueAt, learned, lapses }) => ({
+    .filter((card) => card.stage !== "new" || card.lapses > 0)
+    .map(({
       id,
       repetitions,
       intervalDays,
@@ -79,6 +85,30 @@ export async function saveRemoteState(cards: Flashcard[], meta: LearningMeta): P
       dueAt,
       learned,
       lapses,
+      stage,
+      correctStreak,
+      successfulModes,
+      firstActiveRecallAt,
+      lastActiveRecallAt,
+      lastReviewedAt,
+      typedAttempts,
+      typedSuccesses,
+    }) => ({
+      id,
+      repetitions,
+      intervalDays,
+      ease,
+      dueAt,
+      learned,
+      lapses,
+      stage,
+      correctStreak,
+      successfulModes,
+      firstActiveRecallAt,
+      lastActiveRecallAt,
+      lastReviewedAt,
+      typedAttempts,
+      typedSuccesses,
     }));
   const response = await fetch("/api/learning", {
     method: "PUT",

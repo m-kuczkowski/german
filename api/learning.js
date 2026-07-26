@@ -1,7 +1,22 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 
-const progressKeys = ["repetitions", "intervalDays", "ease", "dueAt", "learned", "lapses"];
+const progressKeys = [
+  "repetitions",
+  "intervalDays",
+  "ease",
+  "dueAt",
+  "learned",
+  "lapses",
+  "stage",
+  "correctStreak",
+  "successfulModes",
+  "firstActiveRecallAt",
+  "lastActiveRecallAt",
+  "lastReviewedAt",
+  "typedAttempts",
+  "typedSuccesses",
+];
 let schemaReady;
 
 function database() {
@@ -98,17 +113,24 @@ export default async function handler(req, res) {
       const body = readBody(req);
       const progress = progressPayload(body.progress);
       const meta = body.meta && typeof body.meta === "object" ? body.meta : {};
-      await sql.query("DELETE FROM card_progress WHERE profile_id = $1::uuid", [profile.id]);
-      if (progress.length) {
-        await sql.query(
-          `INSERT INTO card_progress (profile_id, card_id, data)
-           SELECT $1::uuid, entry->>'id', entry - 'id'
-           FROM jsonb_array_elements($2::jsonb) AS entry
-           ON CONFLICT (profile_id, card_id)
-           DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
-          [profile.id, JSON.stringify(progress)],
-        );
-      }
+      await sql.query(
+        `WITH entries AS (
+           SELECT entry FROM jsonb_array_elements($2::jsonb) AS entry
+         ),
+         removed AS (
+           DELETE FROM card_progress AS saved
+           WHERE saved.profile_id = $1::uuid
+             AND NOT EXISTS (
+               SELECT 1 FROM entries WHERE entries.entry->>'id' = saved.card_id
+             )
+         )
+         INSERT INTO card_progress (profile_id, card_id, data)
+         SELECT $1::uuid, entry->>'id', entry - 'id'
+         FROM entries
+         ON CONFLICT (profile_id, card_id)
+         DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
+        [profile.id, JSON.stringify(progress)],
+      );
       await sql.query("UPDATE learning_profiles SET meta = $2::jsonb, updated_at = NOW() WHERE id = $1::uuid", [profile.id, JSON.stringify(meta)]);
       return res.status(204).end();
     }

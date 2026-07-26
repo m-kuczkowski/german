@@ -20,7 +20,7 @@ describe("lokalny zapis i kopie", () => {
   it("w trybie bez danych uruchamia gotowy zestaw startowy", async () => {
     const result = await loadOrSeed(starterCards);
     expect(result.cards).toHaveLength(3038);
-    expect(result.meta.contentVersion).toBe(4);
+    expect(result.meta.contentVersion).toBe(5);
     expect(await loadCards()).toHaveLength(3038);
   });
 
@@ -37,7 +37,7 @@ describe("lokalny zapis i kopie", () => {
     await saveMeta(defaultMeta);
     const migrated = await loadOrSeed(starterCards);
     expect(migrated.cards).toHaveLength(3038);
-    expect(migrated.meta.contentVersion).toBe(4);
+    expect(migrated.meta.contentVersion).toBe(5);
 
     await saveCards(migrated.cards.slice(1));
     const afterDeletion = await loadOrSeed(starterCards);
@@ -58,6 +58,7 @@ describe("lokalny zapis i kopie", () => {
     const refreshed = migrated.cards.find((card) => card.id === oldCard.id);
     expect(refreshed?.category).toBe(starterCards[0].category);
     expect(refreshed?.repetitions).toBe(2);
+    expect(refreshed?.stage).toBe("learning");
   });
 
   it("eksportuje i waliduje kopię zapasową", () => {
