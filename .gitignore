@@ -1,0 +1,11 @@
+/node_modules
+/coverage
+/dist
+/.wrangler
+.env
+.env.local
+.dev.vars
+.vite
+.DS_Store
+npm-debug.log*
+*.tsbuildinfo
