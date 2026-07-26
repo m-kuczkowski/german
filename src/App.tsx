@@ -555,13 +555,13 @@ function FlashcardSession(props: SessionProps) {
             </button>
             <div className="rating-actions persistent-ratings" role="group" aria-label="Jak dobrze znasz to słowo?">
               <button className="rating-again" onClick={() => rateIntroduction("again")} disabled={Boolean(outcome)}>
-                <strong>Nie znam</strong><small>przegródka 1</small>
+                <strong>Nie znam</strong><small>pokaż znów za chwilę</small>
               </button>
               <button className="rating-hard" onClick={() => rateIntroduction("hard")} disabled={Boolean(outcome)}>
-                <strong>Niepewnie</strong><small>krótszy odstęp</small>
+                <strong>Niepewnie</strong><small>daj łatwe pytanie</small>
               </button>
               <button className="rating-good" onClick={() => rateIntroduction("good")} disabled={Boolean(outcome)}>
-                <strong>Znam</strong><small>aktywne sprawdzenie</small>
+                <strong>Znam</strong><small>sprawdź bez podpowiedzi</small>
               </button>
             </div>
           </div>
