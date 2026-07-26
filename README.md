@@ -1,6 +1,6 @@
 # Wortschatz
 
-Mobilna aplikacja PWA do nauki niemieckiego po polsku. Zawiera pełny statyczny zestaw 3038 kart z kursu Nicos Weg, ćwiczenia w obu kierunkach językowych, przykładowe zdania po niemiecku z polskim przekładem, lokalne powtórki rozłożone w czasie i wymowę przez Web Speech API.
+Mobilna aplikacja PWA do nauki niemieckiego po polsku. Zawiera statyczny zestaw kart z kursu Nicos Weg, ćwiczenia w obu kierunkach językowych, przykładowe zdania po niemiecku z polskim przekładem, lokalne powtórki rozłożone w czasie i wymowę przez Web Speech API.
 
 Interfejs jest zaprojektowany przede wszystkim dla Safari na iPhonie. Po pierwszym otwarciu aplikacja działa również offline.
 
