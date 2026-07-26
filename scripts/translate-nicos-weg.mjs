@@ -7,11 +7,26 @@ const sourcePath = resolve(process.argv[2] ?? "data/nicosWegSource.json");
 const outputPath = resolve(process.argv[3] ?? "data/nicosWegTranslations.json");
 const apiKey = process.env.OPENAI_API_KEY;
 const model = process.env.OPENAI_MODEL ?? "gpt-5.6";
-const batchSize = Number.parseInt(process.env.TRANSLATION_BATCH_SIZE ?? "100", 10);
+const batchSize = Number.parseInt(process.env.TRANSLATION_BATCH_SIZE ?? "25", 10);
+
+function reportFailure(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`::error title=Static translation generation failed::${message.replace(/\r?\n/g, " ")}`);
+}
+
+process.on("uncaughtException", (error) => {
+  reportFailure(error);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (error) => {
+  reportFailure(error);
+  process.exit(1);
+});
 
 if (!apiKey) throw new Error("Brakuje OPENAI_API_KEY.");
-if (!Number.isInteger(batchSize) || batchSize < 1 || batchSize > 100) {
-  throw new Error("TRANSLATION_BATCH_SIZE musi być liczbą od 1 do 100.");
+if (!Number.isInteger(batchSize) || batchSize < 1 || batchSize > 50) {
+  throw new Error("TRANSLATION_BATCH_SIZE musi być liczbą od 1 do 50.");
 }
 
 const source = JSON.parse(readFileSync(sourcePath, "utf8"));
@@ -61,7 +76,7 @@ async function requestBatch(cards, attempt = 1) {
     body: JSON.stringify({
       model,
       store: false,
-      max_output_tokens: 12000,
+      max_output_tokens: 20000,
       input: [
         { role: "system", content: system },
         {
