@@ -2,7 +2,9 @@ import { preferredExerciseMode } from "./exercises";
 import type {
   Flashcard,
   LearningSession,
+  ReviewEvidence,
   ReviewRating,
+  SessionAnswer,
   SessionItem,
 } from "../types";
 
@@ -13,7 +15,7 @@ export function createLearningSession(
   now = new Date(),
 ): LearningSession {
   return {
-    version: 1,
+    version: 2,
     mode,
     categoryId,
     queue: cards.map((card) => ({
@@ -26,6 +28,7 @@ export function createLearningSession(
     correct: 0,
     mistakes: 0,
     introduced: 0,
+    pendingAnswer: null,
   };
 }
 
@@ -43,19 +46,26 @@ function deterministicGap(cardId: string, index: number, rating: ReviewRating): 
   return minimum + (hash % (maximum - minimum + 1));
 }
 
-export function scheduleSessionAnswer(
+export function recordSessionAnswer(
   session: LearningSession,
-  card: Flashcard,
+  previousCard: Flashcard,
+  updatedCard: Flashcard,
   item: SessionItem,
   rating: ReviewRating,
-  correct: boolean,
+  evidence: ReviewEvidence,
+  answerValue: string | null,
+  correctAnswer: string,
+  now = new Date(),
 ): LearningSession {
+  if (session.pendingAnswer) return session;
   const queue = [...session.queue];
-  const shouldReturn = item.round === 0 || (!correct && item.round < 2);
+  const shouldReturn =
+    (item.kind === "introduction" && item.round === 0) ||
+    (!evidence.correct && item.round < 2);
   if (shouldReturn) {
-    const gap = deterministicGap(card.id, session.index, rating);
+    const gap = deterministicGap(previousCard.id, session.index, rating);
     const nextItem: SessionItem = {
-      id: card.id,
+      id: previousCard.id,
       kind: rating === "again" && item.kind === "introduction"
         ? "introduction"
         : "exercise",
@@ -63,22 +73,44 @@ export function scheduleSessionAnswer(
         ? "type-pl-de"
         : rating === "hard"
           ? "choice-de-pl"
-          : preferredExerciseMode(card, session.index + gap),
+          : preferredExerciseMode(updatedCard, session.index + gap),
       round: item.round + 1,
     };
     queue.splice(Math.min(queue.length, session.index + gap + 1), 0, nextItem);
   }
 
+  const pendingAnswer: SessionAnswer = {
+    cardId: previousCard.id,
+    rating,
+    evidence,
+    answerValue,
+    correctAnswer,
+    fromBox: previousCard.leitnerBox,
+    toBox: updatedCard.leitnerBox,
+    dueAt: updatedCard.dueAt,
+    reason: updatedCard.lastSchedulingReason,
+    recordedAt: now.toISOString(),
+  };
   return {
     ...session,
     queue,
-    index: session.index + 1,
-    correct: session.correct + (correct ? 1 : 0),
-    mistakes: session.mistakes + (correct ? 0 : 1),
+    correct: session.correct + (evidence.correct ? 1 : 0),
+    mistakes: session.mistakes + (evidence.correct ? 0 : 1),
     introduced: session.introduced + (item.kind === "introduction" && item.round === 0 ? 1 : 0),
+    pendingAnswer,
   };
 }
 
+export function advanceSession(session: LearningSession): LearningSession {
+  if (!session.pendingAnswer) return session;
+  return { ...session, index: session.index + 1, pendingAnswer: null };
+}
+
 export function sessionComplete(session: LearningSession | null): boolean {
-  return Boolean(session && session.queue.length > 0 && session.index >= session.queue.length);
+  return Boolean(
+    session &&
+    !session.pendingAnswer &&
+    session.queue.length > 0 &&
+    session.index >= session.queue.length,
+  );
 }

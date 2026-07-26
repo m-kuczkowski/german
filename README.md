@@ -4,6 +4,9 @@ Mobilna aplikacja PWA do nauki niemieckiego po polsku. Łączy spokojny interfej
 
 Interfejs jest zaprojektowany przede wszystkim dla Safari na iPhonie. Po pierwszym otwarciu aplikacja działa również offline.
 
+Podstawa badawcza i uzasadnienie harmonogramu są opisane w
+[docs/research-learning-methods.md](docs/research-learning-methods.md).
+
 ## Co działa
 
 - pełne 1856 kart A2 i 1182 karty B1;
@@ -11,10 +14,11 @@ Interfejs jest zaprojektowany przede wszystkim dla Safari na iPhonie. Po pierwsz
 - adaptacyjne powroty w tej samej lekcji: po 3–5, 6–8 albo 8–11 innych kartach;
 - wybór jednego tłumaczenia z trzech odpowiedzi i wpisywanie w obu kierunkach;
 - ocena podobieństwa wpisanej odpowiedzi z progiem 90%, bez ignorowania rodzajników i umlautów;
-- pięć stanów znajomości: nowe, uczę się, niepewne, znane i opanowane;
+- pięć przegródek Leitnera z odstępami 1, 3, 7, 14 i 30 dni;
+- widok zawartości przegródek, terminów i historii decyzji dla każdej karty;
 - opanowanie wymagające poprawnych aktywnych odpowiedzi w różnych formach oraz odstępu czasu;
 - tryb trudnych słów, dzienna krótka lekcja i spokojne podsumowanie;
-- powtórki po 1, 3 i 7 dniach, a później w rosnących odstępach;
+- ręczne „Dalej” po odpowiedzi — wynik i kontekst nie znikają automatycznie;
 - automatyczne obniżenie stanu karty po błędzie aktywnego przypominania;
 - kolekcja z wyszukiwaniem, filtrami, edycją i usuwaniem;
 - ręczne dodawanie własnych kart;
@@ -35,9 +39,9 @@ Aplikacja nie kopiuje plików audio, obrazów ani szablonów Anki. Przechowuje t
 
 ## Jak działa nauka
 
-Nowe słowo jest najpierw prezentowane bez testu. Ocena użytkownika ustala jego miejsce w bieżącej kolejce. „Znam” prowadzi do aktywnego wpisywania po kilku innych słowach, „Niepewnie” do prostszego quizu, a „Nie znam” do szybkiego ponownego pokazania fiszki.
+Nowe słowo jest najpierw prezentowane na dwustronnej fiszce. Trzy oceny są widoczne po obu stronach. „Znam” prowadzi do aktywnego wpisywania po kilku innych słowach, „Niepewnie” do prostszego quizu, a „Nie znam” do szybkiego ponownego pokazania fiszki.
 
-Kolejne odpowiedzi aktualizują odstęp, trudność, serię poprawnych odpowiedzi i zestaw zaliczonych typów ćwiczeń. Samo klikanie „Znam” nigdy nie wystarcza do stanu „opanowane”. Błąd w pisaniu natychmiast przenosi kartę do niepewnych i planuje wcześniejszy powrót.
+Kolejne odpowiedzi aktualizują przegródkę, termin, serię, historię oraz zestaw zaliczonych typów ćwiczeń. Samo klikanie „Znam” nigdy nie wystarcza do opanowania. Błąd aktywnego przypominania przenosi kartę do przegródki 1 i planuje wcześniejszy powrót. Ekran wyniku pozostaje widoczny do kliknięcia „Dalej”.
 
 ## Architektura
 

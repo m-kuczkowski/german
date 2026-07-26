@@ -1,11 +1,31 @@
 export type CardSource = "starter" | "anki" | "manual" | "ai" | "import";
 export type LearningStage = "new" | "learning" | "uncertain" | "known" | "mastered";
 export type ReviewRating = "again" | "hard" | "good";
+export type LeitnerBox = 1 | 2 | 3 | 4 | 5;
 export type ExerciseMode =
   | "choice-de-pl"
   | "choice-pl-de"
   | "type-de-pl"
   | "type-pl-de";
+
+export interface ReviewEvidence {
+  mode: "introduction" | ExerciseMode;
+  correct: boolean;
+  score?: number;
+}
+
+export interface ReviewHistoryEntry {
+  id: string;
+  reviewedAt: string;
+  mode: ReviewEvidence["mode"];
+  rating: ReviewRating;
+  correct: boolean;
+  score: number | null;
+  fromBox: LeitnerBox;
+  toBox: LeitnerBox;
+  scheduledFor: string;
+  reason: string;
+}
 
 export interface CardContent {
   id: string;
@@ -40,6 +60,10 @@ export interface Flashcard extends CardContent {
   lastReviewedAt: string | null;
   typedAttempts: number;
   typedSuccesses: number;
+  leitnerBox: LeitnerBox;
+  reviewHistory: ReviewHistoryEntry[];
+  lastSchedulingReason: string;
+  successfulReviewDays: string[];
 }
 
 export interface SessionItem {
@@ -50,7 +74,7 @@ export interface SessionItem {
 }
 
 export interface LearningSession {
-  version: 1;
+  version: 2;
   mode: "learn" | "review" | "hard";
   categoryId: string | null;
   queue: SessionItem[];
@@ -59,6 +83,20 @@ export interface LearningSession {
   correct: number;
   mistakes: number;
   introduced: number;
+  pendingAnswer: SessionAnswer | null;
+}
+
+export interface SessionAnswer {
+  cardId: string;
+  rating: ReviewRating;
+  evidence: ReviewEvidence;
+  answerValue: string | null;
+  correctAnswer: string;
+  fromBox: LeitnerBox;
+  toBox: LeitnerBox;
+  dueAt: string;
+  reason: string;
+  recordedAt: string;
 }
 
 export interface LearningMeta {
@@ -78,4 +116,4 @@ export interface BackupFile {
   meta: LearningMeta;
 }
 
-export type TabId = "learn" | "review" | "collection" | "progress" | "settings";
+export type TabId = "learn" | "review" | "leitner" | "collection" | "settings";

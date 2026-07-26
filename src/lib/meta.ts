@@ -11,6 +11,20 @@ export const defaultMeta: LearningMeta = {
   activeSession: null,
 };
 
+export function withMetaDefaults(meta: Partial<LearningMeta> | null | undefined): LearningMeta {
+  const merged = { ...defaultMeta, ...(meta ?? {}) };
+  return {
+    ...merged,
+    activeSession: merged.activeSession
+      ? {
+          ...merged.activeSession,
+          version: 2,
+          pendingAnswer: merged.activeSession.pendingAnswer ?? null,
+        }
+      : null,
+  };
+}
+
 export function recordReview(meta: LearningMeta, now = new Date()): LearningMeta {
   const today = localDateKey(now);
   const freshDay = meta.lastStudyDate !== today;

@@ -1,13 +1,13 @@
 import type { BackupFile, Flashcard, LearningMeta } from "../types";
 import { validateCardContent, withLearningDefaults } from "./cards";
-import { defaultMeta } from "./meta";
+import { withMetaDefaults } from "./meta";
 
 const DB_NAME = "wortschatz-a2";
 const DB_VERSION = 1;
 const CARD_STORE = "cards";
 const META_STORE = "meta";
 const META_KEY = "learning";
-const CURRENT_CONTENT_VERSION = 5;
+const CURRENT_CONTENT_VERSION = 6;
 
 function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -68,7 +68,7 @@ export async function loadMeta(): Promise<LearningMeta> {
   const result = await requestToPromise(transaction.objectStore(META_STORE).get(META_KEY));
   await transactionDone(transaction);
   db.close();
-  return result ? { ...defaultMeta, ...(result as LearningMeta) } : defaultMeta;
+  return withMetaDefaults(result as LearningMeta | undefined);
 }
 
 export async function saveMeta(meta: LearningMeta): Promise<void> {
@@ -129,7 +129,7 @@ export function parseBackup(value: unknown): BackupFile {
   return {
     ...backup,
     cards: backup.cards.map((card) => withLearningDefaults(card)),
-    meta: { ...defaultMeta, ...backup.meta, activeSession: null },
+    meta: { ...withMetaDefaults(backup.meta), activeSession: null },
   } as BackupFile;
 }
 
@@ -139,7 +139,7 @@ export async function loadOrSeed(seed: Flashcard[]): Promise<{
 }> {
   const [storedCards, meta] = await Promise.all([loadCards(), loadMeta()]);
   const normalizedStoredCards = storedCards.map(withLearningDefaults);
-  const nextMeta = { ...defaultMeta, ...meta, contentVersion: CURRENT_CONTENT_VERSION };
+  const nextMeta = { ...withMetaDefaults(meta), contentVersion: CURRENT_CONTENT_VERSION };
   if (normalizedStoredCards.length === 0) {
     await Promise.all([saveCards(seed), saveMeta(nextMeta)]);
     return { cards: seed, meta: nextMeta };
@@ -168,6 +168,10 @@ export async function loadOrSeed(seed: Flashcard[]): Promise<{
         lastReviewedAt: card.lastReviewedAt,
         typedAttempts: card.typedAttempts,
         typedSuccesses: card.typedSuccesses,
+        leitnerBox: card.leitnerBox,
+        reviewHistory: card.reviewHistory,
+        lastSchedulingReason: card.lastSchedulingReason,
+        successfulReviewDays: card.successfulReviewDays,
       };
     });
     const merged = [...updatedStoredCards, ...seed.filter((card) => !storedIds.has(card.id))];

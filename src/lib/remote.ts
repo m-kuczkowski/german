@@ -1,5 +1,5 @@
 import { toFlashcard, withLearningDefaults } from "./cards";
-import { defaultMeta } from "./meta";
+import { withMetaDefaults } from "./meta";
 import type { CardContent, Flashcard, LearningMeta } from "../types";
 
 const DEVICE_KEY = "wortschatz-device";
@@ -46,14 +46,39 @@ export function hydrateRemoteState(
   const progressById = new Map(remote.progress.map((card) => [card.id, card]));
   const catalogCards = remote.cards.map((content) => {
     const local = localById.get(content.id) ?? toFlashcard(content, "anki");
-    return withLearningDefaults(
-      { ...local, ...content, ...progressById.get(content.id) } as Flashcard,
-    );
+    const remoteProgress = progressById.get(content.id);
+    const localReviewedAt = local.lastReviewedAt
+      ? new Date(local.lastReviewedAt).getTime()
+      : 0;
+    const remoteReviewedAt = remoteProgress?.lastReviewedAt
+      ? new Date(remoteProgress.lastReviewedAt).getTime()
+      : 0;
+    const remoteIsNewer = remoteReviewedAt > localReviewedAt ||
+      (
+        remoteReviewedAt === 0 &&
+        localReviewedAt === 0 &&
+        (remoteProgress?.repetitions ?? 0) > local.repetitions
+      );
+    const newestProgress = remoteIsNewer ? remoteProgress : local;
+    return withLearningDefaults({ ...local, ...content, ...newestProgress } as Flashcard);
   });
   const personalCards = localCards.filter((card) => card.source !== "anki");
+  const remoteMeta = withMetaDefaults(remote.meta);
+  const meta = withMetaDefaults({
+    ...remoteMeta,
+    ...localMeta,
+    streak: Math.max(localMeta.streak, remoteMeta.streak),
+    completedToday: Math.max(localMeta.completedToday, remoteMeta.completedToday),
+    totalReviews: Math.max(localMeta.totalReviews, remoteMeta.totalReviews),
+    lastStudyDate: [localMeta.lastStudyDate, remoteMeta.lastStudyDate]
+      .filter((value): value is string => Boolean(value))
+      .sort()
+      .at(-1) ?? null,
+    activeSession: localMeta.activeSession ?? remoteMeta.activeSession,
+  });
   return {
     cards: [...catalogCards, ...personalCards],
-    meta: { ...defaultMeta, ...localMeta, ...remote.meta },
+    meta,
   };
 }
 
@@ -93,6 +118,10 @@ export async function saveRemoteState(cards: Flashcard[], meta: LearningMeta): P
       lastReviewedAt,
       typedAttempts,
       typedSuccesses,
+      leitnerBox,
+      reviewHistory,
+      lastSchedulingReason,
+      successfulReviewDays,
     }) => ({
       id,
       repetitions,
@@ -109,6 +138,10 @@ export async function saveRemoteState(cards: Flashcard[], meta: LearningMeta): P
       lastReviewedAt,
       typedAttempts,
       typedSuccesses,
+      leitnerBox,
+      reviewHistory,
+      lastSchedulingReason,
+      successfulReviewDays,
     }));
   const response = await fetch("/api/learning", {
     method: "PUT",

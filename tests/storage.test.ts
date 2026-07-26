@@ -20,7 +20,7 @@ describe("lokalny zapis i kopie", () => {
   it("w trybie bez danych uruchamia gotowy zestaw startowy", async () => {
     const result = await loadOrSeed(starterCards);
     expect(result.cards).toHaveLength(3038);
-    expect(result.meta.contentVersion).toBe(5);
+    expect(result.meta.contentVersion).toBe(6);
     expect(await loadCards()).toHaveLength(3038);
   });
 
@@ -37,7 +37,7 @@ describe("lokalny zapis i kopie", () => {
     await saveMeta(defaultMeta);
     const migrated = await loadOrSeed(starterCards);
     expect(migrated.cards).toHaveLength(3038);
-    expect(migrated.meta.contentVersion).toBe(5);
+    expect(migrated.meta.contentVersion).toBe(6);
 
     await saveCards(migrated.cards.slice(1));
     const afterDeletion = await loadOrSeed(starterCards);
@@ -59,6 +59,25 @@ describe("lokalny zapis i kopie", () => {
     expect(refreshed?.category).toBe(starterCards[0].category);
     expect(refreshed?.repetitions).toBe(2);
     expect(refreshed?.stage).toBe("learning");
+    expect(refreshed?.leitnerBox).toBe(1);
+  });
+
+  it("migruje wcześniejsze etapy deterministycznie bez zerowania postępu", async () => {
+    const legacy = {
+      ...starterCards[0],
+      stage: "known" as const,
+      repetitions: 6,
+      intervalDays: 14,
+      leitnerBox: undefined,
+      reviewHistory: undefined,
+    };
+    await saveCards([legacy as unknown as typeof starterCards[number]]);
+    await saveMeta(defaultMeta);
+    const migrated = await loadOrSeed(starterCards);
+    const card = migrated.cards.find((item) => item.id === legacy.id);
+    expect(card?.leitnerBox).toBe(4);
+    expect(card?.repetitions).toBe(6);
+    expect(card?.reviewHistory).toEqual([]);
   });
 
   it("eksportuje i waliduje kopię zapasową", () => {

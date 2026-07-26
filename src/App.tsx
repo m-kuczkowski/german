@@ -19,14 +19,16 @@ import {
 } from "./lib/learning";
 import { defaultMeta, recordReview } from "./lib/meta";
 import {
+  boxDescription,
   isDue,
   localDateKey,
+  nextReviewLabel,
   reviewCard,
-  type ReviewEvidence,
 } from "./lib/srs";
 import {
+  advanceSession,
   createLearningSession,
-  scheduleSessionAnswer,
+  recordSessionAnswer,
   sessionComplete,
 } from "./lib/session";
 import { speakGerman } from "./lib/speech";
@@ -43,7 +45,10 @@ import type {
   CardContent,
   Flashcard,
   LearningMeta,
+  LeitnerBox,
+  ReviewEvidence,
   ReviewRating,
+  SessionAnswer,
   SessionItem,
   TabId,
 } from "./types";
@@ -51,8 +56,8 @@ import type {
 const navItems: Array<{ id: TabId; icon: string; label: string }> = [
   { id: "learn", icon: "◇", label: "Nauka" },
   { id: "review", icon: "↻", label: "Powtórki" },
+  { id: "leitner", icon: "▥", label: "Przegródki" },
   { id: "collection", icon: "▤", label: "Kolekcja" },
-  { id: "progress", icon: "◔", label: "Postępy" },
   { id: "settings", icon: "⚙", label: "Ustawienia" },
 ];
 
@@ -186,22 +191,42 @@ function App() {
     }
   }
 
-  function answerCard(rating: ReviewRating, evidence: ReviewEvidence) {
-    if (!activeCard || !activeItem || !session) return;
-    const updatedCard = reviewCard(activeCard, rating, evidence);
+  function answerCard(
+    rating: ReviewRating,
+    evidence: ReviewEvidence,
+    answerValue: string | null,
+    correctAnswer: string,
+  ): Flashcard | null {
+    if (!activeCard || !activeItem || !session || session.pendingAnswer) return null;
+    const answeredAt = new Date();
+    const updatedCard = reviewCard(activeCard, rating, evidence, answeredAt);
     setCards((current) =>
       current.map((card) => (card.id === activeCard.id ? updatedCard : card)),
     );
     setMeta((current) => ({
       ...recordReview(current),
       activeSession: current.activeSession
-        ? scheduleSessionAnswer(
+        ? recordSessionAnswer(
             current.activeSession,
+            activeCard,
             updatedCard,
             activeItem,
             rating,
-            evidence.correct,
+            evidence,
+            answerValue,
+            correctAnswer,
+            answeredAt,
           )
+        : null,
+    }));
+    return updatedCard;
+  }
+
+  function advanceAnswer() {
+    setMeta((current) => ({
+      ...current,
+      activeSession: current.activeSession
+        ? advanceSession(current.activeSession)
         : null,
     }));
   }
@@ -250,6 +275,7 @@ function App() {
             session={session?.mode === "learn" ? session : null}
             complete={session?.mode === "learn" && complete}
             onAnswer={answerCard}
+            onNext={advanceAnswer}
             onStart={() => startSession("learn", activeCategoryId)}
             onStartHard={() => startSession("hard", null)}
             onSelectCategory={setSelectedCategoryId}
@@ -272,6 +298,7 @@ function App() {
             session={session?.mode !== "learn" ? session : null}
             complete={session?.mode !== "learn" && complete}
             onAnswer={answerCard}
+            onNext={advanceAnswer}
             onStart={(categoryId) => startSession("review", categoryId)}
             onStartHard={() => startSession("hard", null)}
             onSelectCategory={setReviewCategoryId}
@@ -290,8 +317,8 @@ function App() {
           />
         )}
 
-        {tab === "progress" && (
-          <ProgressView
+        {tab === "leitner" && (
+          <LeitnerView
             cards={cards}
             dueCount={dueCards.length}
             masteredCount={masteredCount}
@@ -338,7 +365,13 @@ interface SessionProps {
   activeItem?: SessionItem;
   session: LearningMeta["activeSession"];
   complete: boolean;
-  onAnswer: (rating: ReviewRating, evidence: ReviewEvidence) => void;
+  onAnswer: (
+    rating: ReviewRating,
+    evidence: ReviewEvidence,
+    answerValue: string | null,
+    correctAnswer: string,
+  ) => Flashcard | null;
+  onNext: () => void;
   onFinish: () => void;
   onSpeak: (text: string) => void;
 }
@@ -348,60 +381,94 @@ function FlashcardSession(props: SessionProps) {
   const isIntroduction = props.activeItem?.kind === "introduction";
   const sessionIndex = props.session?.index ?? 0;
   const sessionLength = props.session?.queue.length ?? 0;
-  const exercise = useMemo(
-    () => createExercise(card, props.cards, sessionIndex, props.activeItem?.forcedMode),
-    [card, props.cards, props.activeItem?.forcedMode, sessionIndex],
+  const [exercise] = useState(() =>
+    createExercise(card, props.cards, sessionIndex, props.activeItem?.forcedMode));
+  const persistedOutcome = props.session?.pendingAnswer ?? null;
+  const [localOutcome, setLocalOutcome] = useState<SessionAnswer | null>(persistedOutcome);
+  const outcome = persistedOutcome ?? localOutcome;
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(
+    persistedOutcome && exercise.mode.startsWith("choice")
+      ? persistedOutcome.answerValue
+      : null,
   );
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
-  const [typedAnswer, setTypedAnswer] = useState("");
-  const [typedResult, setTypedResult] = useState<TypedAnswerResult | null>(null);
-  const [introRevealed, setIntroRevealed] = useState(false);
-  const [introRating, setIntroRating] = useState<ReviewRating | null>(null);
+  const [typedAnswer, setTypedAnswer] = useState(
+    persistedOutcome && exercise.mode.startsWith("type")
+      ? persistedOutcome.answerValue ?? ""
+      : "",
+  );
+  const [flipped, setFlipped] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const submittedRef = useRef(Boolean(persistedOutcome));
   const isChoice = exercise.mode.startsWith("choice");
   const selectedOption = exercise.options.find((option) => option.cardId === selectedCardId);
-  const exerciseAnswered = isChoice ? Boolean(selectedOption) : typedResult !== null;
-  const answered = isIntroduction ? introRating !== null : exerciseAnswered;
-  const correct = isIntroduction
-    ? introRating !== "again"
-    : isChoice
-      ? Boolean(selectedOption?.correct)
-      : typedResult?.correct === true;
-  const rating: ReviewRating | null = isIntroduction
-    ? introRating
-    : answered
-      ? correct
-        ? typedResult && typedResult.score < 0.98
-          ? "hard"
-          : "good"
-        : "again"
-      : null;
+  const correct = outcome?.evidence.correct ?? false;
+  const germanLabel = card.article ? `${card.article} ${card.german}` : card.german;
+
+  function submitAnswer(
+    rating: ReviewRating,
+    evidence: ReviewEvidence,
+    answerValue: string | null,
+    correctAnswer: string,
+  ) {
+    if (submittedRef.current) return;
+    submittedRef.current = true;
+    const previousBox = card.leitnerBox;
+    const updated = props.onAnswer(rating, evidence, answerValue, correctAnswer);
+    if (!updated) {
+      submittedRef.current = false;
+      return;
+    }
+    setLocalOutcome({
+      cardId: card.id,
+      rating,
+      evidence,
+      answerValue,
+      correctAnswer,
+      fromBox: previousBox,
+      toBox: updated.leitnerBox,
+      dueAt: updated.dueAt,
+      reason: updated.lastSchedulingReason,
+      recordedAt: new Date().toISOString(),
+    });
+  }
 
   function checkTypedAnswer(event: FormEvent) {
     event.preventDefault();
-    if (!typedAnswer.trim() || typedResult !== null) return;
-    setTypedResult(evaluateTypedAnswer(typedAnswer, exercise.acceptedAnswers));
+    if (!typedAnswer.trim() || outcome) return;
+    const result: TypedAnswerResult = evaluateTypedAnswer(
+      typedAnswer,
+      exercise.acceptedAnswers,
+    );
+    inputRef.current?.blur();
+    submitAnswer(
+      result.correct ? (result.score < 0.98 ? "hard" : "good") : "again",
+      { mode: exercise.mode, correct: result.correct, score: result.score },
+      typedAnswer,
+      exercise.answerLabel,
+    );
   }
 
-  useEffect(() => {
-    if (!props.activeCard || !answered || !rating) return;
-    const timer = window.setTimeout(
-      () => props.onAnswer(rating, {
-        mode: isIntroduction ? "introduction" : exercise.mode,
-        correct,
-        score: typedResult?.score,
-      }),
-      isIntroduction ? 760 : 1150,
+  function chooseAnswer(cardId: string) {
+    if (outcome) return;
+    const option = exercise.options.find((item) => item.cardId === cardId);
+    if (!option) return;
+    setSelectedCardId(cardId);
+    submitAnswer(
+      option.correct ? "good" : "again",
+      { mode: exercise.mode, correct: option.correct, score: option.correct ? 1 : 0 },
+      cardId,
+      exercise.answerLabel,
     );
-    return () => window.clearTimeout(timer);
-  }, [
-    answered,
-    correct,
-    exercise.mode,
-    isIntroduction,
-    props,
-    rating,
-    typedResult?.score,
-  ]);
+  }
+
+  function rateIntroduction(rating: ReviewRating) {
+    submitAnswer(
+      rating,
+      { mode: "introduction", correct: rating !== "again" },
+      rating,
+      card.polish,
+    );
+  }
 
   if (props.complete) {
     const accuracy = props.session && props.session.correct + props.session.mistakes > 0
@@ -428,7 +495,7 @@ function FlashcardSession(props: SessionProps) {
   if (!props.activeCard || !props.activeItem || !props.session) return null;
 
   return (
-    <section className="session-wrap" aria-live="polite">
+    <section className={`session-wrap ${outcome ? "has-outcome" : ""}`}>
       <div className="session-progress">
         <span>{props.session.mode === "hard" ? "Trudne słowa" : "Dzisiejsza lekcja"}</span>
         <strong>{sessionIndex + 1} / {sessionLength}</strong>
@@ -445,43 +512,51 @@ function FlashcardSession(props: SessionProps) {
 
         {isIntroduction ? (
           <div className="introduction-card">
-            <p className="exercise-instruction">Najpierw poznaj słowo. Bez testu.</p>
-            <div className="exercise-prompt">
-              <h2 lang="de">{card.article && <i>{card.article} </i>}{card.german}</h2>
+            <p className="exercise-instruction">Dotknij karty, aby ją odwrócić.</p>
+            <div className="flip-card-shell">
               <button
-                className="speak-button inline"
-                onClick={() => props.onSpeak(card.article ? `${card.article} ${card.german}` : card.german)}
+                type="button"
+                className={`flip-card-button ${flipped ? "flipped" : ""}`}
+                onClick={() => setFlipped((current) => !current)}
+                aria-label={flipped ? "Schowaj znaczenie" : "Pokaż znaczenie"}
+                aria-pressed={flipped}
+              >
+                <span className="flip-card-inner">
+                  <span className="flip-face flip-front">
+                    <small>NIEMIECKI</small>
+                    <strong lang="de">{germanLabel}</strong>
+                    {card.plural && <span>Liczba mnoga: die {card.plural}</span>}
+                  </span>
+                  <span className="flip-face flip-back">
+                    <small>POLSKI I KONTEKST</small>
+                    <strong>{card.polish}</strong>
+                    <span lang="de">{card.exampleGerman}</span>
+                    <span>{card.examplePolish}</span>
+                  </span>
+                </span>
+              </button>
+              <button
+                className="card-audio-button"
+                onClick={() => props.onSpeak(germanLabel)}
                 aria-label={`Odtwórz wymowę: ${card.german}`}
               >
                 <span aria-hidden="true">◖))</span>
               </button>
             </div>
-            {!introRevealed ? (
-              <button className="primary-button wide" onClick={() => setIntroRevealed(true)}>Pokaż znaczenie</button>
-            ) : (
-              <div className="introduction-answer">
-                <strong>{card.polish}</strong>
-                {card.plural && <small>Liczba mnoga: die {card.plural}</small>}
-                <div className="context-example">
-                  <small>W kontekście</small>
-                  <p lang="de">{card.exampleGerman}</p>
-                  <p>{card.examplePolish}</p>
-                </div>
-                {introRating === null && (
-                  <div className="rating-actions" role="group" aria-label="Jak dobrze znasz to słowo?">
-                    <button className="rating-again" onClick={() => setIntroRating("again")}>
-                      <strong>Nie znam</strong><small>wróci za 3–5</small>
-                    </button>
-                    <button className="rating-hard" onClick={() => setIntroRating("hard")}>
-                      <strong>Niepewnie</strong><small>wróci za 6–8</small>
-                    </button>
-                    <button className="rating-good" onClick={() => setIntroRating("good")}>
-                      <strong>Znam</strong><small>sprawdzę pisaniem</small>
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+            <button className="flip-toggle" onClick={() => setFlipped((current) => !current)}>
+              {flipped ? "Schowaj znaczenie" : "Pokaż znaczenie"}
+            </button>
+            <div className="rating-actions persistent-ratings" role="group" aria-label="Jak dobrze znasz to słowo?">
+              <button className="rating-again" onClick={() => rateIntroduction("again")} disabled={Boolean(outcome)}>
+                <strong>Nie znam</strong><small>przegródka 1</small>
+              </button>
+              <button className="rating-hard" onClick={() => rateIntroduction("hard")} disabled={Boolean(outcome)}>
+                <strong>Niepewnie</strong><small>krótszy odstęp</small>
+              </button>
+              <button className="rating-good" onClick={() => rateIntroduction("good")} disabled={Boolean(outcome)}>
+                <strong>Znam</strong><small>aktywne sprawdzenie</small>
+              </button>
+            </div>
           </div>
         ) : (
           <>
@@ -514,8 +589,8 @@ function FlashcardSession(props: SessionProps) {
                 <button
                   key={option.cardId}
                   className={`${isSelected ? "selected" : ""} ${stateClass}`}
-                  onClick={() => setSelectedCardId(option.cardId)}
-                  disabled={Boolean(selectedOption)}
+                  onClick={() => chooseAnswer(option.cardId)}
+                  disabled={Boolean(outcome)}
                 >
                   <span aria-hidden="true">{String.fromCharCode(65 + index)}</span>
                   <strong lang={exercise.answerLanguage}>{option.label}</strong>
@@ -530,6 +605,7 @@ function FlashcardSession(props: SessionProps) {
                 <span className="sr-only">{exercise.instruction}</span>
                 <input
                   lang={exercise.answerLanguage}
+                  ref={inputRef}
                   value={typedAnswer}
                   onChange={(event) => setTypedAnswer(event.target.value)}
                   placeholder={exercise.answerLanguage === "de" ? "Wpisz po niemiecku…" : "Wpisz po polsku…"}
@@ -537,11 +613,11 @@ function FlashcardSession(props: SessionProps) {
                   autoComplete="off"
                   spellCheck={false}
                   enterKeyHint="done"
-                  readOnly={typedResult !== null}
+                  readOnly={Boolean(outcome)}
                   autoFocus
                 />
               </label>
-              {typedResult === null && (
+              {!outcome && (
                 <button
                   className="typing-submit"
                   type="submit"
@@ -552,52 +628,43 @@ function FlashcardSession(props: SessionProps) {
                 </button>
               )}
             </div>
-            {typedResult === null && <small className="typing-hint">„Gotowe” na klawiaturze lub strzałka sprawdza odpowiedź.</small>}
+            {!outcome && <small className="typing-hint">„Gotowe” na klawiaturze lub strzałka sprawdza odpowiedź.</small>}
           </form>
         )}
           </>
         )}
 
-        {answered && (
+        {outcome && (
           <div className={`exercise-feedback ${correct ? "correct" : "incorrect"}`} role="status">
             <span className="feedback-icon" aria-hidden="true">{correct ? "✓" : "×"}</span>
             <div>
-              <strong>
-                {isIntroduction
-                  ? introRating === "good"
-                    ? "Sprawdzę je aktywnie za kilka słów"
-                    : introRating === "hard"
-                      ? "Wróci jeszcze w tej lekcji"
-                      : "Pokażę je ponownie szybciej"
-                  : correct
-                    ? typedResult && typedResult.score < 0.98
-                      ? "Zaliczone, ale jeszcze poćwiczymy"
-                      : "Dobrze"
-                    : "Wraca do trudniejszych"}
-              </strong>
-              {typedResult && (
+              <strong>{correct ? "Odpowiedź zapisana" : "Jeszcze do utrwalenia"}</strong>
+              {outcome.evidence.score !== undefined && (
                 <small className="similarity-score">
-                  Zgodność odpowiedzi: {Math.round(typedResult.score * 100)}%
+                  Zgodność odpowiedzi: {Math.round(outcome.evidence.score * 100)}%
                 </small>
               )}
-              {!correct && !isIntroduction && <p>Poprawna odpowiedź: <b lang={exercise.answerLanguage}>{exercise.answerLabel}</b></p>}
-              {card.plural && !isIntroduction && exercise.answerLanguage === "de" && <small>Liczba mnoga: die {card.plural}</small>}
-              {!isIntroduction && card.exampleGerman && card.examplePolish && (
-                <div className="context-example">
-                  <small>W kontekście</small>
-                  <p lang="de">{card.exampleGerman}</p>
-                  <p>{card.examplePolish}</p>
-                </div>
-              )}
-              {card.sourceLabel && card.sourceUrl && (
-                <a href={card.sourceUrl} target="_blank" rel="noreferrer">{card.sourceLabel}</a>
-              )}
+              {!isIntroduction && <p>Poprawna odpowiedź: <b lang={exercise.answerLanguage}>{outcome.correctAnswer}</b></p>}
+              <div className="result-word-pair">
+                <p lang="de"><b>{germanLabel}</b>{card.plural ? ` · die ${card.plural}` : ""}</p>
+                <p>{card.polish}</p>
+              </div>
+              <div className="context-example">
+                <small>W kontekście</small>
+                <p lang="de">{card.exampleGerman}</p>
+                <p>{card.examplePolish}</p>
+              </div>
+              <div className="schedule-result">
+                <strong>Przegródka {outcome.fromBox} → {outcome.toBox}</strong>
+                <small>Następna powtórka: {nextReviewLabel(outcome.dueAt)}</small>
+                <p>{outcome.reason}</p>
+              </div>
             </div>
-            {!isIntroduction && exercise.answerLanguage === "de" && (
+            {(!isIntroduction && exercise.answerLanguage === "de") && (
               <button
                 className="feedback-speak"
-                onClick={() => props.onSpeak(exercise.answerLabel)}
-                aria-label={`Odtwórz wymowę: ${exercise.answerLabel}`}
+                onClick={() => props.onSpeak(germanLabel)}
+                aria-label={`Odtwórz wymowę: ${germanLabel}`}
               >
                 <span aria-hidden="true">◖))</span>
               </button>
@@ -606,6 +673,13 @@ function FlashcardSession(props: SessionProps) {
         )}
       </article>
 
+      {outcome && (
+        <div className="next-action-bar">
+          <button className="primary-button wide continue-button" onClick={props.onNext}>
+            Dalej <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      )}
     </section>
   );
 }
@@ -657,7 +731,7 @@ function LearnView(props: SessionProps & {
   onGoToReviews: () => void;
 }) {
   if (props.activeCard || props.complete) {
-    return <FlashcardSession key={props.activeCard?.id ?? "complete"} {...props} />;
+    return <FlashcardSession key={`${props.activeCard?.id ?? "complete"}:${props.session?.index ?? 0}`} {...props} />;
   }
   const category = props.selectedCategory;
   const newCount = category?.cards.filter((card) => card.stage === "new").length ?? 0;
@@ -744,7 +818,7 @@ function ReviewView(props: SessionProps & {
   onSelectCategory: (id: string) => void;
 }) {
   if (props.activeCard || props.complete) {
-    return <FlashcardSession key={props.activeCard?.id ?? "complete"} {...props} />;
+    return <FlashcardSession key={`${props.activeCard?.id ?? "complete"}:${props.session?.index ?? 0}`} {...props} />;
   }
   const categoriesWithDue = props.categories.filter((category) => category.due > 0);
   const activeCategoryId = props.selectedCategoryId ?? categoriesWithDue[0]?.id;
@@ -969,7 +1043,7 @@ function CardEditor({
   );
 }
 
-function ProgressView({
+function LeitnerView({
   cards,
   dueCount,
   masteredCount,
@@ -980,25 +1054,39 @@ function ProgressView({
   masteredCount: number;
   meta: LearningMeta;
 }) {
-  const categoryNames = [...new Set(cards.map((card) => card.category))];
-  const categories = categoryNames.map((category) => {
-    const all = cards.filter((card) => card.category === category);
-    const mastered = all.filter((card) => card.stage === "mastered").length;
-    const known = all.filter((card) => card.stage === "known").length;
+  const [selectedBox, setSelectedBox] = useState<LeitnerBox | null>(null);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("Wszystkie");
+  const [detail, setDetail] = useState<Flashcard | null>(null);
+  const now = new Date();
+  const boxes = ([1, 2, 3, 4, 5] as LeitnerBox[]).map((box) => {
+    const boxCards = cards.filter((card) => card.leitnerBox === box);
+    const due = boxCards.filter((card) => card.stage !== "new" && isDue(card, now));
+    const future = boxCards
+      .filter((card) => card.stage !== "new" && !isDue(card, now))
+      .sort((left, right) => new Date(left.dueAt).getTime() - new Date(right.dueAt).getTime());
     return {
-      category,
-      all: all.length,
-      mastered,
-      known,
-      percent: all.length ? Math.round((mastered / all.length) * 100) : 0,
+      box,
+      cards: boxCards,
+      due: due.length,
+      newCards: boxCards.filter((card) => card.stage === "new").length,
+      next: due.length ? "teraz" : future[0] ? nextReviewLabel(future[0].dueAt, now) : "—",
     };
   });
+  const activeBox = boxes.find((item) => item.box === selectedBox);
+  const categoryNames = ["Wszystkie", ...new Set(activeBox?.cards.map((card) => card.category) ?? [])];
+  const filtered = (activeBox?.cards ?? []).filter((card) => {
+    const phrase = `${card.article ?? ""} ${card.german} ${card.polish}`.toLocaleLowerCase("pl-PL");
+    return (category === "Wszystkie" || card.category === category) &&
+      phrase.includes(search.toLocaleLowerCase("pl-PL"));
+  });
+
   return (
     <section>
       <div className="page-heading">
-        <p className="eyebrow">Twoja regularność</p>
-        <h1>Postępy</h1>
-        <p>Nie ścigaj perfekcji. Liczy się powrót do nauki.</p>
+        <p className="eyebrow">Twój rytm pamięci</p>
+        <h1>Przegródki</h1>
+        <p>Im wyższa przegródka, tym rzadziej słowo wraca. Błąd przenosi je bliżej.</p>
       </div>
       <div className="stat-grid">
         <article><span aria-hidden="true">✦</span><strong>{meta.streak}</strong><small>dni serii</small></article>
@@ -1006,17 +1094,112 @@ function ProgressView({
         <article><span aria-hidden="true">↻</span><strong>{dueCount}</strong><small>do powtórki</small></article>
         <article><span aria-hidden="true">◇</span><strong>{meta.totalReviews}</strong><small>odpowiedzi</small></article>
       </div>
-      <section className="section-block">
-        <div className="section-heading"><div><p className="eyebrow">Opanowanie</p><h2>Kategorie</h2></div></div>
-        <div className="category-progress-list">
-          {categories.map((item) => (
-            <div key={item.category}>
-              <span><strong>{categoryTitle(item.category)}</strong><small>{item.mastered} opanowanych · {item.known} znanych</small></span>
-              <div className="progress-track"><i style={{ width: `${item.percent}%` }} /></div>
-            </div>
-          ))}
+
+      <div className="leitner-boxes" aria-label="Pięć przegródek Leitnera">
+        {boxes.map((item) => (
+          <button
+            key={item.box}
+            className={selectedBox === item.box ? "active" : ""}
+            onClick={() => {
+              setSelectedBox(item.box);
+              setCategory("Wszystkie");
+              setSearch("");
+            }}
+          >
+            <span className="box-number">{item.box}</span>
+            <span>
+              <strong>Przegródka {item.box}</strong>
+              <small>{boxDescription(item.box)}</small>
+            </span>
+            <span className="box-count">
+              <strong>{item.cards.length}</strong>
+              <small>{item.due ? `${item.due} dziś` : item.newCards ? `${item.newCards} nowych` : `następna ${item.next}`}</small>
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <div className="info-card leitner-explainer">
+        <span aria-hidden="true">◷</span>
+        <div>
+          <strong>Jak karta awansuje?</strong>
+          <p>Poprawne aktywne przypomnienie przesuwa ją o jedną przegródkę. „Niepewnie” skraca odstęp, a błąd wraca do przegródki 1. Samo „Znam” na odsłoniętej fiszce nie wystarcza do opanowania.</p>
         </div>
-      </section>
+      </div>
+
+      {activeBox && (
+        <section className="section-block box-browser">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">{boxDescription(activeBox.box)}</p>
+              <h2>Przegródka {activeBox.box}</h2>
+            </div>
+            <button className="text-button" onClick={() => setSelectedBox(null)}>Zamknij</button>
+          </div>
+          <label className="search-box">
+            <span aria-hidden="true">⌕</span>
+            <span className="sr-only">Szukaj w przegródce</span>
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Szukaj słowa" />
+          </label>
+          <div className="category-scroll" aria-label="Filtr kategorii">
+            {categoryNames.map((item) => (
+              <button key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>
+                {item === "Wszystkie" ? item : categoryTitle(item)}
+              </button>
+            ))}
+          </div>
+          <p className="collection-count">{filtered.length} kart</p>
+          <div className="box-card-list">
+            {filtered.map((card) => (
+              <button key={card.id} onClick={() => setDetail(card)}>
+                <span>
+                  <strong lang="de">{card.article && <i>{card.article} </i>}{card.german}</strong>
+                  <small>{card.polish}</small>
+                  <small>{categoryTitle(card.category)}</small>
+                </span>
+                <span>
+                  <strong>{card.stage === "new" ? "Nowa" : nextReviewLabel(card.dueAt, now)}</strong>
+                  <small>{card.reviewHistory.at(-1)?.correct === false ? "ostatnio: błąd" : card.lastReviewedAt ? "ostatnio: dobrze" : "bez powtórek"}</small>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {detail && (
+        <div className="modal-backdrop">
+          <section className="modal-sheet card-history-sheet" role="dialog" aria-modal="true" aria-labelledby="history-title">
+            <div className="modal-head">
+              <div>
+                <p className="eyebrow">Przegródka {detail.leitnerBox}</p>
+                <h2 id="history-title" lang="de">{detail.article && <i>{detail.article} </i>}{detail.german}</h2>
+              </div>
+              <button className="close-button" onClick={() => setDetail(null)} aria-label="Zamknij">×</button>
+            </div>
+            <p className="history-translation">{detail.polish}</p>
+            <div className="history-next">
+              <strong>{detail.stage === "new" ? "Jeszcze niepoznana" : `Następna powtórka ${nextReviewLabel(detail.dueAt, now)}`}</strong>
+              <small>{detail.lastSchedulingReason}</small>
+            </div>
+            <h3>Historia odpowiedzi</h3>
+            {detail.reviewHistory.length ? (
+              <div className="history-list">
+                {[...detail.reviewHistory].reverse().map((entry) => (
+                  <div key={entry.id}>
+                    <span className={entry.correct ? "history-good" : "history-again"}>{entry.correct ? "✓" : "×"}</span>
+                    <span>
+                      <strong>{entry.fromBox} → {entry.toBox} · {entry.rating === "again" ? "Nie znam" : entry.rating === "hard" ? "Niepewnie" : "Znam"}</strong>
+                      <small>{new Date(entry.reviewedAt).toLocaleString("pl-PL", { dateStyle: "medium", timeStyle: "short" })}</small>
+                      <small>{entry.reason}</small>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : <p className="empty-history">Historia pojawi się po pierwszej odpowiedzi.</p>}
+          </section>
+        </div>
+      )}
     </section>
   );
 }

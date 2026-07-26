@@ -3,6 +3,7 @@ import type {
   CardSource,
   ExerciseMode,
   Flashcard,
+  LeitnerBox,
   LearningStage,
 } from "../types";
 
@@ -47,6 +48,10 @@ export function toFlashcard(
     lastReviewedAt: null,
     typedAttempts: 0,
     typedSuccesses: 0,
+    leitnerBox: 1,
+    reviewHistory: [],
+    lastSchedulingReason: "Nowa karta — zaczyna w przegródce 1.",
+    successfulReviewDays: [],
   };
 }
 
@@ -62,11 +67,32 @@ function legacyStage(card: Flashcard): LearningStage {
   return card.learned ? "known" : "learning";
 }
 
+function legacyLeitnerBox(card: Flashcard, stage: LearningStage): LeitnerBox {
+  if (stage === "mastered") return 5;
+  if (stage === "new" || stage === "learning" || stage === "uncertain") return 1;
+  if (card.intervalDays >= 14) return 4;
+  if (card.intervalDays >= 7) return 3;
+  return 2;
+}
+
+function reviewDays(card: Flashcard): string[] {
+  const existing = Array.isArray(card.successfulReviewDays)
+    ? card.successfulReviewDays.filter((value) => /^\d{4}-\d{2}-\d{2}$/.test(value))
+    : [];
+  const legacy = [card.firstActiveRecallAt, card.lastActiveRecallAt]
+    .filter((value): value is string => Boolean(value))
+    .map((value) => value.slice(0, 10));
+  return [...new Set([...existing, ...legacy])].sort();
+}
+
 export function withLearningDefaults(card: Flashcard): Flashcard {
   const stage =
     !card.stage || (card.stage === "new" && card.repetitions > 0)
       ? legacyStage(card)
       : card.stage;
+  const leitnerBox = [1, 2, 3, 4, 5].includes(card.leitnerBox)
+    ? card.leitnerBox
+    : legacyLeitnerBox(card, stage);
   return {
     ...card,
     stage,
@@ -82,6 +108,11 @@ export function withLearningDefaults(card: Flashcard): Flashcard {
     lastReviewedAt: card.lastReviewedAt ?? null,
     typedAttempts: Number.isFinite(card.typedAttempts) ? Math.max(0, card.typedAttempts) : 0,
     typedSuccesses: Number.isFinite(card.typedSuccesses) ? Math.max(0, card.typedSuccesses) : 0,
+    leitnerBox,
+    reviewHistory: Array.isArray(card.reviewHistory) ? card.reviewHistory.slice(-50) : [],
+    lastSchedulingReason: card.lastSchedulingReason ||
+      `Przeniesiono z wcześniejszego etapu „${stage}” do przegródki ${leitnerBox}.`,
+    successfulReviewDays: reviewDays(card),
   };
 }
 

@@ -16,6 +16,10 @@ const progressKeys = [
   "lastReviewedAt",
   "typedAttempts",
   "typedSuccesses",
+  "leitnerBox",
+  "reviewHistory",
+  "lastSchedulingReason",
+  "successfulReviewDays",
 ];
 let schemaReady;
 

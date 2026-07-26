@@ -1,29 +1,56 @@
 import { describe, expect, it } from "vitest";
 import { starterCards } from "../src/data/starterCards";
 import {
+  advanceSession,
   createLearningSession,
-  scheduleSessionAnswer,
+  recordSessionAnswer,
   sessionComplete,
 } from "../src/lib/session";
+import { reviewCard } from "../src/lib/srs";
 
 describe("adaptacyjna kolejka w lekcji", () => {
   it("po zaznaczeniu Znam wraca po 8–11 innych kartach jako wpisywanie", () => {
     const card = starterCards[0];
     const session = createLearningSession(starterCards.slice(0, 10), "learn", card.category);
-    const updated = scheduleSessionAnswer(session, card, session.queue[0], "good", true);
-    const nextIndex = updated.queue.findIndex(
+    const evidence = { mode: "introduction" as const, correct: true };
+    const reviewed = reviewCard(card, "good", evidence);
+    const recorded = recordSessionAnswer(
+      session,
+      card,
+      reviewed,
+      session.queue[0],
+      "good",
+      evidence,
+      "good",
+      card.polish,
+    );
+    const nextIndex = recorded.queue.findIndex(
       (item, index) => index > 0 && item.id === card.id,
     );
     expect(nextIndex - 1).toBeGreaterThanOrEqual(8);
     expect(nextIndex - 1).toBeLessThanOrEqual(11);
-    expect(updated.queue[nextIndex].kind).toBe("exercise");
-    expect(updated.queue[nextIndex].forcedMode).toBe("type-pl-de");
+    expect(recorded.queue[nextIndex].kind).toBe("exercise");
+    expect(recorded.queue[nextIndex].forcedMode).toBe("type-pl-de");
+    expect(recorded.index).toBe(0);
+    expect(recorded.pendingAnswer?.cardId).toBe(card.id);
+    expect(advanceSession(recorded).index).toBe(1);
   });
 
   it("Nie znam wraca szybciej jako zwykła fiszka", () => {
     const card = starterCards[0];
     const session = createLearningSession(starterCards.slice(0, 10), "learn", card.category);
-    const updated = scheduleSessionAnswer(session, card, session.queue[0], "again", false);
+    const evidence = { mode: "introduction" as const, correct: false };
+    const reviewed = reviewCard(card, "again", evidence);
+    const updated = recordSessionAnswer(
+      session,
+      card,
+      reviewed,
+      session.queue[0],
+      "again",
+      evidence,
+      "again",
+      card.polish,
+    );
     const nextIndex = updated.queue.findIndex(
       (item, index) => index > 0 && item.id === card.id,
     );
@@ -32,18 +59,95 @@ describe("adaptacyjna kolejka w lekcji", () => {
     expect(updated.queue[nextIndex].kind).toBe("introduction");
   });
 
+  it("Niepewnie wraca po 6–8 kartach jako wybór jednej z trzech", () => {
+    const card = starterCards[0];
+    const session = createLearningSession(starterCards.slice(0, 10), "learn", card.category);
+    const evidence = { mode: "introduction" as const, correct: true };
+    const reviewed = reviewCard(card, "hard", evidence);
+    const recorded = recordSessionAnswer(
+      session,
+      card,
+      reviewed,
+      session.queue[0],
+      "hard",
+      evidence,
+      "hard",
+      card.polish,
+    );
+    const nextIndex = recorded.queue.findIndex(
+      (item, index) => index > 0 && item.id === card.id,
+    );
+    expect(nextIndex - 1).toBeGreaterThanOrEqual(6);
+    expect(nextIndex - 1).toBeLessThanOrEqual(8);
+    expect(recorded.queue[nextIndex].forcedMode).toBe("choice-de-pl");
+  });
+
   it("zachowuje podsumowanie i rozpoznaje koniec sesji", () => {
     const card = starterCards[0];
     const session = createLearningSession([card], "review", card.category);
     const item = { ...session.queue[0], round: 2 };
-    const updated = scheduleSessionAnswer(
+    const evidence = { mode: "choice-de-pl" as const, correct: true };
+    const reviewed = reviewCard({ ...card, stage: "known" }, "good", evidence);
+    const recorded = recordSessionAnswer(
       { ...session, queue: [item] },
       { ...card, stage: "known" },
+      reviewed,
       item,
       "good",
-      true,
+      evidence,
+      card.id,
+      card.polish,
     );
-    expect(updated.correct).toBe(1);
+    expect(recorded.correct).toBe(1);
+    expect(sessionComplete(recorded)).toBe(false);
+    const updated = advanceSession(recorded);
     expect(sessionComplete(updated)).toBe(true);
+  });
+
+  it("nie zapisuje tej samej odpowiedzi drugi raz", () => {
+    const card = starterCards[0];
+    const session = createLearningSession([card], "learn", card.category);
+    const evidence = { mode: "introduction" as const, correct: true };
+    const reviewed = reviewCard(card, "good", evidence);
+    const once = recordSessionAnswer(
+      session,
+      card,
+      reviewed,
+      session.queue[0],
+      "good",
+      evidence,
+      "good",
+      card.polish,
+    );
+    const twice = recordSessionAnswer(
+      once,
+      card,
+      reviewed,
+      session.queue[0],
+      "good",
+      evidence,
+      "good",
+      card.polish,
+    );
+    expect(twice).toBe(once);
+    expect(twice.correct).toBe(1);
+  });
+
+  it("nie mnoży poprawnych powtórek tej samej karty w jednym dniu", () => {
+    const card = { ...starterCards[0], stage: "known" as const, leitnerBox: 2 as const };
+    const session = createLearningSession([card], "review", card.category);
+    const evidence = { mode: "choice-de-pl" as const, correct: true };
+    const reviewed = reviewCard(card, "good", evidence);
+    const recorded = recordSessionAnswer(
+      session,
+      card,
+      reviewed,
+      session.queue[0],
+      "good",
+      evidence,
+      card.id,
+      card.polish,
+    );
+    expect(recorded.queue).toHaveLength(1);
   });
 });
