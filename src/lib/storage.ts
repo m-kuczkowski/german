@@ -7,7 +7,7 @@ const DB_VERSION = 1;
 const CARD_STORE = "cards";
 const META_STORE = "meta";
 const META_KEY = "learning";
-const CURRENT_CONTENT_VERSION = 3;
+const CURRENT_CONTENT_VERSION = 4;
 
 function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -141,7 +141,23 @@ export async function loadOrSeed(seed: Flashcard[]): Promise<{
   }
   if (meta.contentVersion < CURRENT_CONTENT_VERSION) {
     const storedIds = new Set(storedCards.map((card) => card.id));
-    const merged = [...storedCards, ...seed.filter((card) => !storedIds.has(card.id))];
+    const seedById = new Map(seed.map((card) => [card.id, card]));
+    const updatedStoredCards = storedCards.map((card) => {
+      const replacement = seedById.get(card.id);
+      if (!replacement || card.source !== "anki") return card;
+      return {
+        ...replacement,
+        source: card.source,
+        createdAt: card.createdAt,
+        repetitions: card.repetitions,
+        intervalDays: card.intervalDays,
+        ease: card.ease,
+        dueAt: card.dueAt,
+        learned: card.learned,
+        lapses: card.lapses,
+      };
+    });
+    const merged = [...updatedStoredCards, ...seed.filter((card) => !storedIds.has(card.id))];
     await Promise.all([saveCards(merged), saveMeta(nextMeta)]);
     return { cards: merged, meta: nextMeta };
   }

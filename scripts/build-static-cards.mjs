@@ -3,6 +3,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createHash } from "node:crypto";
+import { LESSON_CATEGORIES } from "./life-categories.mjs";
 
 const [sourcePath, translationsPath, outputPath = "src/data/nicosWegCards.ts"] =
   process.argv.slice(2);
@@ -136,6 +137,10 @@ const cards = [];
 for (const sourceCard of source.cards) {
   const parsed = parseGerman(sourceCard.german);
   const translation = translationById.get(sourceCard.id);
+  const category = LESSON_CATEGORIES[sourceCard.lesson];
+  if (!category) {
+    throw new Error(`Brak kategorii życiowej dla lekcji: ${sourceCard.lesson}`);
+  }
   const [deckId, noteId] = sourceCard.id.split(":");
   const legacyHash = createHash("sha1").update(`${deckId}:${noteId}`).digest("hex").slice(0, 12);
   cards.push({
@@ -146,7 +151,7 @@ for (const sourceCard of source.cards) {
     plural: parsed.plural,
     exampleGerman: translation.exampleGerman,
     examplePolish: translation.examplePolish,
-    category: `Nicos Weg ${sourceCard.level} · ${sourceCard.lesson}`,
+    category,
     level: sourceCard.level,
     sourceLabel: `Nicos Weg ${sourceCard.level} · Deutsche Welle`,
     sourceUrl: sourceCard.sourceUrl,
