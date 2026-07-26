@@ -1,4 +1,5 @@
 name: Generate static AI translations
+# This workflow deletes itself after a successful one-time static build.
 
 on:
   push:
