@@ -785,6 +785,12 @@ h1 em {
   gap: 13px;
 }
 
+.typing-hint {
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
 .typing-exercise label,
 .typing-exercise input {
   width: 100%;

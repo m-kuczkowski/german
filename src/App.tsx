@@ -286,6 +286,17 @@ function FlashcardSession(props: SessionProps) {
     setTypedResult(isTypedAnswerCorrect(typedAnswer, exercise.acceptedAnswers));
   }
 
+  useEffect(() => {
+    if (!props.activeCard || !answered) return;
+    const timer = window.setTimeout(
+      () => props.onAnswer(correct),
+      isIntroduction ? 700 : 1100,
+    );
+    return () => window.clearTimeout(timer);
+    // The answer itself is the only action that should advance this card.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answered, correct, isIntroduction, props.activeCard?.id]);
+
   if (props.complete) {
     return (
       <section className="completion-card" aria-live="polite">
@@ -406,11 +417,7 @@ function FlashcardSession(props: SessionProps) {
                 autoFocus
               />
             </label>
-            {typedResult === null && (
-              <button className="primary-button wide" disabled={!typedAnswer.trim()}>
-                Sprawdź odpowiedź
-              </button>
-            )}
+            {typedResult === null && <small className="typing-hint">Naciśnij „Gotowe” na klawiaturze, aby przejść dalej.</small>}
           </form>
         )}
           </>
@@ -447,11 +454,6 @@ function FlashcardSession(props: SessionProps) {
         )}
       </article>
 
-      {answered && (
-        <button className="primary-button wide continue-button" onClick={() => props.onAnswer(correct)}>
-          Dalej <span aria-hidden="true">→</span>
-        </button>
-      )}
     </section>
   );
 }
