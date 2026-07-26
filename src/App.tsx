@@ -6,9 +6,9 @@ import {
   useRef,
   useState,
 } from "react";
-import { starterCards, starterCategories } from "./data/starterCards";
-import { generateCards } from "./lib/api";
-import { isDuplicate, mergeUnique, toFlashcard } from "./lib/cards";
+import { starterCards } from "./data/starterCards";
+import { isDuplicate, toFlashcard } from "./lib/cards";
+import { createExercise, isTypedAnswerCorrect } from "./lib/exercises";
 import { defaultMeta, recordReview } from "./lib/meta";
 import { isDue, reviewCard, sortForLearning } from "./lib/srs";
 import { speakGerman } from "./lib/speech";
@@ -45,11 +45,9 @@ function App() {
   const [meta, setMeta] = useState<LearningMeta>(defaultMeta);
   const [tab, setTab] = useState<TabId>("learn");
   const [ready, setReady] = useState(false);
-  const [online, setOnline] = useState(navigator.onLine);
   const [toast, setToast] = useState<string | null>(null);
   const [sessionIds, setSessionIds] = useState<string[]>([]);
   const [sessionIndex, setSessionIndex] = useState(0);
-  const [revealed, setRevealed] = useState(false);
   const [sessionMode, setSessionMode] = useState<"learn" | "review">("learn");
 
   useEffect(() => {
@@ -74,17 +72,6 @@ function App() {
     if (!ready) return;
     void saveMeta(meta).catch(() => setToast("Nie udało się zapisać postępu."));
   }, [meta, ready]);
-
-  useEffect(() => {
-    const setConnected = () => setOnline(true);
-    const setDisconnected = () => setOnline(false);
-    window.addEventListener("online", setConnected);
-    window.addEventListener("offline", setDisconnected);
-    return () => {
-      window.removeEventListener("online", setConnected);
-      window.removeEventListener("offline", setDisconnected);
-    };
-  }, []);
 
   useEffect(() => {
     document.documentElement.dataset.theme = meta.theme;
@@ -112,7 +99,6 @@ function App() {
     setSessionMode(mode);
     setSessionIds(pool.map((card) => card.id));
     setSessionIndex(0);
-    setRevealed(false);
     setTab(mode);
     if (pool.length === 0) setToast("Świetnie — na teraz nie masz kart do powtórki.");
   }
@@ -124,13 +110,11 @@ function App() {
     );
     setMeta((current) => recordReview(current));
     setSessionIndex((index) => index + 1);
-    setRevealed(false);
   }
 
   function finishSession() {
     setSessionIds([]);
     setSessionIndex(0);
-    setRevealed(false);
   }
 
   if (!ready) {
@@ -144,16 +128,10 @@ function App() {
 
   return (
     <div className="app-shell">
-      {!online && (
-        <div className="offline-banner" role="status">
-          Tryb offline · fiszki działają, generator AI poczeka na internet
-        </div>
-      )}
-
       <header className="topbar">
         <button className="brand" onClick={() => setTab("learn")} aria-label="Przejdź do nauki">
           <span className="brand-mark" aria-hidden="true">W</span>
-          <span><strong>Wortschatz</strong><small>NIEMIECKI · A2</small></span>
+          <span><strong>Wortschatz</strong><small>NIEMIECKI · A2 +</small></span>
         </button>
         <div className="streak-pill" aria-label={`${meta.streak} dni serii nauki`}>
           <span aria-hidden="true">✦</span> {meta.streak}
@@ -170,8 +148,6 @@ function App() {
             sessionLength={sessionMode === "learn" ? sessionIds.length : 0}
             sessionIndex={sessionIndex}
             complete={sessionMode === "learn" && sessionComplete}
-            revealed={revealed}
-            onReveal={() => setRevealed(true)}
             onAnswer={answerCard}
             onStart={() => startSession("learn")}
             onFinish={finishSession}
@@ -184,13 +160,12 @@ function App() {
 
         {tab === "review" && (
           <ReviewView
+            cards={cards}
             dueCards={dueCards}
             activeCard={sessionMode === "review" ? activeCard : undefined}
             sessionLength={sessionMode === "review" ? sessionIds.length : 0}
             sessionIndex={sessionIndex}
             complete={sessionMode === "review" && sessionComplete}
-            revealed={revealed}
-            onReveal={() => setRevealed(true)}
             onAnswer={answerCard}
             onStart={() => startSession("review")}
             onFinish={finishSession}
@@ -203,7 +178,6 @@ function App() {
         {tab === "collection" && (
           <CollectionView
             cards={cards}
-            online={online}
             onChange={setCards}
             onToast={setToast}
           />
@@ -252,18 +226,36 @@ function App() {
 }
 
 interface SessionProps {
+  cards: Flashcard[];
   activeCard?: Flashcard;
   sessionLength: number;
   sessionIndex: number;
   complete: boolean;
-  revealed: boolean;
-  onReveal: () => void;
   onAnswer: (remembered: boolean) => void;
   onFinish: () => void;
   onSpeak: (text: string) => void;
 }
 
 function FlashcardSession(props: SessionProps) {
+  const card = props.activeCard ?? props.cards[0]!;
+  const exercise = useMemo(
+    () => createExercise(card, props.cards, props.sessionIndex),
+    [card, props.cards, props.sessionIndex],
+  );
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [typedAnswer, setTypedAnswer] = useState("");
+  const [typedResult, setTypedResult] = useState<boolean | null>(null);
+  const isChoice = exercise.mode.startsWith("choice");
+  const selectedOption = exercise.options.find((option) => option.cardId === selectedCardId);
+  const answered = isChoice ? Boolean(selectedOption) : typedResult !== null;
+  const correct = isChoice ? Boolean(selectedOption?.correct) : typedResult === true;
+
+  function checkTypedAnswer(event: FormEvent) {
+    event.preventDefault();
+    if (!typedAnswer.trim() || typedResult !== null) return;
+    setTypedResult(isTypedAnswerCorrect(typedAnswer, exercise.acceptedAnswers));
+  }
+
   if (props.complete) {
     return (
       <section className="completion-card" aria-live="polite">
@@ -277,8 +269,6 @@ function FlashcardSession(props: SessionProps) {
   }
 
   if (!props.activeCard) return null;
-  const card = props.activeCard;
-  const displayGerman = card.article ? `${card.article} ${card.german}` : card.german;
 
   return (
     <section className="session-wrap" aria-live="polite">
@@ -290,62 +280,109 @@ function FlashcardSession(props: SessionProps) {
         <span style={{ width: `${((props.sessionIndex + 1) / props.sessionLength) * 100}%` }} />
       </div>
 
-      <article
-        className={`flashcard ${props.revealed ? "revealed" : ""}`}
-        onClick={!props.revealed ? props.onReveal : undefined}
-      >
-        <p className="category-chip">{card.category}</p>
-        <button
-          className="speak-button"
-          onClick={(event) => {
-            event.stopPropagation();
-            props.onSpeak(displayGerman);
-          }}
-          aria-label={`Odtwórz wymowę: ${displayGerman}`}
-        >
-          <span aria-hidden="true">◖))</span>
-        </button>
-        <div className="flashcard-main">
-          <p className="article-label">{card.article || "WYRAŻENIE"}</p>
-          <h2>{card.german}</h2>
-          {card.plural && <p className="plural">Plural: die {card.plural}</p>}
+      <article className="exercise-card">
+        <div className="exercise-meta">
+          <p className="category-chip">{card.level || "A2"}</p>
+          <span>{isChoice ? "1 z 3" : "Wpisywanie"}</span>
         </div>
-        {!props.revealed ? (
-          <button className="reveal-hint" onClick={props.onReveal}>
-            Dotknij, żeby odkryć znaczenie
-          </button>
-        ) : (
-          <div className="answer-panel">
-            <strong>{card.polish}</strong>
+        <p className="exercise-instruction">{exercise.instruction}</p>
+        <div className="exercise-prompt">
+          <h2 lang={exercise.answerLanguage === "pl" ? "de" : "pl"}>{exercise.prompt}</h2>
+          {exercise.answerLanguage === "pl" && (
             <button
-              className="example-speak"
-              onClick={(event) => {
-                event.stopPropagation();
-                props.onSpeak(card.exampleGerman);
-              }}
-              aria-label="Odtwórz zdanie przykładowe"
+              className="speak-button inline"
+              onClick={() => props.onSpeak(exercise.prompt)}
+              aria-label={`Odtwórz wymowę: ${exercise.prompt}`}
             >
               <span aria-hidden="true">◖))</span>
             </button>
-            <p lang="de">{card.exampleGerman}</p>
-            <small>{card.examplePolish}</small>
+          )}
+        </div>
+
+        {isChoice ? (
+          <div className="choice-list" role="group" aria-label={exercise.instruction}>
+            {exercise.options.map((option, index) => {
+              const isSelected = selectedCardId === option.cardId;
+              const stateClass = selectedOption
+                ? option.correct
+                  ? "correct"
+                  : isSelected
+                    ? "incorrect"
+                    : ""
+                : "";
+              return (
+                <button
+                  key={option.cardId}
+                  className={`${isSelected ? "selected" : ""} ${stateClass}`}
+                  onClick={() => setSelectedCardId(option.cardId)}
+                  disabled={Boolean(selectedOption)}
+                >
+                  <span aria-hidden="true">{String.fromCharCode(65 + index)}</span>
+                  <strong lang={exercise.answerLanguage}>{option.label}</strong>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <form className="typing-exercise" onSubmit={checkTypedAnswer}>
+            <label>
+              <span className="sr-only">{exercise.instruction}</span>
+              <input
+                lang={exercise.answerLanguage}
+                value={typedAnswer}
+                onChange={(event) => setTypedAnswer(event.target.value)}
+                placeholder={exercise.answerLanguage === "de" ? "Wpisz po niemiecku…" : "Wpisz po polsku…"}
+                autoCapitalize="none"
+                autoComplete="off"
+                spellCheck={false}
+                enterKeyHint="done"
+                readOnly={typedResult !== null}
+                autoFocus
+              />
+            </label>
+            {typedResult === null && (
+              <button className="primary-button wide" disabled={!typedAnswer.trim()}>
+                Sprawdź odpowiedź
+              </button>
+            )}
+          </form>
+        )}
+
+        {answered && (
+          <div className={`exercise-feedback ${correct ? "correct" : "incorrect"}`} role="status">
+            <span className="feedback-icon" aria-hidden="true">{correct ? "✓" : "×"}</span>
+            <div>
+              <strong>{correct ? "Sehr gut!" : "Jeszcze raz następnym razem"}</strong>
+              {!correct && <p>Poprawna odpowiedź: <b lang={exercise.answerLanguage}>{exercise.answerLabel}</b></p>}
+              {card.plural && exercise.answerLanguage === "de" && <small>Liczba mnoga: die {card.plural}</small>}
+              {card.exampleGerman && card.examplePolish && (
+                <div className="context-example">
+                  <small>W kontekście</small>
+                  <p lang="de">{card.exampleGerman}</p>
+                  <p>{card.examplePolish}</p>
+                </div>
+              )}
+              {card.sourceLabel && card.sourceUrl && (
+                <a href={card.sourceUrl} target="_blank" rel="noreferrer">{card.sourceLabel}</a>
+              )}
+            </div>
+            {exercise.answerLanguage === "de" && (
+              <button
+                className="feedback-speak"
+                onClick={() => props.onSpeak(exercise.answerLabel)}
+                aria-label={`Odtwórz wymowę: ${exercise.answerLabel}`}
+              >
+                <span aria-hidden="true">◖))</span>
+              </button>
+            )}
           </div>
         )}
       </article>
 
-      {props.revealed && (
-        <div className="answer-actions">
-          <button className="again-button" onClick={() => props.onAnswer(false)}>
-            <span aria-hidden="true">↻</span>
-            Powtórz
-            <small>za 10 min</small>
-          </button>
-          <button className="know-button" onClick={() => props.onAnswer(true)}>
-            <span aria-hidden="true">✓</span>
-            Umiem
-            <small>coraz później</small>
-          </button>
-        </div>
+      {answered && (
+        <button className="primary-button wide continue-button" onClick={() => props.onAnswer(correct)}>
+          Dalej <span aria-hidden="true">→</span>
+        </button>
       )}
     </section>
   );
@@ -358,7 +395,9 @@ function LearnView(props: SessionProps & {
   onStart: () => void;
   onGoToReviews: () => void;
 }) {
-  if (props.activeCard || props.complete) return <FlashcardSession {...props} />;
+  if (props.activeCard || props.complete) {
+    return <FlashcardSession key={props.activeCard?.id ?? "complete"} {...props} />;
+  }
   const newCount = props.cards.filter((card) => card.repetitions === 0).length;
 
   return (
@@ -366,7 +405,7 @@ function LearnView(props: SessionProps & {
       <section className="hero-copy">
         <p className="eyebrow">Guten Tag!</p>
         <h1>Mały krok.<br /><em>Großer Fortschritt.</em></h1>
-        <p>Dziesięć kart wystarczy, by podtrzymać rytm.</p>
+        <p>Dziesięć krótkich ćwiczeń z kursem Nicos Weg wystarczy, by podtrzymać rytm.</p>
       </section>
 
       <section className="daily-card">
@@ -411,7 +450,9 @@ function LearnView(props: SessionProps & {
 }
 
 function ReviewView(props: SessionProps & { dueCards: Flashcard[]; onStart: () => void }) {
-  if (props.activeCard || props.complete) return <FlashcardSession {...props} />;
+  if (props.activeCard || props.complete) {
+    return <FlashcardSession key={props.activeCard?.id ?? "complete"} {...props} />;
+  }
   return (
     <section>
       <div className="page-heading">
@@ -432,7 +473,7 @@ function ReviewView(props: SessionProps & { dueCards: Flashcard[]; onStart: () =
       </button>
       <div className="info-card">
         <span aria-hidden="true">◷</span>
-        <div><strong>Jak działa plan?</strong><p>Po odpowiedzi „Umiem” karta wróci za 1, 3, 7 dni, a później coraz rzadziej.</p></div>
+        <div><strong>Jak działa plan?</strong><p>Po poprawnej odpowiedzi karta wróci za 1, 3, 7 dni, a później coraz rzadziej. Błędna wróci szybciej.</p></div>
       </div>
     </section>
   );
@@ -440,27 +481,25 @@ function ReviewView(props: SessionProps & { dueCards: Flashcard[]; onStart: () =
 
 function CollectionView({
   cards,
-  online,
   onChange,
   onToast,
 }: {
   cards: Flashcard[];
-  online: boolean;
   onChange: (cards: Flashcard[]) => void;
   onToast: (message: string) => void;
 }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Wszystkie");
-  const [showGenerator, setShowGenerator] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [editing, setEditing] = useState<Flashcard | null>(null);
   const [draft, setDraft] = useState(emptyContent);
 
-  const categories = ["Wszystkie", ...new Set(cards.map((card) => card.category))];
+  const categoryFor = (card: Flashcard) => card.level ? `Nicos Weg ${card.level}` : card.category;
+  const categories = ["Wszystkie", ...new Set(cards.map(categoryFor))];
   const filtered = cards.filter((card) => {
     const phrase = `${card.german} ${card.polish}`.toLocaleLowerCase("pl-PL");
     return (
-      (category === "Wszystkie" || card.category === category) &&
+      (category === "Wszystkie" || categoryFor(card) === category) &&
       phrase.includes(search.toLocaleLowerCase("pl-PL"))
     );
   });
@@ -513,11 +552,16 @@ function CollectionView({
         <button className="round-button" onClick={openNewCard} aria-label="Dodaj fiszkę">＋</button>
       </div>
 
-      <button className="ai-card" onClick={() => setShowGenerator(true)}>
-        <span className="ai-spark" aria-hidden="true">✦</span>
-        <span><strong>Ułóż nowy zestaw z AI</strong><small>{online ? "Wybierz temat i dodaj 5–20 kart" : "Dostępne po połączeniu z internetem"}</small></span>
-        <span aria-hidden="true">›</span>
-      </button>
+      <div className="source-note">
+        <span aria-hidden="true">◎</span>
+        <p>
+          Główny zestaw: Nicos Weg Deutsche Welle —{" "}
+          <a href="https://ankiweb.net/shared/info/458469586" target="_blank" rel="noreferrer">A2</a>
+          {" "}oraz{" "}
+          <a href="https://ankiweb.net/shared/info/492301569" target="_blank" rel="noreferrer">B1</a>.
+          Poziom A2 ma pierwszeństwo w nauce.
+        </p>
+      </div>
 
       <label className="search-box">
         <span aria-hidden="true">⌕</span>
@@ -546,7 +590,7 @@ function CollectionView({
                 <strong>{card.article && <i>{card.article} </i>}{card.german}</strong>
                 <small>{card.polish}</small>
               </span>
-              <span className="mini-category">{card.category}</span>
+              <span className="mini-category">{card.category.replace(/^Nicos Weg (A2|B1) · /, "")}</span>
             </button>
             <button
               className="delete-button"
@@ -564,25 +608,6 @@ function CollectionView({
         ))}
       </div>
 
-      {showGenerator && (
-        <AiGenerator
-          cards={cards}
-          online={online}
-          onClose={() => setShowGenerator(false)}
-          onAccept={(generated) => {
-            const incoming = generated.map((card) => toFlashcard(card, "ai"));
-            const merged = mergeUnique(cards, incoming);
-            onChange(merged.cards);
-            setShowGenerator(false);
-            onToast(
-              merged.skipped
-                ? `Dodano ${incoming.length - merged.skipped} kart, pominięto ${merged.skipped} duplikatów.`
-                : `Dodano ${incoming.length} nowych fiszek.`,
-            );
-          }}
-        />
-      )}
-
       {showEditor && (
         <CardEditor
           draft={draft}
@@ -593,111 +618,6 @@ function CollectionView({
         />
       )}
     </section>
-  );
-}
-
-function AiGenerator({
-  cards,
-  online,
-  onClose,
-  onAccept,
-}: {
-  cards: Flashcard[];
-  online: boolean;
-  onClose: () => void;
-  onAccept: (cards: CardContent[]) => void;
-}) {
-  const [topic, setTopic] = useState("");
-  const [count, setCount] = useState<5 | 10 | 20>(10);
-  const [generated, setGenerated] = useState<CardContent[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    if (topic.trim().length < 2) {
-      setError("Wpisz temat składający się z co najmniej 2 znaków.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const result = await generateCards(topic, count);
-      setGenerated(result.filter((card) => !isDuplicate(card, cards)));
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Nie udało się wygenerować fiszek.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="modal-backdrop" role="presentation">
-      <section className="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="ai-title">
-        <div className="modal-head">
-          <div><p className="eyebrow">Generator A2</p><h2 id="ai-title">Nowy zestaw z AI</h2></div>
-          <button className="close-button" onClick={onClose} aria-label="Zamknij">×</button>
-        </div>
-        {generated.length === 0 ? (
-          <form onSubmit={submit}>
-            <label className="field">
-              <span>Temat fiszek</span>
-              <input
-                value={topic}
-                maxLength={80}
-                onChange={(event) => setTopic(event.target.value)}
-                placeholder="np. wizyta u dentysty"
-                autoFocus
-              />
-              <small>{topic.length}/80</small>
-            </label>
-            <fieldset className="count-picker">
-              <legend>Liczba kart</legend>
-              {[5, 10, 20].map((value) => (
-                <button
-                  type="button"
-                  key={value}
-                  className={count === value ? "active" : ""}
-                  onClick={() => setCount(value as 5 | 10 | 20)}
-                >
-                  {value}
-                </button>
-              ))}
-            </fieldset>
-            {!online && <p className="form-error">Połącz się z internetem, aby użyć generatora.</p>}
-            {error && <p className="form-error" role="alert">{error}</p>}
-            <button className="primary-button wide" disabled={!online || loading}>
-              {loading ? "Tworzę fiszki…" : "Generuj zestaw ✦"}
-            </button>
-            <p className="privacy-note">Do AI wysyłamy wyłącznie wpisany temat i liczbę kart.</p>
-          </form>
-        ) : (
-          <>
-            <p className="preview-note">Sprawdź karty. Usuń te, których nie chcesz zapisywać.</p>
-            <div className="generated-list">
-              {generated.map((card) => (
-                <article key={card.id}>
-                  <span><strong>{card.article && `${card.article} `}{card.german}</strong><small>{card.polish}</small></span>
-                  <button
-                    aria-label={`Usuń ${card.german}`}
-                    onClick={() => setGenerated((current) => current.filter((item) => item.id !== card.id))}
-                  >
-                    ×
-                  </button>
-                </article>
-              ))}
-            </div>
-            <button
-              className="primary-button wide"
-              onClick={() => onAccept(generated)}
-              disabled={generated.length === 0}
-            >
-              Dodaj {generated.length} {generated.length === 1 ? "kartę" : "kart"}
-            </button>
-          </>
-        )}
-      </section>
-    </div>
   );
 }
 
@@ -756,8 +676,9 @@ function ProgressView({
   learnedCount: number;
   meta: LearningMeta;
 }) {
-  const categories = starterCategories.map((category) => {
-    const all = cards.filter((card) => card.category === category);
+  const categoryNames = [...new Set(cards.map((card) => card.level ? `Nicos Weg ${card.level}` : card.category))];
+  const categories = categoryNames.map((category) => {
+    const all = cards.filter((card) => (card.level ? `Nicos Weg ${card.level}` : card.category) === category);
     const learned = all.filter((card) => card.learned).length;
     return { category, all: all.length, learned, percent: all.length ? Math.round((learned / all.length) * 100) : 0 };
   });
@@ -857,7 +778,11 @@ function SettingsView({
       <section className="settings-group">
         <h2>O aplikacji</h2>
         <div className="settings-row static">
-          <span><strong>Wortschatz A2</strong><small>110 kart startowych · dane tylko na tym urządzeniu</small></span><span>1.0</span>
+          <span>
+            <strong>Wortschatz A2</strong>
+            <small>{cards.length} kart · Nicos Weg A2 z rozszerzeniem B1 · dane tylko na tym urządzeniu</small>
+          </span>
+          <span>1.1</span>
         </div>
       </section>
       <button

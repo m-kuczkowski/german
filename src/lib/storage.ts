@@ -1,5 +1,5 @@
 import type { BackupFile, Flashcard, LearningMeta } from "../types";
-import { validateCardContent } from "./cards";
+import { mergeUnique, validateCardContent } from "./cards";
 import { defaultMeta } from "./meta";
 
 const DB_NAME = "wortschatz-a2";
@@ -7,6 +7,7 @@ const DB_VERSION = 1;
 const CARD_STORE = "cards";
 const META_STORE = "meta";
 const META_KEY = "learning";
+const CURRENT_CONTENT_VERSION = 2;
 
 function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -133,7 +134,15 @@ export async function loadOrSeed(seed: Flashcard[]): Promise<{
   meta: LearningMeta;
 }> {
   const [storedCards, meta] = await Promise.all([loadCards(), loadMeta()]);
-  if (storedCards.length > 0) return { cards: storedCards, meta };
-  await saveCards(seed);
-  return { cards: seed, meta };
+  const nextMeta = { ...meta, contentVersion: CURRENT_CONTENT_VERSION };
+  if (storedCards.length === 0) {
+    await Promise.all([saveCards(seed), saveMeta(nextMeta)]);
+    return { cards: seed, meta: nextMeta };
+  }
+  if (meta.contentVersion < CURRENT_CONTENT_VERSION) {
+    const merged = mergeUnique(storedCards, seed).cards;
+    await Promise.all([saveCards(merged), saveMeta(nextMeta)]);
+    return { cards: merged, meta: nextMeta };
+  }
+  return { cards: storedCards, meta };
 }

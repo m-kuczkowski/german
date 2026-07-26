@@ -1,4 +1,4 @@
-export type CardSource = "starter" | "manual" | "ai" | "import";
+export type CardSource = "starter" | "anki" | "manual" | "ai" | "import";
 
 export interface CardContent {
   id: string;
@@ -9,6 +9,11 @@ export interface CardContent {
   exampleGerman: string;
   examplePolish: string;
   category: string;
+  level?: "A2" | "B1";
+  sourceLabel?: string;
+  sourceUrl?: string;
+  sourceGloss?: string;
+  sourceLanguage?: "de" | "en";
 }
 
 export interface Flashcard extends CardContent {
@@ -28,6 +33,7 @@ export interface LearningMeta {
   completedToday: number;
   totalReviews: number;
   theme: "system" | "light" | "dark";
+  contentVersion: number;
 }
 
 export interface BackupFile {
@@ -38,7 +44,3 @@ export interface BackupFile {
 }
 
 export type TabId = "learn" | "review" | "collection" | "progress" | "settings";
-
-export interface GeneratedCardsResponse {
-  cards: CardContent[];
-}

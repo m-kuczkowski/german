@@ -1,7 +1,0 @@
-name = "wortschatz-a2-api"
-main = "worker/src/index.ts"
-compatibility_date = "2026-07-26"
-
-[vars]
-ALLOWED_ORIGIN = "https://m-kuczkowski.github.io"
-MODEL = "gpt-5-nano"

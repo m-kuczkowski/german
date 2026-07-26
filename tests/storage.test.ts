@@ -9,6 +9,7 @@ import {
   loadOrSeed,
   parseBackup,
   saveCards,
+  saveMeta,
 } from "../src/lib/storage";
 
 describe("lokalny zapis i kopie", () => {
@@ -18,14 +19,29 @@ describe("lokalny zapis i kopie", () => {
 
   it("w trybie bez danych uruchamia gotowy zestaw startowy", async () => {
     const result = await loadOrSeed(starterCards);
-    expect(result.cards).toHaveLength(110);
-    expect(await loadCards()).toHaveLength(110);
+    expect(result.cards).toHaveLength(299);
+    expect(result.meta.contentVersion).toBe(2);
+    expect(await loadCards()).toHaveLength(299);
   });
 
   it("zapisuje i odczytuje zmiany w IndexedDB", async () => {
     await saveCards(starterCards.slice(0, 3));
     const stored = await loadCards();
-    expect(stored.map((card) => card.id)).toEqual(starterCards.slice(0, 3).map((card) => card.id));
+    expect(stored.map((card) => card.id).sort()).toEqual(
+      starterCards.slice(0, 3).map((card) => card.id).sort(),
+    );
+  });
+
+  it("dodaje nowy zestaw tylko raz i nie przywraca później usuniętych kart", async () => {
+    await saveCards(starterCards.slice(0, 3));
+    await saveMeta(defaultMeta);
+    const migrated = await loadOrSeed(starterCards);
+    expect(migrated.cards).toHaveLength(299);
+    expect(migrated.meta.contentVersion).toBe(2);
+
+    await saveCards(migrated.cards.slice(1));
+    const afterDeletion = await loadOrSeed(starterCards);
+    expect(afterDeletion.cards).toHaveLength(298);
   });
 
   it("eksportuje i waliduje kopię zapasową", () => {

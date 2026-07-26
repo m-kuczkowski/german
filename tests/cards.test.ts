@@ -3,13 +3,15 @@ import { starterCards } from "../src/data/starterCards";
 import { isDuplicate, mergeUnique, normalizeGerman, toFlashcard } from "../src/lib/cards";
 
 describe("kolekcja fiszek", () => {
-  it("zawiera co najmniej 100 unikalnych kart startowych", () => {
-    expect(starterCards).toHaveLength(110);
-    expect(new Set(starterCards.map((card) => normalizeGerman(card.german))).size).toBe(110);
+  it("zawiera 299 unikalnych kart Nicos Weg A2 i B1", () => {
+    expect(starterCards).toHaveLength(299);
+    expect(new Set(starterCards.map((card) => normalizeGerman(card.german))).size).toBe(299);
+    expect(starterCards.filter((card) => card.level === "A2")).toHaveLength(228);
+    expect(starterCards.filter((card) => card.level === "B1")).toHaveLength(71);
   });
 
   it("wykrywa duplikat niezależnie od wielkości liter i rodzajnika", () => {
-    expect(isDuplicate({ german: "das HAUS" }, starterCards)).toBe(true);
+    expect(isDuplicate({ german: "das ABITUR" }, starterCards)).toBe(true);
   });
 
   it("pomija duplikaty podczas importu", () => {
@@ -28,6 +30,6 @@ describe("kolekcja fiszek", () => {
     );
     const result = mergeUnique(starterCards, [starterCards[0], unique]);
     expect(result.skipped).toBe(1);
-    expect(result.cards).toHaveLength(111);
+    expect(result.cards).toHaveLength(300);
   });
 });
