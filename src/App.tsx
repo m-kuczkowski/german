@@ -506,7 +506,9 @@ function FlashcardSession(props: SessionProps) {
 
       <article className="exercise-card">
         <div className="exercise-meta">
-          <p className="category-chip">{categoryTitle(card.category)}</p>
+          <p className="category-chip">
+            {categoryTitle(card.category).replace(/\s*\([^)]*\)$/, "")}
+          </p>
           <span>{isIntroduction ? "Nowe słowo" : isChoice ? "1 z 3" : "Wpisywanie"}</span>
         </div>
 
