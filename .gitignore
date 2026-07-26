@@ -9,3 +9,8 @@
 .DS_Store
 npm-debug.log*
 *.tsbuildinfo
+.vercel
+.env*
+!.env.example
+.agents/
+skills-lock.json

@@ -27,6 +27,7 @@ import {
   saveCards,
   saveMeta,
 } from "./lib/storage";
+import { hydrateRemoteState, loadRemoteState, saveRemoteState } from "./lib/remote";
 import type { CardContent, Flashcard, LearningMeta, TabId } from "./types";
 
 const navItems: Array<{ id: TabId; icon: string; label: string }> = [
@@ -60,16 +61,29 @@ function App() {
   const [reviewCategoryId, setReviewCategoryId] = useState<string | null>(null);
 
   useEffect(() => {
-    loadOrSeed(starterCards)
-      .then(({ cards: savedCards, meta: savedMeta }) => {
-        setCards(savedCards);
-        setMeta(savedMeta);
-      })
-      .catch(() => {
+    let active = true;
+    void (async () => {
+      try {
+        const local = await loadOrSeed(starterCards);
+        let state = local;
+        try {
+          const remote = await loadRemoteState();
+          if (remote) state = hydrateRemoteState(local.cards, local.meta, remote);
+        } catch {
+          // The offline cache remains fully usable when a connection is unavailable.
+        }
+        if (!active) return;
+        setCards(state.cards);
+        setMeta(state.meta);
+      } catch {
+        if (!active) return;
         setCards(starterCards);
         setToast("Nie udało się otworzyć pamięci urządzenia. Postępy mogą nie zostać zapisane.");
-      })
-      .finally(() => setReady(true));
+      } finally {
+        if (active) setReady(true);
+      }
+    })();
+    return () => { active = false; };
   }, []);
 
   useEffect(() => {
@@ -81,6 +95,13 @@ function App() {
     if (!ready) return;
     void saveMeta(meta).catch(() => setToast("Nie udało się zapisać postępu."));
   }, [meta, ready]);
+
+  useEffect(() => {
+    if (!ready) return;
+    void saveRemoteState(cards, meta).catch(() => {
+      // Local persistence is the offline fallback; a later change retries syncing.
+    });
+  }, [cards, meta, ready]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = meta.theme;
@@ -906,7 +927,7 @@ function SettingsView({
         <div className="settings-row static">
           <span>
             <strong>Wortschatz A2</strong>
-            <small>{cards.length} kart · Nicos Weg A2 z rozszerzeniem B1 · dane tylko na tym urządzeniu</small>
+            <small>{cards.length} kart · Nicos Weg A2 z rozszerzeniem B1 · postęp synchronizowany z bazą</small>
           </span>
           <span>1.1</span>
         </div>
