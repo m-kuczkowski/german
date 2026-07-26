@@ -203,9 +203,8 @@ function App() {
     setCards((current) =>
       current.map((card) => (card.id === activeCard.id ? updatedCard : card)),
     );
-    setMeta((current) => ({
-      ...recordReview(current),
-      activeSession: current.activeSession
+    setMeta((current) => {
+      const recordedSession = current.activeSession
         ? recordSessionAnswer(
             current.activeSession,
             activeCard,
@@ -217,8 +216,14 @@ function App() {
             correctAnswer,
             answeredAt,
           )
-        : null,
-    }));
+        : null;
+      return {
+        ...recordReview(current),
+        activeSession: recordedSession && evidence.mode === "introduction"
+          ? advanceSession(recordedSession)
+          : recordedSession,
+      };
+    });
     return updatedCard;
   }
 

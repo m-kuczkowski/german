@@ -74,8 +74,10 @@ Anki/FSRS potraktowano jako źródło wdrożeniowe, nie dowód rozstrzygający.
 
 ## Świadomie odrzucone rozwiązania
 
-- **Automatyczne przejście po sekundzie.** Odbiera czas na przetworzenie
-  informacji zwrotnej i kontekstu. Wynik pozostaje do ręcznego „Dalej”.
+- **Automatyczne przejście po sekundzie po ćwiczeniu.** Odbiera czas na
+  przetworzenie informacji zwrotnej i kontekstu. Po wyborze lub wpisywaniu
+  wynik pozostaje do ręcznego „Dalej”; na zwykłej fiszce świadome kliknięcie
+  jednej z trzech ocen jest jednocześnie przejściem dalej.
 - **Awans na podstawie samego „Znam”.** Widoczna odpowiedź podnosi poczucie
   płynności, ale nie dowodzi samodzielnego odtworzenia.
 - **Wiele natychmiastowych powtórzeń.** Używamy jednej krótkiej dogrywki z

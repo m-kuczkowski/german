@@ -18,7 +18,8 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 - widok zawartości przegródek, terminów i historii decyzji dla każdej karty;
 - opanowanie wymagające poprawnych aktywnych odpowiedzi w różnych formach oraz odstępu czasu;
 - tryb trudnych słów, dzienna krótka lekcja i spokojne podsumowanie;
-- ręczne „Dalej” po odpowiedzi — wynik i kontekst nie znikają automatycznie;
+- pojedyncze kliknięcie oceny przechodzi do następnej zwykłej fiszki;
+- ręczne „Dalej” po wyborze lub wpisywaniu — wynik i kontekst nie znikają automatycznie;
 - automatyczne obniżenie stanu karty po błędzie aktywnego przypominania;
 - kolekcja z wyszukiwaniem, filtrami, edycją i usuwaniem;
 - ręczne dodawanie własnych kart;
@@ -41,7 +42,7 @@ Aplikacja nie kopiuje plików audio, obrazów ani szablonów Anki. Przechowuje t
 
 Nowe słowo jest najpierw prezentowane na dwustronnej fiszce. Trzy oceny są widoczne po obu stronach. „Znam” prowadzi do aktywnego wpisywania po kilku innych słowach, „Niepewnie” do prostszego quizu, a „Nie znam” do szybkiego ponownego pokazania fiszki.
 
-Kolejne odpowiedzi aktualizują przegródkę, termin, serię, historię oraz zestaw zaliczonych typów ćwiczeń. Samo klikanie „Znam” nigdy nie wystarcza do opanowania. Błąd aktywnego przypominania przenosi kartę do przegródki 1 i planuje wcześniejszy powrót. Ekran wyniku pozostaje widoczny do kliknięcia „Dalej”.
+Kolejne odpowiedzi aktualizują przegródkę, termin, serię, historię oraz zestaw zaliczonych typów ćwiczeń. Samo klikanie „Znam” nigdy nie wystarcza do opanowania. Ocena na zwykłej fiszce od razu otwiera kolejną kartę. Po wyborze jednej z trzech odpowiedzi lub wpisywaniu ekran wyniku pozostaje widoczny do kliknięcia „Dalej”.
 
 ## Architektura
 
