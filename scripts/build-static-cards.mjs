@@ -131,46 +131,42 @@ function quoted(value) {
   return JSON.stringify(value);
 }
 
-const lines = [
-  'import type { CardContent } from "../types";',
-  "",
-  "// Generated from all 3038 notes in the two public AnkiWeb decks.",
-  "// Polish translations were created in a separate AI translation pass.",
-  "export const nicosWegContents: CardContent[] = [",
-];
+const cards = [];
 
 for (const sourceCard of source.cards) {
   const parsed = parseGerman(sourceCard.german);
   const translation = translationById.get(sourceCard.id);
   const [deckId, noteId] = sourceCard.id.split(":");
   const legacyHash = createHash("sha1").update(`${deckId}:${noteId}`).digest("hex").slice(0, 12);
-  lines.push(
-    "  {",
-    `    id: ${quoted(`nicos-${sourceCard.level.toLowerCase()}-${legacyHash}`)},`,
-    `    german: ${quoted(parsed.german)},`,
-    `    polish: ${quoted(translation.polish)},`,
-    `    article: ${parsed.article ? quoted(parsed.article) : "null"},`,
-    `    plural: ${parsed.plural ? quoted(parsed.plural) : "null"},`,
-    `    exampleGerman: ${quoted(translation.exampleGerman)},`,
-    `    examplePolish: ${quoted(translation.examplePolish)},`,
-    `    category: ${quoted(`Nicos Weg ${sourceCard.level} · ${sourceCard.lesson}`)},`,
-    `    level: ${quoted(sourceCard.level)},`,
-    `    sourceLabel: ${quoted(`Nicos Weg ${sourceCard.level} · Deutsche Welle`)},`,
-    `    sourceUrl: ${quoted(sourceCard.sourceUrl)},`,
-    `    sourceGloss: ${quoted(stripHtml(sourceCard.sourceGloss))},`,
-    `    sourceLanguage: ${quoted(sourceCard.sourceLanguage)},`,
-    "  },",
-  );
+  cards.push({
+    id: `nicos-${sourceCard.level.toLowerCase()}-${legacyHash}`,
+    german: parsed.german,
+    polish: translation.polish,
+    article: parsed.article,
+    plural: parsed.plural,
+    exampleGerman: translation.exampleGerman,
+    examplePolish: translation.examplePolish,
+    category: `Nicos Weg ${sourceCard.level} · ${sourceCard.lesson}`,
+    level: sourceCard.level,
+    sourceLabel: `Nicos Weg ${sourceCard.level} · Deutsche Welle`,
+    sourceUrl: sourceCard.sourceUrl,
+    sourceGloss: stripHtml(sourceCard.sourceGloss),
+    sourceLanguage: sourceCard.sourceLanguage,
+  });
 }
 
-lines.push(
-  "];",
+const lines = [
+  'import type { CardContent } from "../types";',
+  "",
+  "// Generated from all 3038 notes in the two public AnkiWeb decks.",
+  "// Polish translations were created in a separate AI translation pass.",
+  `export const nicosWegContents: CardContent[] = JSON.parse(${quoted(JSON.stringify(cards))}) as CardContent[];`,
   "",
   "export const nicosWegCategories = [",
   "  ...new Set(nicosWegContents.map((card) => card.category)),",
   "];",
   "",
-);
+];
 
 writeFileSync(resolve(outputPath), lines.join("\n"));
 
