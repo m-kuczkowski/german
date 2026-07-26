@@ -330,6 +330,20 @@ h1 em {
   width: 100%;
 }
 
+.secondary-button {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 20px;
+  color: var(--green);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px 16px 6px 16px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
 .primary-button span {
   font-size: 20px;
 }
@@ -542,6 +556,87 @@ h1 em {
   padding-top: 2px;
 }
 
+.learning-path {
+  display: grid;
+  gap: 10px;
+}
+
+.learning-path-row {
+  display: grid;
+  width: 100%;
+  min-height: 82px;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  padding: 12px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  text-align: left;
+}
+
+.learning-path-row.active {
+  border: 2px solid var(--green);
+  box-shadow: 0 8px 20px rgb(25 78 61 / 10%);
+}
+
+.learning-path-row.complete {
+  background: color-mix(in srgb, var(--mint) 42%, var(--surface));
+}
+
+.category-number {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: var(--green);
+  background: var(--mint);
+  border-radius: 11px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.category-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.category-copy strong {
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-copy small,
+.category-state {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.category-state {
+  color: var(--green);
+  text-align: right;
+}
+
+.category-mini-progress {
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  background: var(--surface-2);
+  border-radius: 99px;
+}
+
+.category-mini-progress i {
+  display: block;
+  height: 100%;
+  background: var(--green-2);
+  border-radius: inherit;
+}
+
 .exercise-card {
   margin-top: 20px;
   padding: 20px;
@@ -578,6 +673,29 @@ h1 em {
   font-size: 13px;
   font-weight: 750;
   text-align: center;
+}
+
+.introduction-answer {
+  display: grid;
+  gap: 13px;
+  padding-top: 6px;
+  text-align: center;
+}
+
+.introduction-answer > strong {
+  font-size: 23px;
+}
+
+.introduction-answer > small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.intro-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 4px;
 }
 
 .exercise-prompt {
