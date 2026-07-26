@@ -111,11 +111,17 @@ async function requestBatch(cards, attempt = 1) {
   if (payload.status === "incomplete") {
     throw new Error(`Niekompletna odpowiedź modelu: ${payload.incomplete_details?.reason ?? "brak powodu"}.`);
   }
-  if (typeof payload.output_text !== "string") {
+  const outputText =
+    typeof payload.output_text === "string"
+      ? payload.output_text
+      : payload.output
+          ?.flatMap((item) => item.content ?? [])
+          .find((item) => item.type === "output_text")?.text;
+  if (typeof outputText !== "string") {
     throw new Error("Model nie zwrócił tekstu strukturalnego.");
   }
 
-  const parsed = JSON.parse(payload.output_text);
+  const parsed = JSON.parse(outputText);
   const translations = parsed.translations;
   const expectedIds = cards.map((card) => card.id);
   const receivedIds = Array.isArray(translations) ? translations.map((entry) => entry.id) : [];
