@@ -336,6 +336,12 @@ function App() {
     setMeta((current) => ({ ...current, activeSession: null }));
   }
 
+  function abortSession() {
+    setMeta((current) => ({ ...current, activeSession: null }));
+    setTab("learn");
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
   function startChallenge(type: ChallengeType, count: number) {
     const startedAt = new Date();
     const challenge = createChallengeSession(cards, type, count, startedAt);
@@ -409,6 +415,16 @@ function App() {
     }));
   }
 
+  function abortChallenge() {
+    setMeta((current) => ({
+      ...current,
+      activeChallenge: null,
+      challengeUpdatedAt: new Date().toISOString(),
+    }));
+    setTab("learn");
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
   if (!profileName) {
     return <ProfileGate onSelect={setProfileName} />;
   }
@@ -458,6 +474,7 @@ function App() {
             onStartHard={() => startSession("hard", null)}
             onSelectCategory={setSelectedCategoryId}
             onFinish={finishSession}
+            onAbort={abortSession}
             onSpeak={(cardId, text) => {
               if (!speakGerman(cardId, text)) setToast("Ta przeglądarka nie obsługuje wymowy.");
             }}
@@ -481,6 +498,7 @@ function App() {
             onStartHard={() => startSession("hard", null)}
             onSelectCategory={setReviewCategoryId}
             onFinish={finishSession}
+            onAbort={abortSession}
             onSpeak={(cardId, text) => {
               if (!speakGerman(cardId, text)) setToast("Ta przeglądarka nie obsługuje wymowy.");
             }}
@@ -496,6 +514,7 @@ function App() {
             onNext={advanceChallengeAnswer}
             onRepeatMistakes={repeatChallengeMistakes}
             onFinish={finishChallenge}
+            onAbort={abortChallenge}
             onSpeak={(cardId, text) => {
               if (!speakGerman(cardId, text)) setToast("Ta przeglądarka nie obsługuje wymowy.");
             }}
@@ -567,6 +586,7 @@ interface SessionProps {
   ) => Flashcard | null;
   onNext: () => void;
   onFinish: () => void;
+  onAbort: () => void;
   onSpeak: (cardId: string, text: string) => void;
 }
 
@@ -703,7 +723,18 @@ function FlashcardSession(props: SessionProps) {
     <section className={`session-wrap ${outcome ? "has-outcome" : ""}`}>
       <div className="session-progress">
         <span>{props.session.mode === "hard" ? "Trudne słowa" : "Dzisiejsza lekcja"}</span>
-        <strong>{sessionIndex + 1} / {sessionLength}</strong>
+        <div className="session-progress-actions">
+          <strong>{sessionIndex + 1} / {sessionLength}</strong>
+          <button
+            type="button"
+            className="session-abort-button"
+            onClick={props.onAbort}
+            aria-label="Przerwij lekcję i wróć do strony głównej"
+          >
+            <span aria-hidden="true">×</span>
+            Przerwij
+          </button>
+        </div>
       </div>
       <div className="progress-track" aria-hidden="true">
         <span style={{ width: `${((sessionIndex + 1) / sessionLength) * 100}%` }} />

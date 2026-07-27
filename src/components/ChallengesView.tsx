@@ -26,6 +26,7 @@ interface ChallengesViewProps {
   onNext: () => void;
   onRepeatMistakes: () => void;
   onFinish: () => void;
+  onAbort: () => void;
   onSpeak: (cardId: string, text: string) => void;
 }
 
@@ -37,6 +38,7 @@ export function ChallengesView({
   onNext,
   onRepeatMistakes,
   onFinish,
+  onAbort,
   onSpeak,
 }: ChallengesViewProps) {
   const [selectedType, setSelectedType] = useState<ChallengeType | null>(null);
@@ -70,6 +72,7 @@ export function ChallengesView({
       session={session}
       onAnswer={onAnswer}
       onNext={onNext}
+      onAbort={onAbort}
       onSpeak={onSpeak}
     />
   );

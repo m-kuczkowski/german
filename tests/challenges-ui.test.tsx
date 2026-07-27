@@ -41,6 +41,7 @@ describe("interfejs wyzwań", () => {
         session={session}
         onAnswer={() => undefined}
         onNext={() => undefined}
+        onAbort={() => undefined}
         onSpeak={() => undefined}
       />,
     );
@@ -66,6 +67,7 @@ describe("interfejs wyzwań", () => {
         session={session}
         onAnswer={() => undefined}
         onNext={() => undefined}
+        onAbort={() => undefined}
         onSpeak={() => undefined}
       />,
     );
@@ -96,6 +98,7 @@ describe("interfejs wyzwań", () => {
         session={answered}
         onAnswer={() => undefined}
         onNext={() => undefined}
+        onAbort={() => undefined}
         onSpeak={() => undefined}
       />,
     );
@@ -103,5 +106,27 @@ describe("interfejs wyzwań", () => {
     expect(html).toContain(card.exampleGerman);
     expect(html).toContain("Dalej");
     expect(html).toContain("Termin zwykłej powtórki pozostaje bez zmian");
+  });
+
+  it("pozwala przerwać aktywne wyzwanie jednym przyciskiem", () => {
+    const session = createChallengeSession(
+      knownCards,
+      "writing",
+      1,
+      new Date("2026-07-27"),
+      () => 0,
+    );
+    const html = renderToStaticMarkup(
+      <ChallengeSession
+        cards={knownCards}
+        session={session}
+        onAnswer={() => undefined}
+        onNext={() => undefined}
+        onAbort={() => undefined}
+        onSpeak={() => undefined}
+      />,
+    );
+    expect(html).toContain("Przerwij");
+    expect(html).toContain("Przerwij wyzwanie i wróć do strony głównej");
   });
 });

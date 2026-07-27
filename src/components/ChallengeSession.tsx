@@ -23,6 +23,7 @@ interface ChallengeSessionProps {
     evaluation: ChallengeEvaluation,
   ) => void;
   onNext: () => void;
+  onAbort: () => void;
   onSpeak: (cardId: string, text: string) => void;
 }
 
@@ -31,6 +32,7 @@ export function ChallengeSession({
   session,
   onAnswer,
   onNext,
+  onAbort,
   onSpeak,
 }: ChallengeSessionProps) {
   const item = session.queue[session.index];
@@ -103,7 +105,18 @@ export function ChallengeSession({
     <section className={`session-wrap challenge-session ${outcome ? "has-outcome" : ""}`}>
       <div className="session-progress">
         <span>Wyzwanie</span>
-        <strong>{session.index + 1} / {session.queue.length}</strong>
+        <div className="session-progress-actions">
+          <strong>{session.index + 1} / {session.queue.length}</strong>
+          <button
+            type="button"
+            className="session-abort-button"
+            onClick={onAbort}
+            aria-label="Przerwij wyzwanie i wróć do strony głównej"
+          >
+            <span aria-hidden="true">×</span>
+            Przerwij
+          </button>
+        </div>
       </div>
       <div className="progress-track" aria-hidden="true">
         <span style={{ width: `${((session.index + 1) / session.queue.length) * 100}%` }} />
