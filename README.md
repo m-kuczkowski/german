@@ -25,7 +25,8 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 - ręczne dodawanie własnych kart;
 - postępy, dzienna seria i statystyki poziomów;
 - wymowa `de-DE` przez Web Speech API;
-- zapis w IndexedDB, synchronizacja postępu w Neon oraz eksport i import kopii JSON;
+- profil wybierany po imieniu bez rejestracji, zapamiętywany na urządzeniu;
+- zapis w IndexedDB, synchronizacja postępu imiennego w Neon oraz eksport i import kopii JSON;
 - jasny, ciemny i systemowy motyw;
 - instalacja na ekranie początkowym jako PWA.
 
@@ -48,12 +49,15 @@ Kolejne odpowiedzi aktualizują przegródkę, termin, serię, historię oraz zes
 
 - Vite, React i TypeScript po stronie klienta;
 - Vercel Function `api/learning.js` jako wąski interfejs do danych;
-- Neon Postgres dla katalogu 3038 kart i anonimowego postępu urządzenia;
+- Neon Postgres dla katalogu 3038 kart i postępu oddzielonego według imienia;
 - IndexedDB jako pamięć lokalna i źródło działania offline;
 - service worker z dynamicznym zakresem dla Vercel i GitHub Pages;
 - Web Speech API do bezpłatnej wymowy `de-DE`.
 
-Nie ma wywołań OpenAI ani Cloudflare w aplikacji produkcyjnej. Dane urządzenia są identyfikowane losowym tokenem przechowywanym lokalnie; do przeglądarki nie trafia adres bazy.
+Nie ma wywołań OpenAI ani Cloudflare w aplikacji produkcyjnej. Imię jest normalizowane
+bez rozróżniania wielkości liter, a jego wybór pozostaje zapisany lokalnie. Ponieważ
+nie ma hasła, osoba znająca imię może otworzyć ten sam postęp. Do przeglądarki nie
+trafia adres bazy.
 
 ## Technologie
 

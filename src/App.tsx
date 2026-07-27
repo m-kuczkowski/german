@@ -41,6 +41,7 @@ import {
   saveMeta,
 } from "./lib/storage";
 import { hydrateRemoteState, loadRemoteState, saveRemoteState } from "./lib/remote";
+import { rememberProfileName, storedProfileName } from "./lib/profile";
 import type {
   CardContent,
   Flashcard,
@@ -71,6 +72,52 @@ const emptyContent: Omit<CardContent, "id"> = {
   category: "Własne",
 };
 
+function ProfileGate({ onSelect }: { onSelect: (name: string) => void }) {
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  function submitProfile(event: FormEvent) {
+    event.preventDefault();
+    const normalized = rememberProfileName(name);
+    if (!normalized) {
+      setError("Wpisz imię mające od 2 do 30 liter.");
+      return;
+    }
+    onSelect(normalized);
+  }
+
+  return (
+    <main className="profile-gate">
+      <section className="profile-card">
+        <div className="brand-mark" aria-hidden="true">W</div>
+        <p className="eyebrow">Twój postęp</p>
+        <h1>Jak masz na imię?</h1>
+        <p>Po imieniu odnajdziemy Twoje fiszki i postępy na każdym urządzeniu.</p>
+        <form onSubmit={submitProfile}>
+          <label htmlFor="profile-name">Imię</label>
+          <input
+            id="profile-name"
+            value={name}
+            onChange={(event) => {
+              setName(event.target.value);
+              setError(null);
+            }}
+            autoComplete="given-name"
+            autoCapitalize="words"
+            enterKeyHint="go"
+            maxLength={30}
+            placeholder="np. Maciej"
+            autoFocus
+          />
+          {error && <small role="alert">{error}</small>}
+          <button className="primary-button wide" type="submit">Przejdź do nauki</button>
+        </form>
+        <small>Bez konta i hasła. Zapamiętamy wybór na tym urządzeniu.</small>
+      </section>
+    </main>
+  );
+}
+
 function App() {
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [meta, setMeta] = useState<LearningMeta>(defaultMeta);
@@ -80,15 +127,17 @@ function App() {
   const [toast, setToast] = useState<string | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [reviewCategoryId, setReviewCategoryId] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState<string | null>(storedProfileName);
 
   useEffect(() => {
+    if (!profileName) return;
     let active = true;
     void (async () => {
       try {
         const local = await loadOrSeed(starterCards);
         let state = local;
         try {
-          const remote = await loadRemoteState();
+          const remote = await loadRemoteState(profileName);
           if (remote) state = hydrateRemoteState(local.cards, local.meta, remote);
         } catch {
           // The offline cache remains fully usable when a connection is unavailable.
@@ -105,7 +154,7 @@ function App() {
       }
     })();
     return () => { active = false; };
-  }, []);
+  }, [profileName]);
 
   useEffect(() => {
     if (!ready) return;
@@ -118,11 +167,11 @@ function App() {
   }, [meta, ready]);
 
   useEffect(() => {
-    if (!ready) return;
-    void saveRemoteState(cards, meta).catch(() => {
+    if (!ready || !profileName) return;
+    void saveRemoteState(cards, meta, profileName).catch(() => {
       // Local persistence is the offline fallback; a later change retries syncing.
     });
-  }, [cards, meta, online, ready]);
+  }, [cards, meta, online, profileName, ready]);
 
   useEffect(() => {
     const connect = () => setOnline(true);
@@ -264,6 +313,10 @@ function App() {
     setMeta((current) => ({ ...current, activeSession: null }));
   }
 
+  if (!profileName) {
+    return <ProfileGate onSelect={setProfileName} />;
+  }
+
   if (!ready) {
     return (
       <main className="loading-screen" aria-live="polite">
@@ -359,6 +412,7 @@ function App() {
           <SettingsView
             cards={cards}
             meta={meta}
+            profileName={profileName}
             onCardsChange={setCards}
             onMetaChange={setMeta}
             onToast={setToast}
@@ -1240,12 +1294,14 @@ function LeitnerView({
 function SettingsView({
   cards,
   meta,
+  profileName,
   onCardsChange,
   onMetaChange,
   onToast,
 }: {
   cards: Flashcard[];
   meta: LearningMeta;
+  profileName: string;
   onCardsChange: (cards: Flashcard[]) => void;
   onMetaChange: (meta: LearningMeta) => void;
   onToast: (message: string) => void;
@@ -1281,6 +1337,16 @@ function SettingsView({
   return (
     <section>
       <div className="page-heading"><p className="eyebrow">Dopasuj aplikację</p><h1>Ustawienia</h1></div>
+      <section className="settings-group">
+        <h2>Profil</h2>
+        <div className="settings-row static">
+          <span>
+            <strong>{profileName}</strong>
+            <small>Postęp zapisuje się pod tym imieniem i synchronizuje między urządzeniami</small>
+          </span>
+          <span aria-hidden="true">●</span>
+        </div>
+      </section>
       <section className="settings-group">
         <h2>Wygląd</h2>
         <label className="settings-row">

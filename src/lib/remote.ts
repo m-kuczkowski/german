@@ -11,6 +11,7 @@ interface DeviceIdentity {
 
 interface RemoteState {
   device?: DeviceIdentity;
+  profile?: { name: string };
   cards: CardContent[];
   progress: Array<Partial<Flashcard> & Pick<Flashcard, "id">>;
   meta: Partial<LearningMeta>;
@@ -27,9 +28,14 @@ function deviceIdentity(): DeviceIdentity | null {
   }
 }
 
-function headers(identity: DeviceIdentity | null, contentType = false): HeadersInit {
+function headers(
+  identity: DeviceIdentity | null,
+  profileName: string,
+  contentType = false,
+): HeadersInit {
   return {
     ...(contentType ? { "content-type": "application/json" } : {}),
+    "x-learning-profile-name": encodeURIComponent(profileName),
     ...(identity ? {
       "x-learning-device-id": identity.id,
       "x-learning-device-token": identity.token,
@@ -82,9 +88,9 @@ export function hydrateRemoteState(
   };
 }
 
-export async function loadRemoteState(): Promise<RemoteState | null> {
+export async function loadRemoteState(profileName: string): Promise<RemoteState | null> {
   const identity = deviceIdentity();
-  const response = await fetch("/api/learning", { headers: headers(identity) });
+  const response = await fetch("/api/learning", { headers: headers(identity, profileName) });
   if (response.status === 404 || response.status === 503) return null;
   if (!response.ok) throw new Error("Nie udało się pobrać postępów z bazy.");
   const remote = await response.json() as RemoteState;
@@ -92,13 +98,12 @@ export async function loadRemoteState(): Promise<RemoteState | null> {
   return remote;
 }
 
-export async function saveRemoteState(cards: Flashcard[], meta: LearningMeta): Promise<void> {
-  let identity = deviceIdentity();
-  if (!identity) {
-    await loadRemoteState();
-    identity = deviceIdentity();
-  }
-  if (!identity) return;
+export async function saveRemoteState(
+  cards: Flashcard[],
+  meta: LearningMeta,
+  profileName: string,
+): Promise<void> {
+  const identity = deviceIdentity();
   const progress = cards
     .filter((card) => card.source === "anki")
     .filter((card) => card.stage !== "new" || card.lapses > 0)
@@ -145,7 +150,7 @@ export async function saveRemoteState(cards: Flashcard[], meta: LearningMeta): P
     }));
   const response = await fetch("/api/learning", {
     method: "PUT",
-    headers: headers(identity, true),
+    headers: headers(identity, profileName, true),
     body: JSON.stringify({ progress, meta }),
   });
   if (!response.ok) throw new Error("Nie udało się zapisać postępów w bazie.");

@@ -3,14 +3,15 @@ import { resolve } from "node:path";
 import { neon } from "@neondatabase/serverless";
 
 function loadEnv(name) {
-  const line = readFileSync(resolve(".env.local"), "utf8")
+  const envFile = process.env.WORTSCHATZ_ENV_FILE || ".env.local";
+  const line = readFileSync(resolve(envFile), "utf8")
     .split(/\r?\n/)
     .find((item) => item.startsWith(`${name}=`));
   return line ? line.slice(name.length + 1).replace(/^"|"$/g, "") : undefined;
 }
 
 const databaseUrl = process.env.DATABASE_URL_UNPOOLED || loadEnv("DATABASE_URL_UNPOOLED") || process.env.DATABASE_URL || loadEnv("DATABASE_URL");
-if (!databaseUrl) throw new Error("Brakuje DATABASE_URL_UNPOOLED w .env.local.");
+if (!databaseUrl) throw new Error("Brakuje DATABASE_URL_UNPOOLED w pliku środowiskowym.");
 
 const generated = readFileSync(resolve("src/data/nicosWegCards.ts"), "utf8");
 const match = generated.match(/JSON\.parse\((.*)\) as CardContent\[\];/);
@@ -30,6 +31,10 @@ await sql`CREATE TABLE IF NOT EXISTS learning_profiles (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 )`;
+await sql`ALTER TABLE learning_profiles ADD COLUMN IF NOT EXISTS display_name TEXT`;
+await sql`ALTER TABLE learning_profiles ADD COLUMN IF NOT EXISTS name_key TEXT`;
+await sql`CREATE UNIQUE INDEX IF NOT EXISTS learning_profiles_name_key_unique
+  ON learning_profiles (name_key) WHERE name_key IS NOT NULL`;
 await sql`CREATE TABLE IF NOT EXISTS card_progress (
   profile_id UUID NOT NULL REFERENCES learning_profiles(id) ON DELETE CASCADE,
   card_id TEXT NOT NULL REFERENCES catalog_cards(id) ON DELETE CASCADE,
