@@ -37,7 +37,7 @@ import {
   recordSessionAnswer,
   sessionComplete,
 } from "./lib/session";
-import { speakGerman } from "./lib/speech";
+import { preloadGermanAudio, speakGerman } from "./lib/speech";
 import {
   clearDatabase,
   createBackup,
@@ -372,8 +372,8 @@ function App() {
             onStartHard={() => startSession("hard", null)}
             onSelectCategory={setSelectedCategoryId}
             onFinish={finishSession}
-            onSpeak={(text) => {
-              if (!speakGerman(text)) setToast("Ta przeglądarka nie obsługuje wymowy.");
+            onSpeak={(cardId, text) => {
+              if (!speakGerman(cardId, text)) setToast("Ta przeglądarka nie obsługuje wymowy.");
             }}
             onGoToReviews={() => setTab("review")}
           />
@@ -395,8 +395,8 @@ function App() {
             onStartHard={() => startSession("hard", null)}
             onSelectCategory={setReviewCategoryId}
             onFinish={finishSession}
-            onSpeak={(text) => {
-              if (!speakGerman(text)) setToast("Ta przeglądarka nie obsługuje wymowy.");
+            onSpeak={(cardId, text) => {
+              if (!speakGerman(cardId, text)) setToast("Ta przeglądarka nie obsługuje wymowy.");
             }}
           />
         )}
@@ -466,7 +466,7 @@ interface SessionProps {
   ) => Flashcard | null;
   onNext: () => void;
   onFinish: () => void;
-  onSpeak: (text: string) => void;
+  onSpeak: (cardId: string, text: string) => void;
 }
 
 function FlashcardSession(props: SessionProps) {
@@ -497,6 +497,10 @@ function FlashcardSession(props: SessionProps) {
   const selectedOption = exercise.options.find((option) => option.cardId === selectedCardId);
   const correct = outcome?.evidence.correct ?? false;
   const germanLabel = card.article ? `${card.article} ${card.german}` : card.german;
+
+  useEffect(() => {
+    preloadGermanAudio(card.id);
+  }, [card.id]);
 
   function submitAnswer(
     rating: ReviewRating,
@@ -566,7 +570,7 @@ function FlashcardSession(props: SessionProps) {
 
   function playListeningPrompt() {
     if (!exercise.speechPrompt) return;
-    props.onSpeak(exercise.speechPrompt);
+    props.onSpeak(card.id, exercise.speechPrompt);
     window.setTimeout(() => inputRef.current?.focus(), 220);
   }
 
@@ -657,7 +661,7 @@ function FlashcardSession(props: SessionProps) {
               </button>
               <button
                 className="card-audio-button"
-                onClick={() => props.onSpeak(germanLabel)}
+                onClick={() => props.onSpeak(card.id, germanLabel)}
                 aria-label={`Odtwórz wymowę: ${card.german}`}
               >
                 <span aria-hidden="true">◖))</span>
@@ -699,7 +703,7 @@ function FlashcardSession(props: SessionProps) {
               {!isListening && exercise.answerLanguage === "pl" && (
                 <button
                   className="speak-button inline"
-                  onClick={() => props.onSpeak(exercise.prompt)}
+                  onClick={() => props.onSpeak(card.id, exercise.prompt)}
                   aria-label={`Odtwórz wymowę: ${exercise.prompt}`}
                 >
                   <span aria-hidden="true">◖))</span>
@@ -796,7 +800,7 @@ function FlashcardSession(props: SessionProps) {
             {(!isIntroduction && exercise.answerLanguage === "de") && (
               <button
                 className="feedback-speak"
-                onClick={() => props.onSpeak(germanLabel)}
+                onClick={() => props.onSpeak(card.id, germanLabel)}
                 aria-label={`Odtwórz wymowę: ${germanLabel}`}
               >
                 <span aria-hidden="true">◖))</span>

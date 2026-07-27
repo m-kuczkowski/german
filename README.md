@@ -27,7 +27,8 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 - kolekcja z wyszukiwaniem, filtrami, edycją i usuwaniem;
 - ręczne dodawanie własnych kart;
 - postępy, dzienna seria i statystyki poziomów;
-- wymowa `de-DE` przez Web Speech API;
+- naturalna wymowa wszystkich 3038 haseł głosem Thorsten (Piper), z systemowym
+  lektorem `de-DE` jako fallbackiem;
 - profil wybierany po imieniu bez rejestracji, zapamiętywany na urządzeniu;
 - zapis w IndexedDB, synchronizacja postępu imiennego w Neon oraz eksport i import kopii JSON;
 - jasny, ciemny i systemowy motyw;
@@ -56,7 +57,9 @@ Kolejne odpowiedzi aktualizują przegródkę, termin, serię, historię oraz zes
 - Neon Postgres dla katalogu 3038 kart i postępu oddzielonego według imienia;
 - IndexedDB jako pamięć lokalna i źródło działania offline;
 - service worker z dynamicznym zakresem dla Vercel i GitHub Pages;
-- Web Speech API do bezpłatnej wymowy `de-DE`.
+- 3038 jednorazowo wygenerowanych offline nagrań Piper, spakowanych do 64
+  niewielkich paczek WebM/Opus w publicznym Vercel Blob;
+- zwykły element HTML Audio do odtwarzania oraz Web Speech API jako fallback.
 
 Nie ma wywołań OpenAI ani Cloudflare w aplikacji produkcyjnej. Imię jest normalizowane
 bez rozróżniania wielkości liter, a jego wybór pozostaje zapisany lokalnie. Ponieważ
@@ -67,7 +70,7 @@ trafia adres bazy.
 
 - React 19 i TypeScript;
 - Vite;
-- Neon Serverless, natywne IndexedDB, service worker i Web Speech API;
+- Neon Serverless, Vercel Blob, natywne IndexedDB, service worker i Web Speech API;
 - Vitest oraz `fake-indexeddb`;
 - GitHub Actions i GitHub Pages.
 
@@ -109,6 +112,37 @@ node scripts/extract-anki-decks.mjs A2.apkg B1.apkg output.json
 Tłumaczenia i pary zdań kontekstowych są przygotowywane jednorazowo przez model AI, walidowane względem identyfikatorów źródłowych i dopiero wtedy zamieniane na statyczny plik TypeScript. Po wygenerowaniu wynik jest częścią repozytorium; aplikacja nie wykonuje żadnych zapytań do modelu.
 
 `scripts/curate-natural-cards.mjs` wykonuje powtarzalną, ręcznie zdefiniowaną korektę technicznych zapisów i wybranych tłumaczeń bez zmiany identyfikatorów kart.
+
+## Nagrania Thorsten
+
+Audio nie jest generowane podczas używania aplikacji. Skrypt
+`scripts/piper-audio-source.mjs` przygotowuje dokładnie 3038 tekstów z bieżącego
+katalogu, a `scripts/generate-piper-audio.py` jednorazowo syntezuje je lokalnie
+przez Piper i kompresuje kodekiem Opus w kontenerze WebM. Paczki mają stabilne
+nazwy, dzięki czemu mogą być długo buforowane przez CDN.
+
+```bash
+python -m pip install -r scripts/requirements-audio.txt
+npm run audio:source -- --output /tmp/german-piper-source.json
+python scripts/generate-piper-audio.py \
+  --source /tmp/german-piper-source.json \
+  --model /path/to/de_DE-thorsten-high.onnx \
+  --config /path/to/de_DE-thorsten-high.onnx.json \
+  --ffmpeg /path/to/ffmpeg \
+  --output /tmp/german-piper-audio
+npm run audio:upload -- --audio-dir /tmp/german-piper-audio
+```
+
+Ostatni krok wysyła 64 paczki i manifest do publicznego Vercel Blob oraz
+generuje `src/data/piperAudioManifest.ts`. Wymaga lokalnego
+`BLOB_READ_WRITE_TOKEN`; sekret nigdy nie trafia do kodu klienta.
+
+Użyty model to
+[`de_DE-thorsten-high`](https://huggingface.co/rhasspy/piper-voices/tree/main/de/de_DE/thorsten/high)
+z repozytorium `rhasspy/piper-voices`. Repozytorium modelu jest objęte licencją MIT, a karta
+modelu wskazuje zestaw głosowy Thorsten na licencji CC0. Zweryfikowane sumy MD5:
+`256505fe58fb8b9d6ed78b83f6b8a9d2` dla modelu ONNX oraz
+`e81686e00a9d825e2488ead660bec6fd` dla jego konfiguracji.
 
 ## Dane i prywatność
 

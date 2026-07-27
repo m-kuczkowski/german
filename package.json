@@ -17,6 +17,8 @@
     "db:validate": "node scripts/db-migrate-v2.mjs --validate",
     "test:api-integration": "node scripts/api-integration-smoke.mjs",
     "db:push": "node scripts/db-push.mjs",
+    "audio:source": "node scripts/piper-audio-source.mjs",
+    "audio:upload": "node scripts/upload-piper-audio.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -b --pretty false"
@@ -29,6 +31,7 @@
   "devDependencies": {
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "@vercel/blob": "^2.6.1",
     "@vitejs/plugin-react": "^5.1.0",
     "fake-indexeddb": "^6.2.4",
     "typescript": "^5.9.0",
