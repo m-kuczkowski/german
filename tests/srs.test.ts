@@ -67,6 +67,18 @@ describe("algorytm powtórek", () => {
     expect(result.reviewHistory.at(-1)?.correct).toBe(false);
   });
 
+  it("opisuje trudną poprawną odpowiedź prostym zdaniem", () => {
+    const result = reviewCard(
+      { ...starterCards[0], leitnerBox: 2 as const, stage: "known" as const },
+      "hard",
+      { mode: "type-pl-de", correct: true, score: 0.92 },
+      now,
+    );
+    expect(result.lastSchedulingReason).toBe(
+      "Poprawnie, ale z trudem. Karta zostaje w przegródce 2 i pojawi się wcześniej.",
+    );
+  });
+
   it("przegródka 5 wymaga wpisywania, serii i trzech różnych dni", () => {
     const card = {
       ...starterCards[0],

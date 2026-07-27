@@ -136,6 +136,25 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const viewport = window.visualViewport;
+    const updateViewportSize = () => {
+      const height = viewport?.height ?? window.innerHeight;
+      const offsetTop = viewport?.offsetTop ?? 0;
+      document.documentElement.style.setProperty("--visual-viewport-height", `${Math.round(height)}px`);
+      document.documentElement.style.setProperty("--visual-viewport-top", `${Math.round(offsetTop)}px`);
+    };
+    updateViewportSize();
+    viewport?.addEventListener("resize", updateViewportSize);
+    viewport?.addEventListener("scroll", updateViewportSize);
+    window.addEventListener("resize", updateViewportSize);
+    return () => {
+      viewport?.removeEventListener("resize", updateViewportSize);
+      viewport?.removeEventListener("scroll", updateViewportSize);
+      window.removeEventListener("resize", updateViewportSize);
+    };
+  }, []);
+
+  useEffect(() => {
     document.documentElement.dataset.theme = meta.theme;
   }, [meta.theme]);
 
@@ -162,6 +181,11 @@ function App() {
     ? cards.find((card) => card.id === activeItem.id)
     : undefined;
   const complete = sessionComplete(session);
+  const lessonVisible = Boolean(
+    session &&
+    ((tab === "learn" && session.mode === "learn") ||
+      (tab === "review" && session.mode !== "learn")),
+  );
 
   useEffect(() => {
     const selected = categories.find((category) => category.id === selectedCategoryId);
@@ -250,7 +274,7 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${lessonVisible ? "lesson-active" : ""}`}>
       {!online && (
         <div className="offline-banner" role="status">
           Offline · uczysz się lokalnie, synchronizacja wróci z internetem
@@ -531,7 +555,9 @@ function FlashcardSession(props: SessionProps) {
                 <span className="flip-card-inner">
                   <span className="flip-face flip-front">
                     <small>NIEMIECKI</small>
-                    <strong lang="de">{germanLabel}</strong>
+                    <strong className={germanLabel.length > 17 ? "long-word" : undefined} lang="de">
+                      {germanLabel}
+                    </strong>
                     {card.plural && <span>Liczba mnoga: die {card.plural}</span>}
                   </span>
                   <span className="flip-face flip-back">
@@ -555,13 +581,13 @@ function FlashcardSession(props: SessionProps) {
             </button>
             <div className="rating-actions persistent-ratings" role="group" aria-label="Jak dobrze znasz to słowo?">
               <button className="rating-again" onClick={() => rateIntroduction("again")} disabled={Boolean(outcome)}>
-                <strong>Nie znam</strong><small>pokaż znów za chwilę</small>
+                <strong>Nie znam</strong><small>ponownie za 3–5 fiszek</small>
               </button>
               <button className="rating-hard" onClick={() => rateIntroduction("hard")} disabled={Boolean(outcome)}>
-                <strong>Niepewnie</strong><small>daj łatwe pytanie</small>
+                <strong>Niepewnie</strong><small>3 odpowiedzi za 6–8 fiszek</small>
               </button>
               <button className="rating-good" onClick={() => rateIntroduction("good")} disabled={Boolean(outcome)}>
-                <strong>Znam</strong><small>sprawdź bez podpowiedzi</small>
+                <strong>Znam</strong><small>wpisywanie za 8–11 fiszek</small>
               </button>
             </div>
           </div>
@@ -628,6 +654,7 @@ function FlashcardSession(props: SessionProps) {
                 <button
                   className="typing-submit"
                   type="submit"
+                  onPointerDown={(event) => event.preventDefault()}
                   disabled={!typedAnswer.trim()}
                   aria-label="Sprawdź odpowiedź"
                 >
@@ -651,7 +678,6 @@ function FlashcardSession(props: SessionProps) {
                   Zgodność odpowiedzi: {Math.round(outcome.evidence.score * 100)}%
                 </small>
               )}
-              {!isIntroduction && <p>Poprawna odpowiedź: <b lang={exercise.answerLanguage}>{outcome.correctAnswer}</b></p>}
               <div className="result-word-pair">
                 <p lang="de"><b>{germanLabel}</b>{card.plural ? ` · die ${card.plural}` : ""}</p>
                 <p>{card.polish}</p>

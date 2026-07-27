@@ -117,6 +117,47 @@ select {
   margin: 0 auto;
 }
 
+.app-shell.lesson-active {
+  position: fixed;
+  z-index: 1;
+  top: var(--visual-viewport-top, 0);
+  left: 50%;
+  display: flex;
+  width: min(100%, 740px);
+  height: var(--visual-viewport-height, 100dvh);
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateX(-50%);
+  background: var(--bg);
+}
+
+body:has(.lesson-active) {
+  overflow: hidden;
+}
+
+.lesson-active .topbar {
+  position: relative;
+  top: auto;
+  flex: 0 0 auto;
+}
+
+.lesson-active .content {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  padding: 9px 16px 8px;
+}
+
+.lesson-active .bottom-nav {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  width: 100%;
+  flex: 0 0 auto;
+  transform: none;
+}
+
 .offline-banner {
   padding: calc(7px + env(safe-area-inset-top)) 16px 7px;
   color: #704b12;
@@ -615,6 +656,18 @@ h1 em {
   padding-top: 2px;
 }
 
+.lesson-active .session-wrap {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.lesson-active .session-progress,
+.lesson-active .progress-track {
+  flex: 0 0 auto;
+}
+
 .learning-path {
   display: grid;
   gap: 10px;
@@ -707,6 +760,24 @@ h1 em {
   box-shadow: var(--shadow);
 }
 
+.lesson-active .exercise-card {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  margin-top: 9px;
+  padding: 14px 16px;
+  overflow: hidden;
+  border-radius: 24px 24px 8px 24px;
+}
+
+.lesson-active .introduction-card {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
 .exercise-meta {
   display: flex;
   align-items: center;
@@ -734,6 +805,11 @@ h1 em {
   font-size: 13px;
   font-weight: 750;
   text-align: center;
+}
+
+.lesson-active .exercise-instruction {
+  flex: 0 0 auto;
+  margin: 14px 0 6px;
 }
 
 .introduction-answer {
@@ -787,8 +863,9 @@ h1 em {
 
 .rating-actions small {
   color: var(--muted);
-  font-size: 8px;
+  font-size: 9px;
   line-height: 1.2;
+  text-wrap: balance;
 }
 
 .rating-actions .rating-again {
@@ -816,6 +893,12 @@ h1 em {
   text-align: center;
 }
 
+.lesson-active .exercise-prompt {
+  min-height: 76px;
+  flex: 0 1 auto;
+  padding: 4px 3px 10px;
+}
+
 .exercise-prompt h2 {
   max-width: 100%;
   font-size: clamp(32px, 9.5vw, 52px);
@@ -834,6 +917,13 @@ h1 em {
   gap: 11px;
 }
 
+.lesson-active .choice-list {
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-rows: repeat(3, minmax(52px, 1fr));
+  gap: 8px;
+}
+
 .choice-list button {
   display: grid;
   width: 100%;
@@ -847,6 +937,11 @@ h1 em {
   border-radius: 17px;
   text-align: left;
   transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.lesson-active .choice-list button {
+  min-height: 52px;
+  padding: 8px 12px;
 }
 
 .choice-list button:not(:disabled):active {
@@ -891,6 +986,10 @@ h1 em {
 .typing-exercise {
   display: grid;
   gap: 13px;
+}
+
+.lesson-active .typing-exercise {
+  flex: 0 0 auto;
 }
 
 .typing-row {
@@ -941,6 +1040,23 @@ h1 em {
   margin-top: 17px;
   padding: 15px;
   border-radius: 17px;
+}
+
+.lesson-active .has-outcome .exercise-card > .exercise-instruction,
+.lesson-active .has-outcome .exercise-card > .exercise-prompt,
+.lesson-active .has-outcome .exercise-card > .choice-list,
+.lesson-active .has-outcome .exercise-card > .typing-exercise {
+  display: none;
+}
+
+.lesson-active .exercise-feedback {
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 12px;
+  overflow: hidden;
 }
 
 .exercise-feedback.correct {
@@ -1039,6 +1155,15 @@ h1 em {
   background: linear-gradient(transparent, var(--bg) 24%);
 }
 
+.lesson-active .next-action-bar {
+  position: relative;
+  bottom: auto;
+  flex: 0 0 auto;
+  margin: 7px 0 0;
+  padding: 0;
+  background: transparent;
+}
+
 .next-action-bar .primary-button {
   min-height: 58px;
   box-shadow: 0 12px 28px rgb(25 78 61 / 22%);
@@ -1050,6 +1175,12 @@ h1 em {
   perspective: 1000px;
 }
 
+.lesson-active .flip-card-shell {
+  min-height: 0;
+  flex: 1 1 auto;
+  margin-top: 5px;
+}
+
 .flip-card-button {
   display: block;
   width: 100%;
@@ -1058,6 +1189,13 @@ h1 em {
   background: transparent;
   border-radius: 24px;
   text-align: center;
+}
+
+.lesson-active .flip-card-button,
+.lesson-active .flip-card-inner,
+.lesson-active .flip-face {
+  height: 100%;
+  min-height: 0;
 }
 
 .flip-card-inner {
@@ -1105,6 +1243,12 @@ h1 em {
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(35px, 10.5vw, 56px);
   line-height: 1.06;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.flip-face > strong.long-word {
+  font-size: clamp(24px, 7.2vw, 38px);
 }
 
 .flip-face > span {
@@ -1606,6 +1750,13 @@ h1 em {
   text-align: center;
 }
 
+.lesson-active .completion-card {
+  max-height: 100%;
+  margin: auto 0;
+  padding: 24px 20px;
+  overflow: hidden;
+}
+
 .completion-icon {
   display: grid;
   width: 68px;
@@ -1618,14 +1769,34 @@ h1 em {
   font-size: 30px;
 }
 
+.lesson-active .completion-icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 13px;
+  font-size: 25px;
+}
+
 .completion-card h2 {
   font-size: 48px;
+}
+
+.lesson-active .completion-card h2 {
+  font-size: clamp(38px, 11vw, 46px);
 }
 
 .completion-card > p:not(.eyebrow) {
   margin: 10px auto 22px;
   color: var(--muted);
   line-height: 1.55;
+}
+
+.lesson-active .completion-card > p:not(.eyebrow) {
+  margin: 8px auto 14px;
+  line-height: 1.4;
+}
+
+.lesson-active .lesson-summary {
+  margin: 14px 0 6px;
 }
 
 .source-note {
@@ -2135,7 +2306,7 @@ h1 em {
   }
 
   .rating-actions small {
-    font-size: 7px;
+    font-size: 8px;
   }
 
   .form-grid {
@@ -2144,6 +2315,72 @@ h1 em {
 
   .form-grid .full {
     grid-column: auto;
+  }
+}
+
+@media (max-height: 760px) {
+  .lesson-active .topbar {
+    min-height: calc(60px + env(safe-area-inset-top));
+    padding-top: calc(9px + env(safe-area-inset-top));
+    padding-bottom: 7px;
+  }
+
+  .lesson-active .brand-mark {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+    font-size: 20px;
+  }
+
+  .lesson-active .bottom-nav button {
+    min-height: 49px;
+  }
+
+  .lesson-active .exercise-card {
+    padding: 12px 14px;
+  }
+
+  .lesson-active .exercise-instruction {
+    margin-top: 9px;
+  }
+
+  .lesson-active .flip-face {
+    gap: 8px;
+    padding: 18px 16px;
+  }
+
+  .lesson-active .flip-toggle {
+    min-height: 38px;
+    margin-top: 3px;
+  }
+
+  .lesson-active .rating-actions button {
+    min-height: 58px;
+    padding: 6px 4px;
+  }
+
+  .lesson-active .exercise-feedback {
+    margin-top: 7px;
+    padding: 10px;
+  }
+
+  .lesson-active .result-word-pair {
+    margin-top: 7px;
+    padding: 7px 0;
+  }
+
+  .lesson-active .context-example {
+    margin-top: 7px;
+    padding-top: 7px;
+  }
+
+  .lesson-active .schedule-result {
+    margin-top: 8px;
+    padding: 8px 10px;
+  }
+
+  .lesson-active .next-action-bar .primary-button {
+    min-height: 52px;
   }
 }
 
@@ -2170,6 +2407,36 @@ h1 em {
 
   .app-shell:has(.typing-exercise input:focus) .content {
     padding-bottom: calc(28px + env(safe-area-inset-bottom));
+  }
+
+  .lesson-active:has(.typing-exercise input:focus) .topbar {
+    display: none;
+  }
+
+  .lesson-active:has(.typing-exercise input:focus) .content {
+    padding: 6px 14px;
+  }
+
+  .lesson-active:has(.typing-exercise input:focus) .exercise-card {
+    margin-top: 6px;
+    padding: 10px 13px;
+  }
+
+  .lesson-active:has(.typing-exercise input:focus) .exercise-instruction {
+    margin-top: 7px;
+  }
+
+  .lesson-active:has(.typing-exercise input:focus) .exercise-prompt {
+    min-height: 64px;
+    padding-bottom: 6px;
+  }
+
+  .lesson-active:has(.typing-exercise input:focus) .typing-exercise {
+    gap: 6px;
+  }
+
+  .lesson-active:has(.typing-exercise input:focus) .typing-exercise input {
+    min-height: 52px;
   }
 }
 

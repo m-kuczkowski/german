@@ -163,8 +163,10 @@ export function reviewCard(
     const intervalDays = Math.max(1, Math.ceil(LEITNER_INTERVALS[toBox] / 2));
     const dueAt = new Date(now.getTime() + intervalDays * DAY_MS).toISOString();
     const reason = evidence.mode === "introduction"
-      ? "Niepewna znajomość — pozostaje w przegródce 1."
-      : `Poprawnie, ale z trudem — ${toBox < card.leitnerBox ? `cofnięcie do przegródki ${toBox}` : `pozostaje w przegródce ${toBox}`} i krótszy odstęp.`;
+      ? "Jeszcze niepewnie. Karta zostaje w przegródce 1 i wróci wcześniej."
+      : toBox < card.leitnerBox
+        ? `Poprawnie, ale z trudem. Karta wraca do przegródki ${toBox} i pojawi się wcześniej.`
+        : `Poprawnie, ale z trudem. Karta zostaje w przegródce ${toBox} i pojawi się wcześniej.`;
     const history = historyEntry(card, rating, evidence, toBox, dueAt, reason, now);
     return {
       ...card,
