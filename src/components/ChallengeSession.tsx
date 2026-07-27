@@ -188,6 +188,11 @@ export function ChallengeSession({
                       ref={inputRef}
                       value={typedAnswer}
                       onChange={(event) => setTypedAnswer(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key !== "Enter") return;
+                        event.preventDefault();
+                        submit(typedAnswer);
+                      }}
                       placeholder={exercise.inputPlaceholder}
                       autoCapitalize="none"
                       autoComplete="off"
