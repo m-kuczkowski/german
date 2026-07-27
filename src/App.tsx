@@ -636,7 +636,13 @@ function FlashcardSession(props: SessionProps) {
                 <span className="flip-card-inner">
                   <span className="flip-face flip-front">
                     <small>NIEMIECKI</small>
-                    <strong className={germanLabel.length > 17 ? "long-word" : undefined} lang="de">
+                    <strong
+                      className={[
+                        germanLabel.length > 17 ? "long-word" : "",
+                        !/\s/.test(card.german) && card.german.length > 10 ? "long-single-word" : "",
+                      ].filter(Boolean).join(" ") || undefined}
+                      lang="de"
+                    >
                       {germanLabel}
                     </strong>
                     {card.plural && <span>Liczba mnoga: die {card.plural}</span>}

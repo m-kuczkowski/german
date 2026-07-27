@@ -10,6 +10,18 @@ describe("kolekcja fiszek", () => {
     expect(starterCards.filter((card) => card.level === "B1")).toHaveLength(1182);
   });
 
+  it("nie pokazuje technicznych separatorów z talii źródłowej", () => {
+    expect(starterCards.filter((card) => /[|/]/.test(card.german))).toHaveLength(0);
+    expect(starterCards.filter((card) => /[|/]/.test(card.polish))).toHaveLength(0);
+    expect(starterCards.find((card) => card.id === "nicos-a2-d2c4975b3456"))
+      .toMatchObject({ german: "zurückkommen", polish: "wrócić; wracać" });
+    expect(starterCards.find((card) => card.id === "nicos-a2-3e7af31ad03f"))
+      .toMatchObject({
+        german: "vergessen (etwas oder jemanden)",
+        polish: "zapomnieć o czymś lub o kimś",
+      });
+  });
+
   it("wykrywa duplikat niezależnie od wielkości liter i rodzajnika", () => {
     expect(isDuplicate({ german: "das ABITUR" }, starterCards)).toBe(true);
   });

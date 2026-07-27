@@ -86,6 +86,28 @@ describe("ćwiczenia językowe", () => {
     });
   });
 
+  it("ocenia naturalne hasła z poprawionego katalogu bez wskazówek gramatycznych", () => {
+    const vergessen = starterCards.find((card) => card.id === "nicos-a2-3e7af31ad03f")!;
+    const zuhoeren = starterCards.find((card) => card.id === "nicos-a2-7ecd4eacc8a5")!;
+    const vergessenExercise = createExercise(
+      vergessen,
+      starterCards,
+      0,
+      "type-pl-de",
+    );
+    const zuhoerenExercise = createExercise(
+      zuhoeren,
+      starterCards,
+      0,
+      "type-pl-de",
+    );
+
+    expect(evaluateTypedAnswer("vergessen", vergessenExercise.acceptedAnswers))
+      .toMatchObject({ correct: true, score: 1 });
+    expect(evaluateTypedAnswer("zuhören", zuhoerenExercise.acceptedAnswers))
+      .toMatchObject({ correct: true, score: 1 });
+  });
+
   it("ćwiczy rodzajnik osobno dla poznanego rzeczownika", () => {
     const noun = starterCards.find((card) => card.article);
     expect(noun).toBeDefined();

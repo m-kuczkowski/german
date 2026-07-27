@@ -41,6 +41,7 @@ Statyczny zestaw powstał z dwóch publicznych talii AnkiWeb:
 - [Nicos Weg B1 Deutsch Welle (Deutsch)](https://ankiweb.net/shared/info/492301569) — 1182 karty.
 
 Aplikacja nie kopiuje plików audio, obrazów ani szablonów Anki. Przechowuje tekst haseł, polskie tłumaczenia przygotowane jednorazowo przez AI oraz odnośniki do oryginalnych talii.
+Techniczne separatory z talii (`|`, `/`) są usuwane przed publikacją. Rekcja pozostaje jako opcjonalna wskazówka w nawiasie, więc użytkownik wpisuje naturalne hasło, np. `vergessen`, a nie `etwas/jemanden vergessen`.
 
 ## Jak działa nauka
 
@@ -106,6 +107,8 @@ node scripts/extract-anki-decks.mjs A2.apkg B1.apkg output.json
 ```
 
 Tłumaczenia i pary zdań kontekstowych są przygotowywane jednorazowo przez model AI, walidowane względem identyfikatorów źródłowych i dopiero wtedy zamieniane na statyczny plik TypeScript. Po wygenerowaniu wynik jest częścią repozytorium; aplikacja nie wykonuje żadnych zapytań do modelu.
+
+`scripts/curate-natural-cards.mjs` wykonuje powtarzalną, ręcznie zdefiniowaną korektę technicznych zapisów i wybranych tłumaczeń bez zmiany identyfikatorów kart.
 
 ## Dane i prywatność
 
