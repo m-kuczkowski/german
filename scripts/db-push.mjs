@@ -1,6 +1,12 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { neon } from "@neondatabase/serverless";
+import {
+  MIGRATION_ID,
+  migrationStatements,
+  validationPassed,
+  validationQuery,
+} from "./db-schema-v2.mjs";
 
 function loadEnv(name) {
   const envFile = process.env.WORTSCHATZ_ENV_FILE || ".env.local";
@@ -52,4 +58,17 @@ await sql.query(
   [JSON.stringify(payload)],
 );
 
-console.log(JSON.stringify({ cards: cards.length, status: "catalog-synchronized" }));
+await sql.transaction((txn) => [
+  ...migrationStatements.map((statement) => txn.query(statement)),
+  txn.query(validationQuery),
+]);
+const validation = (await sql.query(validationQuery))[0];
+if (!validation || !validationPassed(validation)) {
+  throw new Error(`Walidacja schematu nie powiodła się: ${JSON.stringify(validation ?? {})}`);
+}
+
+console.log(JSON.stringify({
+  cards: cards.length,
+  migration: MIGRATION_ID,
+  status: "catalog-synchronized",
+}));

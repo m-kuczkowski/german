@@ -1,5 +1,6 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
+import { mapCatalogRow, mapProfileMeta, mapProgressRows } from "./learning-mappers.js";
 
 const progressKeys = [
   "repetitions",
@@ -105,10 +106,15 @@ async function deviceProfileForRequest(req, sql) {
   const id = req.headers["x-learning-device-id"];
   const token = req.headers["x-learning-device-token"];
   if (typeof id === "string" && typeof token === "string") {
-    const rows = await sql.query("SELECT token_hash, meta FROM learning_profiles WHERE id = $1", [id]);
+    const rows = await sql.query(
+      `SELECT token_hash, meta, streak, last_study_date, completed_today,
+              total_reviews, theme, content_version, active_session
+       FROM learning_profiles WHERE id = $1`,
+      [id],
+    );
     if (rows.length) {
       if (rows[0].token_hash !== hashToken(token)) return { denied: true };
-      return { id, token, meta: rows[0].meta ?? {}, created: false, authenticated: true };
+      return { id, token, meta: mapProfileMeta(rows[0]), created: false, authenticated: true };
     }
   }
 
@@ -123,13 +129,15 @@ async function profileForRequest(req, sql) {
   if (!requestedName) return deviceProfileForRequest(req, sql);
 
   const namedRows = await sql.query(
-    "SELECT id, meta, display_name FROM learning_profiles WHERE name_key = $1",
+    `SELECT id, meta, display_name, streak, last_study_date, completed_today,
+            total_reviews, theme, content_version, active_session
+     FROM learning_profiles WHERE name_key = $1`,
     [requestedName.nameKey],
   );
   if (namedRows.length) {
     return {
       id: namedRows[0].id,
-      meta: namedRows[0].meta ?? {},
+      meta: mapProfileMeta(namedRows[0]),
       displayName: namedRows[0].display_name,
       created: false,
     };
@@ -139,7 +147,9 @@ async function profileForRequest(req, sql) {
   const deviceToken = req.headers["x-learning-device-token"];
   if (typeof deviceId === "string" && typeof deviceToken === "string") {
     const deviceRows = await sql.query(
-      "SELECT token_hash, meta, name_key FROM learning_profiles WHERE id = $1::uuid",
+      `SELECT token_hash, meta, name_key, streak, last_study_date, completed_today,
+              total_reviews, theme, content_version, active_session
+       FROM learning_profiles WHERE id = $1::uuid`,
       [deviceId],
     );
     if (
@@ -151,14 +161,15 @@ async function profileForRequest(req, sql) {
         `UPDATE learning_profiles
          SET display_name = $2, name_key = $3, updated_at = NOW()
          WHERE id = $1::uuid AND name_key IS NULL
-         RETURNING id, meta, display_name`,
+         RETURNING id, meta, display_name, streak, last_study_date, completed_today,
+                   total_reviews, theme, content_version, active_session`,
         [deviceId, requestedName.displayName, requestedName.nameKey],
       );
       if (claimed.length) {
         return {
           id: claimed[0].id,
           token: deviceToken,
-          meta: claimed[0].meta ?? {},
+          meta: mapProfileMeta(claimed[0]),
           displayName: claimed[0].display_name,
           created: false,
         };
@@ -175,13 +186,15 @@ async function profileForRequest(req, sql) {
     [newId, hashToken(newToken), requestedName.displayName, requestedName.nameKey],
   );
   const createdRows = await sql.query(
-    "SELECT id, meta, display_name FROM learning_profiles WHERE name_key = $1",
+    `SELECT id, meta, display_name, streak, last_study_date, completed_today,
+            total_reviews, theme, content_version, active_session
+     FROM learning_profiles WHERE name_key = $1`,
     [requestedName.nameKey],
   );
   return {
     id: createdRows[0].id,
     token: createdRows[0].id === newId ? newToken : undefined,
-    meta: createdRows[0].meta ?? {},
+    meta: mapProfileMeta(createdRows[0]),
     displayName: createdRows[0].display_name,
     created: createdRows[0].id === newId,
   };
@@ -198,16 +211,44 @@ export default async function handler(req, res) {
     if (profile.denied) return res.status(401).json({ error: "Nieprawidłowy identyfikator urządzenia." });
 
     if (req.method === "GET") {
-      const [cards, progress] = await Promise.all([
-        sql.query("SELECT content FROM catalog_cards ORDER BY position"),
-        sql.query("SELECT card_id, data FROM card_progress WHERE profile_id = $1::uuid", [profile.id]),
+      const [cards, categories, progress, history] = await Promise.all([
+        sql.query(`
+          SELECT
+            card.id, card.german, card.polish, card.article, card.plural,
+            card.example_german, card.example_polish, card.category_id, card.level,
+            card.source_label, card.source_url, card.source_gloss, card.source_language
+          FROM catalog_cards card
+          ORDER BY card.position
+        `),
+        sql.query("SELECT id, display_name FROM categories"),
+        sql.query(`
+          SELECT
+            card_id, data, repetitions, interval_days, ease, due_at, learned,
+            lapses, stage, correct_streak, successful_modes, first_active_recall_at,
+            last_active_recall_at, last_reviewed_at, typed_attempts, typed_successes,
+            leitner_box, last_scheduling_reason, successful_review_days
+          FROM card_progress
+          WHERE profile_id = $1::uuid
+        `, [profile.id]),
+        sql.query(`
+          SELECT
+            card_id, event_id, reviewed_at, mode, rating, correct, score,
+            from_box, to_box, scheduled_for, reason
+          FROM card_review_history
+          WHERE profile_id = $1::uuid
+          ORDER BY card_id, sequence_no
+        `, [profile.id]),
       ]);
       if (!cards.length) return res.status(503).json({ error: "Katalog kart jest jeszcze przygotowywany." });
+      const categoryById = new Map(categories.map((row) => [row.id, row.display_name]));
       return res.status(200).json({
         device: profile.created ? { id: profile.id, token: profile.token } : undefined,
         profile: profile.displayName ? { name: profile.displayName } : undefined,
-        cards: cards.map((row) => row.content),
-        progress: progress.map((row) => ({ id: row.card_id, ...row.data })),
+        cards: cards.map((row) => mapCatalogRow({
+          ...row,
+          category: categoryById.get(row.category_id),
+        })),
+        progress: mapProgressRows(progress, history),
         meta: profile.meta,
       });
     }
@@ -216,7 +257,12 @@ export default async function handler(req, res) {
       const body = readBody(req);
       const progress = progressPayload(body.progress);
       const meta = body.meta && typeof body.meta === "object" ? body.meta : {};
-      await sql.query(
+      await sql.transaction((txn) => [
+        txn.query(
+          "DELETE FROM card_review_history WHERE profile_id = $1::uuid",
+          [profile.id],
+        ),
+        txn.query(
         `WITH entries AS (
            SELECT entry FROM jsonb_array_elements($2::jsonb) AS entry
          ),
@@ -226,15 +272,113 @@ export default async function handler(req, res) {
              AND NOT EXISTS (
                SELECT 1 FROM entries WHERE entries.entry->>'id' = saved.card_id
              )
+           RETURNING 1
          )
-         INSERT INTO card_progress (profile_id, card_id, data)
-         SELECT $1::uuid, entry->>'id', entry - 'id'
+         INSERT INTO card_progress (
+           profile_id, card_id, data, repetitions, interval_days, ease, due_at,
+           learned, lapses, stage, correct_streak, successful_modes,
+           first_active_recall_at, last_active_recall_at, last_reviewed_at,
+           typed_attempts, typed_successes, leitner_box, last_scheduling_reason,
+           successful_review_days
+         )
+         SELECT
+           $1::uuid,
+           entry->>'id',
+           entry - 'id',
+           (entry->>'repetitions')::integer,
+           (entry->>'intervalDays')::integer,
+           (entry->>'ease')::numeric,
+           (entry->>'dueAt')::timestamptz,
+           (entry->>'learned')::boolean,
+           (entry->>'lapses')::integer,
+           entry->>'stage',
+           (entry->>'correctStreak')::integer,
+           ARRAY(SELECT jsonb_array_elements_text(entry->'successfulModes')),
+           NULLIF(entry->>'firstActiveRecallAt', '')::timestamptz,
+           NULLIF(entry->>'lastActiveRecallAt', '')::timestamptz,
+           NULLIF(entry->>'lastReviewedAt', '')::timestamptz,
+           (entry->>'typedAttempts')::integer,
+           (entry->>'typedSuccesses')::integer,
+           (entry->>'leitnerBox')::smallint,
+           entry->>'lastSchedulingReason',
+           ARRAY(
+             SELECT value::date
+             FROM jsonb_array_elements_text(entry->'successfulReviewDays') value
+           )
          FROM entries
          ON CONFLICT (profile_id, card_id)
-         DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
+         DO UPDATE SET
+           data = EXCLUDED.data,
+           repetitions = EXCLUDED.repetitions,
+           interval_days = EXCLUDED.interval_days,
+           ease = EXCLUDED.ease,
+           due_at = EXCLUDED.due_at,
+           learned = EXCLUDED.learned,
+           lapses = EXCLUDED.lapses,
+           stage = EXCLUDED.stage,
+           correct_streak = EXCLUDED.correct_streak,
+           successful_modes = EXCLUDED.successful_modes,
+           first_active_recall_at = EXCLUDED.first_active_recall_at,
+           last_active_recall_at = EXCLUDED.last_active_recall_at,
+           last_reviewed_at = EXCLUDED.last_reviewed_at,
+           typed_attempts = EXCLUDED.typed_attempts,
+           typed_successes = EXCLUDED.typed_successes,
+           leitner_box = EXCLUDED.leitner_box,
+           last_scheduling_reason = EXCLUDED.last_scheduling_reason,
+           successful_review_days = EXCLUDED.successful_review_days,
+           updated_at = NOW()`,
         [profile.id, JSON.stringify(progress)],
-      );
-      await sql.query("UPDATE learning_profiles SET meta = $2::jsonb, updated_at = NOW() WHERE id = $1::uuid", [profile.id, JSON.stringify(meta)]);
+        ),
+        txn.query(
+          `WITH entries AS (
+             SELECT entry FROM jsonb_array_elements($2::jsonb) AS entry
+           )
+           INSERT INTO card_review_history (
+             profile_id, card_id, event_id, sequence_no, reviewed_at, mode, rating,
+             correct, score, from_box, to_box, scheduled_for, reason
+           )
+           SELECT
+             $1::uuid,
+             entry->>'id',
+             event->>'id',
+             history.ordinality::integer,
+             (event->>'reviewedAt')::timestamptz,
+             event->>'mode',
+             event->>'rating',
+             (event->>'correct')::boolean,
+             NULLIF(event->>'score', '')::numeric,
+             (event->>'fromBox')::smallint,
+             (event->>'toBox')::smallint,
+             (event->>'scheduledFor')::timestamptz,
+             event->>'reason'
+           FROM entries
+           CROSS JOIN LATERAL jsonb_array_elements(entries.entry->'reviewHistory')
+             WITH ORDINALITY AS history(event, ordinality)`,
+          [profile.id, JSON.stringify(progress)],
+        ),
+        txn.query(
+          `UPDATE learning_profiles
+           SET
+             meta = $2::jsonb,
+             streak = CASE WHEN $2::jsonb ? 'streak'
+               THEN ($2::jsonb->>'streak')::integer ELSE NULL END,
+             last_study_date = CASE
+               WHEN $2::jsonb->>'lastStudyDate' ~ '^\\d{4}-\\d{2}-\\d{2}$'
+               THEN ($2::jsonb->>'lastStudyDate')::date ELSE NULL END,
+             completed_today = CASE WHEN $2::jsonb ? 'completedToday'
+               THEN ($2::jsonb->>'completedToday')::integer ELSE NULL END,
+             total_reviews = CASE WHEN $2::jsonb ? 'totalReviews'
+               THEN ($2::jsonb->>'totalReviews')::integer ELSE NULL END,
+             theme = $2::jsonb->>'theme',
+             content_version = CASE WHEN $2::jsonb ? 'contentVersion'
+               THEN ($2::jsonb->>'contentVersion')::integer ELSE NULL END,
+             active_session = CASE WHEN $2::jsonb ? 'activeSession'
+               THEN $2::jsonb->'activeSession' ELSE NULL END,
+             updated_at = NOW()
+           WHERE id = $1::uuid`,
+          [profile.id, JSON.stringify(meta)],
+        ),
+      ]);
       return res.status(204).end();
     }
 
