@@ -9,6 +9,22 @@ export type ExerciseMode =
   | "type-de-pl"
   | "type-pl-de"
   | "type-listen-de";
+export type ChallengeType = "article" | "listening" | "writing" | "meaning" | "mixed";
+export type ChallengeSkill = "article" | "listening" | "writing" | "meaning";
+export type ChallengeExerciseMode =
+  | "choice-article"
+  | "type-listen-de"
+  | "type-pl-de"
+  | "choice-de-pl";
+
+export interface ChallengeSkillProgress {
+  attempts: number;
+  successes: number;
+  lastPracticedAt: string;
+  needsWork: boolean;
+}
+
+export type ChallengeStats = Partial<Record<ChallengeSkill, ChallengeSkillProgress>>;
 
 export interface ReviewEvidence {
   mode: "introduction" | ExerciseMode;
@@ -66,6 +82,7 @@ export interface Flashcard extends CardContent {
   reviewHistory: ReviewHistoryEntry[];
   lastSchedulingReason: string;
   successfulReviewDays: string[];
+  challengeStats: ChallengeStats;
 }
 
 export interface SessionItem {
@@ -101,6 +118,35 @@ export interface SessionAnswer {
   recordedAt: string;
 }
 
+export interface ChallengeItem {
+  cardId: string;
+  mode: ChallengeExerciseMode;
+}
+
+export interface ChallengeAnswer {
+  cardId: string;
+  mode: ChallengeExerciseMode;
+  answerValue: string;
+  correct: boolean;
+  score: number;
+  answeredAt: string;
+}
+
+export interface ChallengeSession {
+  version: 1;
+  type: ChallengeType;
+  requestedCount: number;
+  queue: ChallengeItem[];
+  index: number;
+  startedAt: string;
+  updatedAt: string;
+  correct: number;
+  mistakes: number;
+  answers: ChallengeAnswer[];
+  pendingAnswer: ChallengeAnswer | null;
+  retryOf: string | null;
+}
+
 export interface LearningMeta {
   streak: number;
   lastStudyDate: string | null;
@@ -109,6 +155,8 @@ export interface LearningMeta {
   theme: "system" | "light" | "dark";
   contentVersion: number;
   activeSession: LearningSession | null;
+  activeChallenge: ChallengeSession | null;
+  challengeUpdatedAt: string | null;
 }
 
 export interface BackupFile {
@@ -118,4 +166,10 @@ export interface BackupFile {
   meta: LearningMeta;
 }
 
-export type TabId = "learn" | "review" | "leitner" | "collection" | "settings";
+export type TabId =
+  | "learn"
+  | "review"
+  | "challenges"
+  | "leitner"
+  | "collection"
+  | "settings";

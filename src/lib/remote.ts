@@ -1,5 +1,6 @@
 import { toFlashcard, withLearningDefaults } from "./cards";
 import { withMetaDefaults } from "./meta";
+import { mergeChallengeStats } from "./challenges";
 import type { CardContent, Flashcard, LearningMeta } from "../types";
 
 const DEVICE_KEY = "wortschatz-device";
@@ -66,10 +67,28 @@ export function hydrateRemoteState(
         (remoteProgress?.repetitions ?? 0) > local.repetitions
       );
     const newestProgress = remoteIsNewer ? remoteProgress : local;
-    return withLearningDefaults({ ...local, ...content, ...newestProgress } as Flashcard);
+    const challengeStats = mergeChallengeStats(
+      local.challengeStats,
+      remoteProgress?.challengeStats ?? {},
+    );
+    return withLearningDefaults({
+      ...local,
+      ...content,
+      ...newestProgress,
+      challengeStats,
+    } as Flashcard);
   });
   const personalCards = localCards.filter((card) => card.source !== "anki");
   const remoteMeta = withMetaDefaults(remote.meta);
+  const localChallengeTime = new Date(
+    localMeta.challengeUpdatedAt ?? localMeta.activeChallenge?.updatedAt ?? 0,
+  ).getTime();
+  const remoteChallengeTime = new Date(
+    remoteMeta.challengeUpdatedAt ?? remoteMeta.activeChallenge?.updatedAt ?? 0,
+  ).getTime();
+  const newestChallengeMeta = remoteChallengeTime > localChallengeTime
+    ? remoteMeta
+    : localMeta;
   const meta = withMetaDefaults({
     ...remoteMeta,
     ...localMeta,
@@ -81,6 +100,8 @@ export function hydrateRemoteState(
       .sort()
       .at(-1) ?? null,
     activeSession: localMeta.activeSession ?? remoteMeta.activeSession,
+    activeChallenge: newestChallengeMeta.activeChallenge,
+    challengeUpdatedAt: newestChallengeMeta.challengeUpdatedAt,
   });
   return {
     cards: [...catalogCards, ...personalCards],
@@ -127,6 +148,7 @@ export async function saveRemoteState(
       reviewHistory,
       lastSchedulingReason,
       successfulReviewDays,
+      challengeStats,
     }) => ({
       id,
       repetitions,
@@ -147,6 +169,7 @@ export async function saveRemoteState(
       reviewHistory,
       lastSchedulingReason,
       successfulReviewDays,
+      challengeStats,
     }));
   const response = await fetch("/api/learning", {
     method: "PUT",

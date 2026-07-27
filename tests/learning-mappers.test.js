@@ -55,6 +55,16 @@ describe("relational learning API mappers", () => {
       leitner_box: 3,
       last_scheduling_reason: "Poprawna odpowiedź.",
       successful_review_days: ["2026-07-20", "2026-07-27"],
+      data: {
+        challengeStats: {
+          article: {
+            attempts: 2,
+            successes: 1,
+            lastPracticedAt: "2026-07-27T13:00:00.000Z",
+            needsWork: true,
+          },
+        },
+      },
     }], [{
       card_id: "card-1",
       event_id: "event-1",
@@ -75,6 +85,14 @@ describe("relational learning API mappers", () => {
       leitnerBox: 3,
       successfulModes: ["choice-article", "type-pl-de"],
       successfulReviewDays: ["2026-07-20", "2026-07-27"],
+      challengeStats: {
+        article: {
+          attempts: 2,
+          successes: 1,
+          lastPracticedAt: "2026-07-27T13:00:00.000Z",
+          needsWork: true,
+        },
+      },
     });
     expect(progress[0].reviewHistory).toEqual([{
       id: "event-1",

@@ -21,6 +21,7 @@ const progressKeys = [
   "reviewHistory",
   "lastSchedulingReason",
   "successfulReviewDays",
+  "challengeStats",
 ];
 let schemaReady;
 

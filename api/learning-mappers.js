@@ -66,6 +66,7 @@ export function mapProgressRows(rows, historyRows) {
         row.successful_review_days,
         legacy.successfulReviewDays ?? [],
       ),
+      challengeStats: legacy.challengeStats ?? {},
     };
   });
 }

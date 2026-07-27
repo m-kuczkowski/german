@@ -9,10 +9,20 @@ export const defaultMeta: LearningMeta = {
   theme: "system",
   contentVersion: 0,
   activeSession: null,
+  activeChallenge: null,
+  challengeUpdatedAt: null,
 };
 
 export function withMetaDefaults(meta: Partial<LearningMeta> | null | undefined): LearningMeta {
   const merged = { ...defaultMeta, ...(meta ?? {}) };
+  const challenge = merged.activeChallenge;
+  const validChallenge = Boolean(
+    challenge &&
+    Array.isArray(challenge.queue) &&
+    challenge.queue.length > 0 &&
+    Number.isFinite(challenge.index) &&
+    typeof challenge.startedAt === "string",
+  );
   return {
     ...merged,
     activeSession: merged.activeSession
@@ -22,6 +32,22 @@ export function withMetaDefaults(meta: Partial<LearningMeta> | null | undefined)
           pendingAnswer: merged.activeSession.pendingAnswer ?? null,
         }
       : null,
+    activeChallenge: validChallenge && challenge
+      ? {
+          ...challenge,
+          version: 1,
+          index: Math.max(0, Math.min(challenge.queue.length, challenge.index)),
+          answers: Array.isArray(challenge.answers)
+            ? challenge.answers
+            : [],
+          pendingAnswer: challenge.pendingAnswer ?? null,
+          retryOf: challenge.retryOf ?? null,
+          updatedAt: challenge.updatedAt ?? challenge.startedAt,
+        }
+      : null,
+    challengeUpdatedAt: merged.challengeUpdatedAt ??
+      (validChallenge ? challenge?.updatedAt : null) ??
+      null,
   };
 }
 

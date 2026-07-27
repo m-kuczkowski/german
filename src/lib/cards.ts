@@ -1,6 +1,8 @@
 import type {
   CardContent,
   CardSource,
+  ChallengeSkill,
+  ChallengeStats,
   ExerciseMode,
   Flashcard,
   LeitnerBox,
@@ -52,6 +54,7 @@ export function toFlashcard(
     reviewHistory: [],
     lastSchedulingReason: "Nowa karta — zaczyna w przegródce 1.",
     successfulReviewDays: [],
+    challengeStats: {},
   };
 }
 
@@ -87,6 +90,31 @@ function reviewDays(card: Flashcard): string[] {
   return [...new Set([...existing, ...legacy])].sort();
 }
 
+const challengeSkills: ChallengeSkill[] = ["article", "listening", "writing", "meaning"];
+
+function challengeProgress(card: Flashcard): ChallengeStats {
+  if (!card.challengeStats || typeof card.challengeStats !== "object") return {};
+  const result: ChallengeStats = {};
+  for (const skill of challengeSkills) {
+    const progress = card.challengeStats[skill];
+    if (
+      !progress ||
+      typeof progress.lastPracticedAt !== "string" ||
+      !Number.isFinite(progress.attempts) ||
+      !Number.isFinite(progress.successes)
+    ) {
+      continue;
+    }
+    result[skill] = {
+      attempts: Math.max(0, progress.attempts),
+      successes: Math.max(0, progress.successes),
+      lastPracticedAt: progress.lastPracticedAt,
+      needsWork: Boolean(progress.needsWork),
+    };
+  }
+  return result;
+}
+
 export function withLearningDefaults(card: Flashcard): Flashcard {
   const stage =
     !card.stage || (card.stage === "new" && card.repetitions > 0)
@@ -115,6 +143,7 @@ export function withLearningDefaults(card: Flashcard): Flashcard {
     lastSchedulingReason: card.lastSchedulingReason ||
       `Przeniesiono z wcześniejszego etapu „${stage}” do przegródki ${leitnerBox}.`,
     successfulReviewDays: reviewDays(card),
+    challengeStats: challengeProgress(card),
   };
 }
 

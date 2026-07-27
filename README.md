@@ -21,6 +21,11 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 - widok zawartości przegródek, terminów i historii decyzji dla każdej karty;
 - opanowanie wymagające poprawnych aktywnych odpowiedzi w różnych formach oraz odstępu czasu;
 - tryb trudnych słów, dzienna krótka lekcja i spokojne podsumowanie;
+- dobrowolna zakładka „Wyzwania” z rodzajnikami, dyktandem, wpisywaniem,
+  wyborem znaczenia i trybem mieszanym wyłącznie dla poznanych słów;
+- wybór 5, 10, 20 lub wszystkich dostępnych zadań, bez duplikowania kart;
+- osobny postęp umiejętności w wyzwaniach bez przesuwania terminów Leitnera;
+- wznowienie rozpoczętego wyzwania po odświeżeniu i na innym urządzeniu;
 - pojedyncze kliknięcie oceny przechodzi do następnej zwykłej fiszki;
 - ręczne „Dalej” po wyborze lub wpisywaniu — wynik i kontekst nie znikają automatycznie;
 - automatyczne obniżenie stanu karty po błędzie aktywnego przypominania;
@@ -49,6 +54,13 @@ Techniczne separatory z talii (`|`, `/`) są usuwane przed publikacją. Rekcja p
 Nowe słowo jest najpierw prezentowane na dwustronnej fiszce. Trzy oceny są widoczne po obu stronach. „Znam” prowadzi do aktywnego wpisywania po kilku innych słowach, „Niepewnie” do prostszego quizu, a „Nie znam” do szybkiego ponownego pokazania fiszki.
 
 Kolejne odpowiedzi aktualizują przegródkę, termin, serię, historię oraz zestaw zaliczonych typów ćwiczeń. Samo klikanie „Znam” nigdy nie wystarcza do opanowania. Ocena na zwykłej fiszce od razu otwiera kolejną kartę. Po wyborze jednej z trzech odpowiedzi lub wpisywaniu ekran wyniku pozostaje widoczny do kliknięcia „Dalej”.
+
+„Wyzwania” są niezależnym, dobrowolnym utrwalaniem. Losują poznane słowa,
+preferując te dawno niećwiczone w danym trybie. Błąd oznacza do poprawy tylko
+konkretną umiejętność (np. rodzajnik albo słuch) i dodaje ją do trudniejszych
+słów, ale nie cofa pozostałej wiedzy ani nie zmienia terminu zwykłej powtórki.
+Po każdym zadaniu wynik, pełna odpowiedź i zdanie kontekstowe pozostają na
+ekranie do ręcznego kliknięcia „Dalej”.
 
 ## Architektura
 

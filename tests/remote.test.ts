@@ -46,4 +46,72 @@ describe("synchronizacja z bazą", () => {
     expect(result.cards[0].leitnerBox).toBe(4);
     expect(result.meta.totalReviews).toBe(7);
   });
+
+  it("scala osobno postęp wyzwań i zachowuje najnowszą aktywną sesję", () => {
+    const first = {
+      ...starterCards[0],
+      stage: "known" as const,
+      learned: true,
+      challengeStats: {
+        writing: {
+          attempts: 1,
+          successes: 0,
+          lastPracticedAt: "2026-07-27T09:00:00.000Z",
+          needsWork: true,
+        },
+      },
+    };
+    const localChallenge = {
+      version: 1 as const,
+      type: "writing" as const,
+      requestedCount: 1,
+      queue: [{ cardId: first.id, mode: "type-pl-de" as const }],
+      index: 0,
+      startedAt: "2026-07-27T09:00:00.000Z",
+      updatedAt: "2026-07-27T09:00:00.000Z",
+      correct: 0,
+      mistakes: 0,
+      answers: [],
+      pendingAnswer: null,
+      retryOf: null,
+    };
+    const remoteChallenge = {
+      ...localChallenge,
+      index: 1,
+      updatedAt: "2026-07-27T11:00:00.000Z",
+    };
+    const result = hydrateRemoteState(
+      [first],
+      {
+        ...defaultMeta,
+        activeChallenge: localChallenge,
+        challengeUpdatedAt: localChallenge.updatedAt,
+      },
+      {
+        cards: [first],
+        progress: [{
+          id: first.id,
+          challengeStats: {
+            writing: {
+              attempts: 2,
+              successes: 2,
+              lastPracticedAt: "2026-07-27T10:00:00.000Z",
+              needsWork: false,
+            },
+          },
+        }],
+        meta: {
+          activeChallenge: remoteChallenge,
+          challengeUpdatedAt: remoteChallenge.updatedAt,
+        },
+      },
+    );
+    expect(result.cards[0].challengeStats.writing).toMatchObject({
+      attempts: 2,
+      successes: 2,
+      needsWork: false,
+    });
+    expect(result.cards[0].successfulModes).toEqual(first.successfulModes);
+    expect(result.meta.activeChallenge?.index).toBe(1);
+  });
 });

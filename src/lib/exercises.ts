@@ -71,30 +71,36 @@ export interface KnowledgeFacet {
 
 export function knowledgeFacets(card: Flashcard): KnowledgeFacet[] {
   const modes = new Set(card.successfulModes);
+  const challengeSucceeded = (skill: keyof Flashcard["challengeStats"]) => {
+    const progress = card.challengeStats[skill];
+    return Boolean(progress && !progress.needsWork && progress.successes > 0);
+  };
   return [
     {
       id: "meaning",
       label: "Znaczenie",
-      achieved: modes.has("choice-de-pl") || modes.has("type-de-pl"),
+      achieved: modes.has("choice-de-pl") || modes.has("type-de-pl") ||
+        challengeSucceeded("meaning"),
       applicable: true,
     },
     {
       id: "form",
       label: "Forma",
-      achieved: modes.has("type-pl-de") || modes.has("type-listen-de"),
+      achieved: modes.has("type-pl-de") || modes.has("type-listen-de") ||
+        challengeSucceeded("writing"),
       applicable: true,
     },
     {
       id: "article",
       label: "Rodzajnik",
       achieved: modes.has("choice-article") || modes.has("type-pl-de") ||
-        modes.has("type-listen-de"),
+        modes.has("type-listen-de") || challengeSucceeded("article"),
       applicable: Boolean(card.article),
     },
     {
       id: "listening",
       label: "Słuch",
-      achieved: modes.has("type-listen-de"),
+      achieved: modes.has("type-listen-de") || challengeSucceeded("listening"),
       applicable: true,
     },
   ];

@@ -48,8 +48,19 @@ import {
 } from "./lib/storage";
 import { hydrateRemoteState, loadRemoteState, saveRemoteState } from "./lib/remote";
 import { rememberProfileName, storedProfileName } from "./lib/profile";
+import {
+  advanceChallenge,
+  createChallengeSession,
+  createMistakeRetry,
+  recordCardChallengeResult,
+  recordChallengeAnswer,
+  type ChallengeEvaluation,
+} from "./lib/challenges";
+import { ChallengesView } from "./components/ChallengesView";
 import type {
   CardContent,
+  ChallengeItem,
+  ChallengeType,
   Flashcard,
   LearningMeta,
   LeitnerBox,
@@ -63,6 +74,7 @@ import type {
 const navItems: Array<{ id: TabId; icon: string; label: string }> = [
   { id: "learn", icon: "◇", label: "Nauka" },
   { id: "review", icon: "↻", label: "Powtórki" },
+  { id: "challenges", icon: "◎", label: "Wyzwania" },
   { id: "leitner", icon: "▥", label: "Przegródki" },
   { id: "collection", icon: "▤", label: "Kolekcja" },
   { id: "settings", icon: "⚙", label: "Ustawienia" },
@@ -245,6 +257,7 @@ function App() {
     ((tab === "learn" && session.mode === "learn") ||
       (tab === "review" && session.mode !== "learn")),
   );
+  const challengeVisible = Boolean(tab === "challenges" && meta.activeChallenge);
 
   useEffect(() => {
     const selected = categories.find((category) => category.id === selectedCategoryId);
@@ -323,6 +336,79 @@ function App() {
     setMeta((current) => ({ ...current, activeSession: null }));
   }
 
+  function startChallenge(type: ChallengeType, count: number) {
+    const startedAt = new Date();
+    const challenge = createChallengeSession(cards, type, count, startedAt);
+    if (challenge.queue.length === 0) {
+      setToast("To wyzwanie nie ma jeszcze wystarczającej liczby poznanych słów.");
+      return;
+    }
+    setMeta((current) => ({
+      ...current,
+      activeChallenge: challenge,
+      challengeUpdatedAt: startedAt.toISOString(),
+    }));
+    setTab("challenges");
+  }
+
+  function answerChallenge(
+    item: ChallengeItem,
+    answerValue: string,
+    evaluation: ChallengeEvaluation,
+  ) {
+    const answeredAt = new Date();
+    setCards((current) =>
+      current.map((card) =>
+        card.id === item.cardId
+          ? recordCardChallengeResult(card, item.mode, evaluation.correct, answeredAt)
+          : card,
+      ),
+    );
+    setMeta((current) => ({
+      ...current,
+      activeChallenge: current.activeChallenge
+        ? recordChallengeAnswer(
+            current.activeChallenge,
+            item,
+            answerValue,
+            evaluation,
+            answeredAt,
+          )
+        : null,
+      challengeUpdatedAt: answeredAt.toISOString(),
+    }));
+  }
+
+  function advanceChallengeAnswer() {
+    const advancedAt = new Date();
+    setMeta((current) => ({
+      ...current,
+      activeChallenge: current.activeChallenge
+        ? advanceChallenge(current.activeChallenge, advancedAt)
+        : null,
+      challengeUpdatedAt: advancedAt.toISOString(),
+    }));
+  }
+
+  function repeatChallengeMistakes() {
+    const restartedAt = new Date();
+    setMeta((current) => ({
+      ...current,
+      activeChallenge: current.activeChallenge
+        ? createMistakeRetry(current.activeChallenge, restartedAt)
+        : null,
+      challengeUpdatedAt: restartedAt.toISOString(),
+    }));
+  }
+
+  function finishChallenge() {
+    setMeta((current) => ({
+      ...current,
+      activeChallenge: null,
+      challengeUpdatedAt: new Date().toISOString(),
+    }));
+  }
+
   if (!profileName) {
     return <ProfileGate onSelect={setProfileName} />;
   }
@@ -337,7 +423,7 @@ function App() {
   }
 
   return (
-    <div className={`app-shell ${lessonVisible ? "lesson-active" : ""}`}>
+    <div className={`app-shell ${lessonVisible || challengeVisible ? "lesson-active" : ""}`}>
       {!online && (
         <div className="offline-banner" role="status">
           Offline · uczysz się lokalnie, synchronizacja wróci z internetem
@@ -395,6 +481,21 @@ function App() {
             onStartHard={() => startSession("hard", null)}
             onSelectCategory={setReviewCategoryId}
             onFinish={finishSession}
+            onSpeak={(cardId, text) => {
+              if (!speakGerman(cardId, text)) setToast("Ta przeglądarka nie obsługuje wymowy.");
+            }}
+          />
+        )}
+
+        {tab === "challenges" && (
+          <ChallengesView
+            cards={cards}
+            session={meta.activeChallenge}
+            onStart={startChallenge}
+            onAnswer={answerChallenge}
+            onNext={advanceChallengeAnswer}
+            onRepeatMistakes={repeatChallengeMistakes}
+            onFinish={finishChallenge}
             onSpeak={(cardId, text) => {
               if (!speakGerman(cardId, text)) setToast("Ta przeglądarka nie obsługuje wymowy.");
             }}
