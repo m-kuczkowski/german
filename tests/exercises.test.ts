@@ -59,6 +59,33 @@ describe("ćwiczenia językowe", () => {
     expect(isTypedAnswerCorrect(exercise.answerLabel, exercise.acceptedAnswers)).toBe(true);
   });
 
+  it("traktuje fragmenty niemieckiej odpowiedzi w nawiasach jako opcjonalne", () => {
+    const phrase = {
+      ...starterCards[0],
+      article: null,
+      german: "Interesse (an etwas) haben",
+    };
+    const exercise = createExercise(phrase, [phrase, ...starterCards.slice(1)], 0, "type-pl-de");
+    expect(evaluateTypedAnswer("Interesse haben", exercise.acceptedAnswers)).toMatchObject({
+      correct: true,
+      score: 1,
+    });
+    expect(isTypedAnswerCorrect("Interesse (an etwas) haben", exercise.acceptedAnswers)).toBe(true);
+  });
+
+  it("pomija opcjonalny fragment także na początku zwrotu", () => {
+    const phrase = {
+      ...starterCards[0],
+      article: null,
+      german: "(vor etwas) fliehen",
+    };
+    const exercise = createExercise(phrase, [phrase, ...starterCards.slice(1)], 0, "type-listen-de");
+    expect(evaluateTypedAnswer("fliehen", exercise.acceptedAnswers)).toMatchObject({
+      correct: true,
+      score: 1,
+    });
+  });
+
   it("ćwiczy rodzajnik osobno dla poznanego rzeczownika", () => {
     const noun = starterCards.find((card) => card.article);
     expect(noun).toBeDefined();

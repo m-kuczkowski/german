@@ -50,8 +50,16 @@ function polishAnswers(card: Flashcard): string[] {
   return [...new Set(variants.map((value) => value.trim()).filter(Boolean))];
 }
 
+function withoutParentheticalParts(value: string): string {
+  return value
+    .replace(/\s*\([^()]*\)\s*/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function germanAnswers(card: Flashcard): string[] {
-  return [germanLabel(card)];
+  const fullAnswer = germanLabel(card);
+  return [...new Set([fullAnswer, withoutParentheticalParts(fullAnswer)])];
 }
 
 export interface KnowledgeFacet {
