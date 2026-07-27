@@ -56,6 +56,41 @@ export function suggestedCategory(categories: CategoryProgress[]): string | null
     ?? null;
 }
 
+export interface LearningSessionPlan {
+  due: Flashcard[];
+  newCards: Flashcard[];
+  cards: Flashcard[];
+}
+
+export function recommendedNewCardLimit(dueCount: number): number {
+  if (dueCount >= 10) return 0;
+  if (dueCount >= 7) return 1;
+  if (dueCount >= 4) return 2;
+  if (dueCount >= 1) return 4;
+  return 6;
+}
+
+export function learningSessionPlan(
+  cards: Flashcard[],
+  categoryId: string,
+  now = new Date(),
+  limit = 10,
+): LearningSessionPlan {
+  const inCategory = cards.filter((card) => card.category === categoryId);
+  const due = sortForLearning(
+    inCategory.filter((card) => card.stage !== "new" && isDue(card, now)),
+    now,
+  ).slice(0, limit);
+  const newLimit = Math.min(
+    recommendedNewCardLimit(due.length),
+    Math.max(0, limit - due.length),
+  );
+  const newCards = inCategory
+    .filter((card) => card.stage === "new")
+    .slice(0, newLimit);
+  return { due, newCards, cards: [...due, ...newCards] };
+}
+
 export function sessionCardsForCategory(
   cards: Flashcard[],
   categoryId: string,
@@ -69,10 +104,7 @@ export function sessionCardsForCategory(
     now,
   );
   if (mode === "review") return due.slice(0, limit);
-
-  const newCards = inCategory.filter((card) => card.stage === "new");
-  const seen = new Set(due.map((card) => card.id));
-  return [...due, ...newCards.filter((card) => !seen.has(card.id))].slice(0, limit);
+  return learningSessionPlan(cards, categoryId, now, limit).cards;
 }
 
 export function difficultCards(cards: Flashcard[], now = new Date(), limit = 10): Flashcard[] {

@@ -13,6 +13,9 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 - pierwsze spotkanie jako zwykła fiszka z trzema ocenami: „Nie znam”, „Niepewnie”, „Znam”;
 - adaptacyjne powroty w tej samej lekcji: po 3–5, 6–8 albo 8–11 innych kartach;
 - wybór jednego tłumaczenia z trzech odpowiedzi i wpisywanie w obu kierunkach;
+- osobne ćwiczenia rodzajnika i dyktanda ze słuchu;
+- wskaźniki znajomości znaczenia, formy, rodzajnika i brzmienia słowa;
+- adaptacyjna liczba nowych kart zależna od kolejki powtórek;
 - ocena podobieństwa wpisanej odpowiedzi z progiem 90%, bez ignorowania rodzajników i umlautów;
 - pięć przegródek Leitnera z odstępami 1, 3, 7, 14 i 30 dni;
 - widok zawartości przegródek, terminów i historii decyzji dla każdej karty;

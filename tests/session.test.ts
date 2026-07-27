@@ -150,4 +150,27 @@ describe("adaptacyjna kolejka w lekcji", () => {
     );
     expect(recorded.queue).toHaveLength(1);
   });
+
+  it("po błędzie wraca do tego samego składnika znajomości słowa", () => {
+    const card = {
+      ...starterCards.find((item) => item.article)!,
+      stage: "known" as const,
+      leitnerBox: 3 as const,
+    };
+    const session = createLearningSession([card], "review", card.category);
+    const evidence = { mode: "choice-article" as const, correct: false, score: 0 };
+    const reviewed = reviewCard(card, "again", evidence);
+    const recorded = recordSessionAnswer(
+      session,
+      card,
+      reviewed,
+      session.queue[0],
+      "again",
+      evidence,
+      "article-der",
+      `${card.article} ${card.german}`,
+    );
+    expect(recorded.queue).toHaveLength(2);
+    expect(recorded.queue[1].forcedMode).toBe("choice-article");
+  });
 });

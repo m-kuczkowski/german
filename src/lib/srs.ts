@@ -14,8 +14,10 @@ const MINUTE_MS = 60_000;
 const ACTIVE_MODES = new Set<ExerciseMode>([
   "choice-de-pl",
   "choice-pl-de",
+  "choice-article",
   "type-de-pl",
   "type-pl-de",
+  "type-listen-de",
 ]);
 
 export type { ReviewEvidence } from "../types";

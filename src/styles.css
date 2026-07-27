@@ -905,6 +905,36 @@ h1 em {
   line-height: 1.06;
 }
 
+.listening-exercise-prompt {
+  min-height: 118px;
+}
+
+.listening-prompt {
+  display: grid;
+  min-width: min(100%, 230px);
+  min-height: 104px;
+  place-items: center;
+  gap: 3px;
+  padding: 15px 22px;
+  color: var(--green);
+  background: var(--mint);
+  border: 2px solid color-mix(in srgb, var(--green) 30%, var(--line));
+  border-radius: 22px;
+}
+
+.listening-prompt > span {
+  font-size: 28px;
+}
+
+.listening-prompt strong {
+  font-size: 15px;
+}
+
+.listening-prompt small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
 .speak-button.inline {
   position: static;
   flex: 0 0 44px;
@@ -1030,6 +1060,14 @@ h1 em {
 
 .typing-exercise input:focus {
   border-color: var(--green);
+}
+
+.session-plan-copy {
+  margin: -2px 0 13px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  text-align: center;
 }
 
 .exercise-feedback {
@@ -1469,6 +1507,37 @@ h1 em {
   padding: 14px;
   background: var(--cream);
   border-radius: 14px;
+}
+
+.knowledge-facets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin: 14px 0 18px;
+}
+
+.knowledge-facets span {
+  display: flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.knowledge-facets span.achieved {
+  color: var(--green);
+  background: var(--mint);
+  border-color: color-mix(in srgb, var(--green) 28%, var(--line));
+}
+
+.knowledge-facets i {
+  font-style: normal;
 }
 
 .history-next small,

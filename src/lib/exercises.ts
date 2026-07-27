@@ -16,6 +16,9 @@ export interface Exercise {
   acceptedAnswers: string[];
   options: ChoiceOption[];
   answerLanguage: "de" | "pl";
+  promptLanguage: "de" | "pl";
+  speechPrompt: string | null;
+  inputPlaceholder: string;
 }
 
 export interface TypedAnswerResult {
@@ -26,6 +29,10 @@ export interface TypedAnswerResult {
 
 function germanLabel(card: Flashcard): string {
   return card.article ? `${card.article} ${card.german}` : card.german;
+}
+
+function germanSpeech(card: Flashcard): string {
+  return germanLabel(card).replace(/[|·]/g, "");
 }
 
 export function normalizeAnswer(value: string): string {
@@ -45,6 +52,44 @@ function polishAnswers(card: Flashcard): string[] {
 
 function germanAnswers(card: Flashcard): string[] {
   return [germanLabel(card)];
+}
+
+export interface KnowledgeFacet {
+  id: "meaning" | "form" | "article" | "listening";
+  label: string;
+  achieved: boolean;
+  applicable: boolean;
+}
+
+export function knowledgeFacets(card: Flashcard): KnowledgeFacet[] {
+  const modes = new Set(card.successfulModes);
+  return [
+    {
+      id: "meaning",
+      label: "Znaczenie",
+      achieved: modes.has("choice-de-pl") || modes.has("type-de-pl"),
+      applicable: true,
+    },
+    {
+      id: "form",
+      label: "Forma",
+      achieved: modes.has("type-pl-de") || modes.has("type-listen-de"),
+      applicable: true,
+    },
+    {
+      id: "article",
+      label: "Rodzajnik",
+      achieved: modes.has("choice-article") || modes.has("type-pl-de") ||
+        modes.has("type-listen-de"),
+      applicable: Boolean(card.article),
+    },
+    {
+      id: "listening",
+      label: "Słuch",
+      achieved: modes.has("type-listen-de"),
+      applicable: true,
+    },
+  ];
 }
 
 function hash(value: string): number {
@@ -104,7 +149,13 @@ const stageModes: Record<Exclude<LearningStage, "new">, ExerciseMode[]> = {
 
 export function preferredExerciseMode(card: Flashcard, sessionIndex: number): ExerciseMode {
   const stage = card.stage === "new" ? "learning" : card.stage;
-  const candidates = stageModes[stage];
+  const candidates = [...stageModes[stage]];
+  if (stage !== "learning" && card.article) {
+    candidates.splice(Math.min(1, candidates.length), 0, "choice-article");
+  }
+  if (stage === "known" || stage === "mastered") {
+    candidates.splice(Math.min(card.article ? 2 : 1, candidates.length), 0, "type-listen-de");
+  }
   const unseen = candidates.find((mode) => !card.successfulModes.includes(mode));
   return unseen ?? candidates[sessionIndex % candidates.length];
 }
@@ -116,13 +167,35 @@ export function createExercise(
   forcedMode?: ExerciseMode,
 ): Exercise {
   const mode = forcedMode ?? preferredExerciseMode(card, sessionIndex);
-  const asksForGerman = mode.endsWith("pl-de");
+  if (mode === "choice-article" && card.article) {
+    return {
+      mode,
+      prompt: card.german,
+      instruction: "Wybierz właściwy rodzajnik",
+      answerLabel: germanLabel(card),
+      acceptedAnswers: [card.article],
+      options: (["der", "die", "das"] as const).map((article) => ({
+        cardId: `article-${article}`,
+        label: article,
+        correct: article === card.article,
+      })),
+      answerLanguage: "de",
+      promptLanguage: "de",
+      speechPrompt: null,
+      inputPlaceholder: "",
+    };
+  }
+
+  const listening = mode === "type-listen-de";
+  const asksForGerman = mode === "choice-pl-de" || mode === "type-pl-de" || listening;
   const isChoice = mode.startsWith("choice");
   const acceptedAnswers = asksForGerman ? germanAnswers(card) : polishAnswers(card);
   return {
     mode,
-    prompt: asksForGerman ? card.polish : germanLabel(card),
-    instruction: isChoice
+    prompt: listening ? "" : asksForGerman ? card.polish : germanLabel(card),
+    instruction: listening
+      ? "Posłuchaj i wpisz po niemiecku"
+      : isChoice
       ? asksForGerman
         ? "Wybierz po niemiecku"
         : "Wybierz po polsku"
@@ -135,6 +208,13 @@ export function createExercise(
       ? choiceOptions(card, cards, asksForGerman ? "de" : "pl", sessionIndex)
       : [],
     answerLanguage: asksForGerman ? "de" : "pl",
+    promptLanguage: asksForGerman ? "pl" : "de",
+    speechPrompt: listening ? germanSpeech(card) : null,
+    inputPlaceholder: listening
+      ? "Wpisz to, co słyszysz…"
+      : asksForGerman
+        ? "Wpisz po niemiecku…"
+        : "Wpisz po polsku…",
   };
 }
 

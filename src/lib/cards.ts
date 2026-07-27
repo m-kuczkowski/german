@@ -58,8 +58,10 @@ export function toFlashcard(
 const exerciseModes = new Set<ExerciseMode>([
   "choice-de-pl",
   "choice-pl-de",
+  "choice-article",
   "type-de-pl",
   "type-pl-de",
+  "type-listen-de",
 ]);
 
 function legacyStage(card: Flashcard): LearningStage {

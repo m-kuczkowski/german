@@ -13,6 +13,7 @@ describe("synchronizacja z bazą", () => {
         repetitions: 2,
         learned: false,
         intervalDays: 3,
+        successfulModes: ["choice-article", "type-listen-de"],
         lastReviewedAt: "2026-07-26T10:00:00.000Z",
       }],
       meta: { streak: 4, totalReviews: 8 },
@@ -20,6 +21,7 @@ describe("synchronizacja z bazą", () => {
     expect(result.cards).toHaveLength(2);
     expect(result.cards[0].id).toBe(first.id);
     expect(result.cards[0].repetitions).toBe(2);
+    expect(result.cards[0].successfulModes).toEqual(["choice-article", "type-listen-de"]);
     expect(result.meta.streak).toBe(4);
   });
 

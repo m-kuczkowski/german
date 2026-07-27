@@ -8,11 +8,17 @@ import {
 } from "react";
 import { starterCards } from "./data/starterCards";
 import { isDuplicate, toFlashcard } from "./lib/cards";
-import { createExercise, evaluateTypedAnswer, type TypedAnswerResult } from "./lib/exercises";
+import {
+  createExercise,
+  evaluateTypedAnswer,
+  knowledgeFacets,
+  type TypedAnswerResult,
+} from "./lib/exercises";
 import {
   buildCategoryProgress,
   categoryTitle,
   difficultCards,
+  learningSessionPlan,
   sessionCardsForCategory,
   suggestedCategory,
   type CategoryProgress,
@@ -71,6 +77,10 @@ const emptyContent: Omit<CardContent, "id"> = {
   examplePolish: "",
   category: "Własne",
 };
+
+function lessonCount(count: number, singular: string, plural: string): string {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
 
 function ProfileGate({ onSelect }: { onSelect: (name: string) => void }) {
   const [name, setName] = useState("");
@@ -483,6 +493,7 @@ function FlashcardSession(props: SessionProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const submittedRef = useRef(Boolean(persistedOutcome));
   const isChoice = exercise.mode.startsWith("choice");
+  const isListening = exercise.mode === "type-listen-de";
   const selectedOption = exercise.options.find((option) => option.cardId === selectedCardId);
   const correct = outcome?.evidence.correct ?? false;
   const germanLabel = card.article ? `${card.article} ${card.german}` : card.german;
@@ -553,6 +564,12 @@ function FlashcardSession(props: SessionProps) {
     );
   }
 
+  function playListeningPrompt() {
+    if (!exercise.speechPrompt) return;
+    props.onSpeak(exercise.speechPrompt);
+    window.setTimeout(() => inputRef.current?.focus(), 220);
+  }
+
   if (props.complete) {
     const accuracy = props.session && props.session.correct + props.session.mistakes > 0
       ? Math.round(
@@ -592,7 +609,17 @@ function FlashcardSession(props: SessionProps) {
           <p className="category-chip">
             {categoryTitle(card.category).replace(/\s*\([^)]*\)$/, "")}
           </p>
-          <span>{isIntroduction ? "Nowe słowo" : isChoice ? "1 z 3" : "Wpisywanie"}</span>
+          <span>
+            {isIntroduction
+              ? "Nowe słowo"
+              : isListening
+                ? "Słuchanie"
+                : exercise.mode === "choice-article"
+                  ? "Rodzajnik"
+                  : isChoice
+                    ? "1 z 3"
+                    : "Wpisywanie"}
+          </span>
         </div>
 
         {isIntroduction ? (
@@ -648,9 +675,22 @@ function FlashcardSession(props: SessionProps) {
         ) : (
           <>
             <p className="exercise-instruction">{exercise.instruction}</p>
-            <div className="exercise-prompt">
-              <h2 lang={exercise.answerLanguage === "pl" ? "de" : "pl"}>{exercise.prompt}</h2>
-              {exercise.answerLanguage === "pl" && (
+            <div className={`exercise-prompt ${isListening ? "listening-exercise-prompt" : ""}`}>
+              {isListening ? (
+                <button
+                  type="button"
+                  className="listening-prompt"
+                  onClick={playListeningPrompt}
+                  aria-label="Odtwórz niemieckie słowo"
+                >
+                  <span aria-hidden="true">◖))</span>
+                  <strong>Odtwórz słowo</strong>
+                  <small>Możesz odsłuchać ponownie</small>
+                </button>
+              ) : (
+                <h2 lang={exercise.promptLanguage}>{exercise.prompt}</h2>
+              )}
+              {!isListening && exercise.answerLanguage === "pl" && (
                 <button
                   className="speak-button inline"
                   onClick={() => props.onSpeak(exercise.prompt)}
@@ -695,13 +735,13 @@ function FlashcardSession(props: SessionProps) {
                   ref={inputRef}
                   value={typedAnswer}
                   onChange={(event) => setTypedAnswer(event.target.value)}
-                  placeholder={exercise.answerLanguage === "de" ? "Wpisz po niemiecku…" : "Wpisz po polsku…"}
+                  placeholder={exercise.inputPlaceholder}
                   autoCapitalize="none"
                   autoComplete="off"
                   spellCheck={false}
                   enterKeyHint="done"
                   readOnly={Boolean(outcome)}
-                  autoFocus
+                  autoFocus={!isListening}
                 />
               </label>
               {!outcome && (
@@ -823,6 +863,9 @@ function LearnView(props: SessionProps & {
   const category = props.selectedCategory;
   const newCount = category?.cards.filter((card) => card.stage === "new").length ?? 0;
   const categoryDue = category?.due ?? 0;
+  const sessionPlan = category
+    ? learningSessionPlan(props.cards, category.id)
+    : null;
   const completedToday = props.meta.lastStudyDate === localDateKey()
     ? props.meta.completedToday
     : 0;
@@ -853,6 +896,13 @@ function LearnView(props: SessionProps & {
           <span><strong>{categoryDue}</strong> do powtórki</span>
           <span><strong>{newCount}</strong> do poznania</span>
         </div>
+        {sessionPlan && (
+          <p className="session-plan-copy">
+            Ta lekcja: {lessonCount(sessionPlan.due.length, "powtórka", "powtórek")}
+            {" + "}
+            {lessonCount(sessionPlan.newCards.length, "nowe", "nowych")}
+          </p>
+        )}
         <button className="primary-button wide" onClick={props.onStart} disabled={!category || category.mastered === category.total}>
           {category?.mastered === category?.total ? "Kategoria opanowana ✓" : "Zacznij krótką lekcję"} <span aria-hidden="true">→</span>
         </button>
@@ -1268,6 +1318,16 @@ function LeitnerView({
             <div className="history-next">
               <strong>{detail.stage === "new" ? "Jeszcze niepoznana" : `Następna powtórka ${nextReviewLabel(detail.dueAt, now)}`}</strong>
               <small>{detail.lastSchedulingReason}</small>
+            </div>
+            <div className="knowledge-facets" aria-label="Sprawdzone elementy znajomości słowa">
+              {knowledgeFacets(detail)
+                .filter((facet) => facet.applicable)
+                .map((facet) => (
+                  <span key={facet.id} className={facet.achieved ? "achieved" : ""}>
+                    <i aria-hidden="true">{facet.achieved ? "✓" : "○"}</i>
+                    {facet.label}
+                  </span>
+                ))}
             </div>
             <h3>Historia odpowiedzi</h3>
             {detail.reviewHistory.length ? (

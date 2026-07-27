@@ -5,6 +5,7 @@ import {
   createExercise,
   evaluateTypedAnswer,
   isTypedAnswerCorrect,
+  knowledgeFacets,
   normalizeAnswer,
 } from "../src/lib/exercises";
 
@@ -56,5 +57,44 @@ describe("ćwiczenia językowe", () => {
     const exercise = createExercise(noun!, starterCards, 0, "type-pl-de");
     expect(isTypedAnswerCorrect(noun!.german, exercise.acceptedAnswers)).toBe(false);
     expect(isTypedAnswerCorrect(exercise.answerLabel, exercise.acceptedAnswers)).toBe(true);
+  });
+
+  it("ćwiczy rodzajnik osobno dla poznanego rzeczownika", () => {
+    const noun = starterCards.find((card) => card.article);
+    expect(noun).toBeDefined();
+    const exercise = createExercise(
+      { ...noun!, stage: "known", successfulModes: ["type-pl-de"] },
+      starterCards,
+      0,
+    );
+    expect(exercise.mode).toBe("choice-article");
+    expect(exercise.prompt).toBe(noun!.german);
+    expect(exercise.promptLanguage).toBe("de");
+    expect(exercise.options.map((option) => option.label)).toEqual(["der", "die", "das"]);
+    expect(exercise.options.filter((option) => option.correct).map((option) => option.label))
+      .toEqual([noun!.article]);
+  });
+
+  it("buduje dyktando bez pokazywania niemieckiej odpowiedzi", () => {
+    const card = starterCards[0];
+    const exercise = createExercise(card, starterCards, 0, "type-listen-de");
+    expect(exercise.prompt).toBe("");
+    expect(exercise.speechPrompt).toBe(exercise.answerLabel);
+    expect(exercise.instruction).toContain("Posłuchaj");
+    expect(exercise.inputPlaceholder).toContain("słyszysz");
+  });
+
+  it("śledzi osobno znaczenie, formę, rodzajnik i słuch", () => {
+    const noun = starterCards.find((card) => card.article)!;
+    const facets = knowledgeFacets({
+      ...noun,
+      successfulModes: ["choice-de-pl", "choice-article", "type-listen-de"],
+    });
+    expect(Object.fromEntries(facets.map((facet) => [facet.id, facet.achieved]))).toEqual({
+      meaning: true,
+      form: true,
+      article: true,
+      listening: true,
+    });
   });
 });

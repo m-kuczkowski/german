@@ -104,6 +104,31 @@ describe("algorytm powtórek", () => {
     expect(result.intervalDays).toBe(30);
   });
 
+  it("traktuje poprawne dyktando jako aktywne odtworzenie formy", () => {
+    const result = reviewCard(
+      { ...starterCards[0], stage: "known", leitnerBox: 2 },
+      "good",
+      { mode: "type-listen-de", correct: true, score: 1 },
+      now,
+    );
+    expect(result.leitnerBox).toBe(3);
+    expect(result.typedAttempts).toBe(1);
+    expect(result.typedSuccesses).toBe(1);
+    expect(result.successfulModes).toContain("type-listen-de");
+  });
+
+  it("błędny rodzajnik cofa kartę jak inny błąd aktywny", () => {
+    const result = reviewCard(
+      { ...starterCards[0], stage: "known", leitnerBox: 3 },
+      "again",
+      { mode: "choice-article", correct: false, score: 0 },
+      now,
+    );
+    expect(result.leitnerBox).toBe(1);
+    expect(result.stage).toBe("uncertain");
+    expect(result.lapses).toBe(1);
+  });
+
   it("ustawia trudne i zaległe karty na początku", () => {
     const future = { ...starterCards[0], dueAt: "2027-01-01T00:00:00.000Z" };
     const hard = { ...starterCards[1], dueAt: "2026-01-01T00:00:00.000Z", lapses: 3 };

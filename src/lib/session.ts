@@ -73,6 +73,8 @@ export function recordSessionAnswer(
         ? "type-pl-de"
         : rating === "hard"
           ? "choice-de-pl"
+          : !evidence.correct && evidence.mode !== "introduction"
+            ? evidence.mode
           : preferredExerciseMode(updatedCard, session.index + gap),
       round: item.round + 1,
     };

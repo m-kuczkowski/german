@@ -5,8 +5,10 @@ export type LeitnerBox = 1 | 2 | 3 | 4 | 5;
 export type ExerciseMode =
   | "choice-de-pl"
   | "choice-pl-de"
+  | "choice-article"
   | "type-de-pl"
-  | "type-pl-de";
+  | "type-pl-de"
+  | "type-listen-de";
 
 export interface ReviewEvidence {
   mode: "introduction" | ExerciseMode;
