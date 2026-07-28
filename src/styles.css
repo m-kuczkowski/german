@@ -1613,9 +1613,10 @@ h1 em {
 }
 
 .flip-face > strong.long-single-word {
-  font-size: clamp(31px, 9.5vw, 50px);
-  overflow-wrap: normal;
-  white-space: nowrap;
+  font-size: clamp(24px, 7.2vw, 38px);
+  hyphens: auto;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .flip-face > span {
