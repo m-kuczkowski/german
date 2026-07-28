@@ -10,12 +10,16 @@ interface DeviceIdentity {
   token: string;
 }
 
-interface RemoteState {
+export interface RemoteState {
   device?: DeviceIdentity;
-  profile?: { name: string };
+  profile?: { name: string; created?: boolean };
   cards: CardContent[];
   progress: Array<Partial<Flashcard> & Pick<Flashcard, "id">>;
   meta: Partial<LearningMeta>;
+}
+
+export function isNewRemoteProfile(remote: RemoteState | null): boolean {
+  return remote?.profile?.created === true;
 }
 
 function deviceIdentity(): DeviceIdentity | null {

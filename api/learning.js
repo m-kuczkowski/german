@@ -244,7 +244,9 @@ export default async function handler(req, res) {
       const categoryById = new Map(categories.map((row) => [row.id, row.display_name]));
       return res.status(200).json({
         device: profile.created ? { id: profile.id, token: profile.token } : undefined,
-        profile: profile.displayName ? { name: profile.displayName } : undefined,
+        profile: profile.displayName
+          ? { name: profile.displayName, created: profile.created }
+          : undefined,
         cards: cards.map((row) => mapCatalogRow({
           ...row,
           category: categoryById.get(row.category_id),

@@ -46,7 +46,12 @@ import {
   saveCards,
   saveMeta,
 } from "./lib/storage";
-import { hydrateRemoteState, loadRemoteState, saveRemoteState } from "./lib/remote";
+import {
+  hydrateRemoteState,
+  isNewRemoteProfile,
+  loadRemoteState,
+  saveRemoteState,
+} from "./lib/remote";
 import { rememberProfileName, storedProfileName } from "./lib/profile";
 import {
   advanceChallenge,
@@ -57,6 +62,7 @@ import {
   type ChallengeEvaluation,
 } from "./lib/challenges";
 import { ChallengesView } from "./components/ChallengesView";
+import { GettingStarted } from "./components/GettingStarted";
 import type {
   CardContent,
   ChallengeItem,
@@ -150,6 +156,7 @@ function App() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [reviewCategoryId, setReviewCategoryId] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(storedProfileName);
+  const [showGettingStarted, setShowGettingStarted] = useState(false);
 
   useEffect(() => {
     if (!profileName) return;
@@ -158,15 +165,20 @@ function App() {
       try {
         const local = await loadOrSeed(starterCards);
         let state = local;
+        let introduceProfile = false;
         try {
           const remote = await loadRemoteState(profileName);
-          if (remote) state = hydrateRemoteState(local.cards, local.meta, remote);
+          if (remote) {
+            state = hydrateRemoteState(local.cards, local.meta, remote);
+            introduceProfile = isNewRemoteProfile(remote);
+          }
         } catch {
           // The offline cache remains fully usable when a connection is unavailable.
         }
         if (!active) return;
         setCards(state.cards);
         setMeta(state.meta);
+        setShowGettingStarted(introduceProfile);
       } catch {
         if (!active) return;
         setCards(starterCards);
@@ -435,6 +447,15 @@ function App() {
         <div className="brand-mark" aria-hidden="true">W</div>
         <p>Układam Twoją dzisiejszą naukę…</p>
       </main>
+    );
+  }
+
+  if (showGettingStarted) {
+    return (
+      <GettingStarted
+        name={profileName}
+        onFinish={() => setShowGettingStarted(false)}
+      />
     );
   }
 

@@ -2725,6 +2725,280 @@ h1 em {
   line-height: 1.4;
 }
 
+.onboarding-gate {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  min-height: var(--visual-viewport-height, 100dvh);
+  place-items: center;
+  padding:
+    calc(14px + env(safe-area-inset-top))
+    16px
+    calc(14px + env(safe-area-inset-bottom));
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--cream) 68%, transparent), transparent 38%),
+    var(--bg);
+}
+
+.onboarding-card {
+  display: grid;
+  width: min(100%, 430px);
+  max-height: calc(var(--visual-viewport-height, 100dvh) - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  padding: clamp(18px, 4.8vw, 24px);
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 30px 30px 10px 30px;
+  box-shadow: var(--shadow);
+}
+
+.onboarding-header,
+.onboarding-actions,
+.onboarding-progress {
+  display: flex;
+  align-items: center;
+}
+
+.onboarding-header {
+  justify-content: space-between;
+}
+
+.onboarding-header .brand-mark {
+  width: 44px;
+  height: 44px;
+  font-size: 23px;
+}
+
+.text-button {
+  min-height: 44px;
+  padding: 8px 10px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.onboarding-progress {
+  gap: 6px;
+  margin: 13px 0 clamp(14px, 3vh, 22px);
+}
+
+.onboarding-progress > span {
+  width: 24px;
+  height: 4px;
+  background: var(--line);
+  border-radius: 999px;
+}
+
+.onboarding-progress > span.active {
+  width: 42px;
+  background: var(--orange);
+}
+
+.onboarding-progress > small {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.onboarding-content {
+  min-height: 0;
+}
+
+.onboarding-content h1 {
+  max-width: 360px;
+  margin-top: 5px;
+  font-size: clamp(30px, 8.8vw, 42px);
+  line-height: 0.98;
+}
+
+.onboarding-content h1:focus {
+  outline: none;
+}
+
+.onboarding-lead {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: clamp(12px, 3.35vw, 14px);
+  line-height: 1.45;
+}
+
+.method-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: clamp(12px, 2.5vh, 18px);
+}
+
+.method-flow span {
+  flex: 1;
+  padding: 9px 4px;
+  color: var(--green);
+  background: var(--green-soft);
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 850;
+  text-align: center;
+}
+
+.method-flow b {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.method-note {
+  margin-top: 12px;
+  padding: 10px 12px;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.method-note strong {
+  color: var(--ink);
+}
+
+.rating-guide {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.rating-guide-item {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 8px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.rating-guide-item > div {
+  display: grid;
+  gap: 1px;
+}
+
+.rating-guide-item strong {
+  font-size: 12px;
+}
+
+.rating-guide-item small,
+.rating-guide-item p {
+  color: var(--muted);
+  font-size: 9.5px;
+  line-height: 1.3;
+}
+
+.rating-guide-item.again strong { color: var(--red); }
+.rating-guide-item.hard strong { color: var(--orange); }
+.rating-guide-item.good strong { color: var(--green); }
+
+.exercise-guide {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: clamp(14px, 3vh, 22px);
+}
+
+.exercise-guide article {
+  display: grid;
+  min-height: 106px;
+  align-content: start;
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.exercise-guide article > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: var(--green);
+  background: var(--green-soft);
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.exercise-guide strong {
+  font-size: 12px;
+}
+
+.exercise-guide p {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9.5px;
+  line-height: 1.35;
+}
+
+.onboarding-actions {
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: clamp(14px, 3vh, 22px);
+}
+
+.onboarding-actions .primary-button {
+  flex: 1;
+}
+
+.onboarding-actions .secondary-button {
+  min-height: 48px;
+  padding-inline: 16px;
+}
+
+@media (max-height: 700px) {
+  .onboarding-card {
+    padding-block: 14px;
+  }
+
+  .onboarding-progress {
+    margin-block: 9px;
+  }
+
+  .onboarding-content h1 {
+    font-size: 28px;
+  }
+
+  .onboarding-lead,
+  .method-note {
+    margin-top: 8px;
+  }
+
+  .method-flow,
+  .rating-guide,
+  .exercise-guide {
+    margin-top: 8px;
+  }
+
+  .rating-guide-item {
+    min-height: 46px;
+    padding-block: 6px;
+  }
+
+  .exercise-guide article {
+    min-height: 92px;
+    padding: 9px;
+  }
+
+  .onboarding-actions {
+    margin-top: 10px;
+  }
+}
+
 .loading-screen .brand-mark {
   width: 58px;
   height: 58px;
