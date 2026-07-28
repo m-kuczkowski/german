@@ -807,7 +807,7 @@ function FlashcardSession(props: SessionProps) {
                 <strong>Nie znam</strong><small>ponownie za 3–5 fiszek</small>
               </button>
               <button className="rating-hard" onClick={() => rateIntroduction("hard")} disabled={Boolean(outcome)}>
-                <strong>Niepewnie</strong><small>3 odpowiedzi za 6–8 fiszek</small>
+                <strong>Niepewnie</strong><small>dyktando za 6–8 fiszek</small>
               </button>
               <button className="rating-good" onClick={() => rateIntroduction("good")} disabled={Boolean(outcome)}>
                 <strong>Znam</strong><small>wpisywanie za 8–11 fiszek</small>

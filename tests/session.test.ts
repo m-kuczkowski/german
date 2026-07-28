@@ -59,7 +59,7 @@ describe("adaptacyjna kolejka w lekcji", () => {
     expect(updated.queue[nextIndex].kind).toBe("introduction");
   });
 
-  it("Niepewnie wraca po 6–8 kartach jako wybór jednej z trzech", () => {
+  it("Niepewnie wraca po 6–8 kartach jako dyktando", () => {
     const card = starterCards[0];
     const session = createLearningSession(starterCards.slice(0, 10), "learn", card.category);
     const evidence = { mode: "introduction" as const, correct: true };
@@ -79,7 +79,43 @@ describe("adaptacyjna kolejka w lekcji", () => {
     );
     expect(nextIndex - 1).toBeGreaterThanOrEqual(6);
     expect(nextIndex - 1).toBeLessThanOrEqual(8);
-    expect(recorded.queue[nextIndex].forcedMode).toBe("choice-de-pl");
+    expect(recorded.queue[nextIndex].forcedMode).toBe("type-listen-de");
+  });
+
+  it("poprawne dyktando planuje później wpisanie słowa z tłumaczenia", () => {
+    const card = {
+      ...starterCards[0],
+      stage: "uncertain" as const,
+      leitnerBox: 1 as const,
+    };
+    const session = createLearningSession(starterCards.slice(0, 10), "learn", card.category);
+    const item = {
+      ...session.queue[0],
+      kind: "exercise" as const,
+      forcedMode: "type-listen-de" as const,
+      round: 1,
+    };
+    const evidence = { mode: "type-listen-de" as const, correct: true, score: 1 };
+    const reviewed = reviewCard(card, "good", evidence);
+    const recorded = recordSessionAnswer(
+      { ...session, queue: [item, ...session.queue.slice(1)] },
+      card,
+      reviewed,
+      item,
+      "good",
+      evidence,
+      card.german,
+      card.german,
+    );
+    const nextIndex = recorded.queue.findIndex(
+      (candidate, index) => index > 0 && candidate.id === card.id,
+    );
+    expect(nextIndex - 1).toBeGreaterThanOrEqual(6);
+    expect(nextIndex - 1).toBeLessThanOrEqual(8);
+    expect(recorded.queue[nextIndex]).toMatchObject({
+      kind: "exercise",
+      forcedMode: "type-pl-de",
+    });
   });
 
   it("zachowuje podsumowanie i rozpoznaje koniec sesji", () => {

@@ -71,36 +71,30 @@ export interface KnowledgeFacet {
 
 export function knowledgeFacets(card: Flashcard): KnowledgeFacet[] {
   const modes = new Set(card.successfulModes);
-  const challengeSucceeded = (skill: keyof Flashcard["challengeStats"]) => {
-    const progress = card.challengeStats[skill];
-    return Boolean(progress && !progress.needsWork && progress.successes > 0);
-  };
   return [
     {
       id: "meaning",
       label: "Znaczenie",
-      achieved: modes.has("choice-de-pl") || modes.has("type-de-pl") ||
-        challengeSucceeded("meaning"),
+      achieved: modes.has("choice-de-pl") || modes.has("type-de-pl"),
       applicable: true,
     },
     {
       id: "form",
       label: "Forma",
-      achieved: modes.has("type-pl-de") || modes.has("type-listen-de") ||
-        challengeSucceeded("writing"),
+      achieved: modes.has("type-pl-de") || modes.has("type-listen-de"),
       applicable: true,
     },
     {
       id: "article",
       label: "Rodzajnik",
       achieved: modes.has("choice-article") || modes.has("type-pl-de") ||
-        modes.has("type-listen-de") || challengeSucceeded("article"),
+        modes.has("type-listen-de"),
       applicable: Boolean(card.article),
     },
     {
       id: "listening",
       label: "Słuch",
-      achieved: modes.has("type-listen-de") || challengeSucceeded("listening"),
+      achieved: modes.has("type-listen-de"),
       applicable: true,
     },
   ];
@@ -155,8 +149,8 @@ function choiceOptions(
 }
 
 const stageModes: Record<Exclude<LearningStage, "new">, ExerciseMode[]> = {
-  learning: ["choice-de-pl", "choice-pl-de"],
-  uncertain: ["choice-de-pl", "choice-pl-de", "type-de-pl"],
+  learning: ["type-listen-de", "type-pl-de"],
+  uncertain: ["type-listen-de", "type-pl-de"],
   known: ["type-pl-de", "type-de-pl", "choice-pl-de"],
   mastered: ["type-pl-de", "type-de-pl", "choice-de-pl", "choice-pl-de"],
 };
@@ -164,7 +158,7 @@ const stageModes: Record<Exclude<LearningStage, "new">, ExerciseMode[]> = {
 export function preferredExerciseMode(card: Flashcard, sessionIndex: number): ExerciseMode {
   const stage = card.stage === "new" ? "learning" : card.stage;
   const candidates = [...stageModes[stage]];
-  if (stage !== "learning" && card.article) {
+  if ((stage === "known" || stage === "mastered") && card.article) {
     candidates.splice(Math.min(1, candidates.length), 0, "choice-article");
   }
   if (stage === "known" || stage === "mastered") {

@@ -112,7 +112,6 @@ export function difficultCards(cards: Flashcard[], now = new Date(), limit = 10)
     cards.filter((card) =>
       card.stage === "uncertain" ||
       card.lapses >= 2 ||
-      Object.values(card.challengeStats).some((progress) => progress?.needsWork) ||
       (card.typedAttempts >= 2 && card.typedSuccesses / card.typedAttempts < 0.7),
     ),
     now,

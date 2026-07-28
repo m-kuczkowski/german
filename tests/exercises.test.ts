@@ -21,12 +21,32 @@ describe("ćwiczenia językowe", () => {
       starterCards,
       0,
     );
-    expect(learning.mode).toBe("choice-de-pl");
+    expect(learning.mode).toBe("type-listen-de");
     expect(known.mode).toBe("type-pl-de");
   });
 
+  it("dla nieznanego i niepewnego słowa nie wybiera odpowiedzi 1 z 3", () => {
+    const learning = createExercise(
+      { ...starterCards[0], stage: "learning" },
+      starterCards,
+      1,
+    );
+    const uncertain = createExercise(
+      { ...starterCards[0], stage: "uncertain", successfulModes: [] },
+      starterCards,
+      1,
+    );
+    expect(learning.mode.startsWith("choice")).toBe(false);
+    expect(uncertain.mode.startsWith("choice")).toBe(false);
+  });
+
   it("buduje trzy unikalne odpowiedzi z dokładnie jedną poprawną", () => {
-    const exercise = createExercise(starterCards[0], starterCards, 0);
+    const exercise = createExercise(
+      starterCards[0],
+      starterCards,
+      0,
+      "choice-de-pl",
+    );
     expect(exercise.options).toHaveLength(3);
     expect(new Set(exercise.options.map((option) => option.label)).size).toBe(3);
     expect(exercise.options.filter((option) => option.correct)).toHaveLength(1);
@@ -145,5 +165,18 @@ describe("ćwiczenia językowe", () => {
       article: true,
       listening: true,
     });
+  });
+
+  it("nie zalicza głównych umiejętności na podstawie wyników wyzwań", () => {
+    const card = {
+      ...starterCards[0],
+      successfulModes: [],
+      challengeStats: {
+        meaning: { attempts: 1, successes: 1, lastPracticedAt: "2026-07-28", needsWork: false },
+        writing: { attempts: 1, successes: 1, lastPracticedAt: "2026-07-28", needsWork: false },
+        listening: { attempts: 1, successes: 1, lastPracticedAt: "2026-07-28", needsWork: false },
+      },
+    };
+    expect(knowledgeFacets(card).every((facet) => !facet.achieved)).toBe(true);
   });
 });

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { starterCards } from "../src/data/starterCards";
 import {
   buildCategoryProgress,
+  difficultCards,
   learningSessionPlan,
   recommendedNewCardLimit,
   sessionCardsForCategory,
@@ -69,5 +70,24 @@ describe("nauka kategoriami", () => {
       ...plan.due.map((card) => card.id),
       ...plan.newCards.map((card) => card.id),
     ]);
+  });
+
+  it("nie dodaje słowa do trudnych wyłącznie przez błąd w wyzwaniu", () => {
+    const card = {
+      ...starterCards[0],
+      stage: "known" as const,
+      lapses: 0,
+      typedAttempts: 0,
+      typedSuccesses: 0,
+      challengeStats: {
+        writing: {
+          attempts: 2,
+          successes: 0,
+          lastPracticedAt: "2026-07-28T10:00:00.000Z",
+          needsWork: true,
+        },
+      },
+    };
+    expect(difficultCards([card])).toEqual([]);
   });
 });

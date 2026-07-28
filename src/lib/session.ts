@@ -59,25 +59,52 @@ export function recordSessionAnswer(
 ): LearningSession {
   if (session.pendingAnswer) return session;
   const queue = [...session.queue];
-  const shouldReturn =
-    (item.kind === "introduction" && item.round === 0) ||
-    (!evidence.correct && item.round < 2);
-  if (shouldReturn) {
-    const gap = deterministicGap(previousCard.id, session.index, rating);
-    const nextItem: SessionItem = {
+  let nextItem: SessionItem | null = null;
+  let gapRating = rating;
+
+  if (item.kind === "introduction") {
+    if (rating === "again" && item.round === 0) {
+      nextItem = {
+        id: previousCard.id,
+        kind: "introduction",
+        round: item.round + 1,
+      };
+    } else if (rating === "hard" && item.round <= 1) {
+      nextItem = {
+        id: previousCard.id,
+        kind: "exercise",
+        forcedMode: "type-listen-de",
+        round: item.round + 1,
+      };
+    } else if (rating === "good" && item.round <= 1) {
+      nextItem = {
+        id: previousCard.id,
+        kind: "exercise",
+        forcedMode: "type-pl-de",
+        round: item.round + 1,
+      };
+    }
+  } else if (evidence.mode === "type-listen-de" && evidence.correct) {
+    nextItem = {
       id: previousCard.id,
-      kind: rating === "again" && item.kind === "introduction"
-        ? "introduction"
-        : "exercise",
-      forcedMode: rating === "good" && item.kind === "introduction"
-        ? "type-pl-de"
-        : rating === "hard"
-          ? "choice-de-pl"
-          : !evidence.correct && evidence.mode !== "introduction"
-            ? evidence.mode
-          : preferredExerciseMode(updatedCard, session.index + gap),
+      kind: "exercise",
+      forcedMode: "type-pl-de",
       round: item.round + 1,
     };
+    gapRating = "hard";
+  } else if (!evidence.correct && item.round < 2) {
+    nextItem = {
+      id: previousCard.id,
+      kind: "exercise",
+      forcedMode: evidence.mode === "introduction"
+        ? preferredExerciseMode(updatedCard, session.index)
+        : evidence.mode,
+      round: item.round + 1,
+    };
+  }
+
+  if (nextItem) {
+    const gap = deterministicGap(previousCard.id, session.index, gapRating);
     queue.splice(Math.min(queue.length, session.index + gap + 1), 0, nextItem);
   }
 

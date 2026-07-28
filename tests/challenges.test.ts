@@ -119,7 +119,7 @@ describe("dobrowolne wyzwania", () => {
     expect(updated.successfulModes).toContain("choice-de-pl");
     expect(updated.successfulModes).toContain("type-pl-de");
     expect(updated.challengeStats.writing?.needsWork).toBe(true);
-    expect(difficultCards([updated])).toContainEqual(updated);
+    expect(difficultCards([updated])).not.toContainEqual(updated);
   });
 
   it("zapamiętuje aktywną sesję po normalizacji metadanych", () => {
