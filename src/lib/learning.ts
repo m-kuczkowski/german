@@ -22,14 +22,17 @@ export function curriculumTier(card: Pick<Flashcard, "curriculumTier">): Curricu
 }
 
 export function isDefaultCurriculumCard(card: Pick<Flashcard, "curriculumTier">): boolean {
-  return curriculumTier(card) !== "specialist";
+  return curriculumTier(card) === "core";
 }
 
 function newCardOrder(card: Flashcard): number {
   const tierOrder: Record<CurriculumTier, number> = { core: 0, extension: 1, specialist: 2 };
   const familyOrder: Record<WordFamilyRole, number> = { base: 0, derived: 2, compound: 3 };
   const roleOrder = card.wordFamilyRole ? familyOrder[card.wordFamilyRole] : 1;
-  return tierOrder[curriculumTier(card)] * 10 + roleOrder;
+  const officialOrder = Number.isFinite(card.curriculumOrder)
+    ? Math.max(0, card.curriculumOrder!)
+    : 999_999;
+  return tierOrder[curriculumTier(card)] * 10_000_000 + officialOrder * 10 + roleOrder;
 }
 
 export function prerequisitesReady(

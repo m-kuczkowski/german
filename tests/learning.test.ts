@@ -11,9 +11,9 @@ import {
 describe("nauka kategoriami", () => {
   it("liczy postęp osobno dla każdej lekcji", () => {
     const cards = [
-      { ...starterCards[0], category: "Nicos Weg A2 · Start", repetitions: 1, stage: "learning" as const, learned: false },
-      { ...starterCards[1], category: "Nicos Weg A2 · Start", repetitions: 3, stage: "mastered" as const, learned: true },
-      { ...starterCards[2], category: "Nicos Weg A2 · Dom", repetitions: 0 },
+      { ...starterCards[0], category: "Nicos Weg A2 · Start", curriculumTier: "core" as const, repetitions: 1, stage: "learning" as const, learned: false },
+      { ...starterCards[1], category: "Nicos Weg A2 · Start", curriculumTier: "core" as const, repetitions: 3, stage: "mastered" as const, learned: true },
+      { ...starterCards[2], category: "Nicos Weg A2 · Dom", curriculumTier: "core" as const, repetitions: 0 },
     ];
     const categories = buildCategoryProgress(cards, new Date("2026-07-26T10:00:00.000Z"));
     expect(categories.map((category) => [category.title, category.introduced, category.mastered])).toEqual([
@@ -25,9 +25,9 @@ describe("nauka kategoriami", () => {
   it("łączy powtórki z nowymi kartami tylko z wybranej kategorii", () => {
     const now = new Date("2026-07-26T10:00:00.000Z");
     const cards = [
-      { ...starterCards[0], category: "Nicos Weg A2 · Start", repetitions: 1, stage: "learning" as const, dueAt: "2026-07-25T10:00:00.000Z" },
-      { ...starterCards[1], category: "Nicos Weg A2 · Start", repetitions: 0 },
-      { ...starterCards[2], category: "Nicos Weg A2 · Dom", repetitions: 0 },
+      { ...starterCards[0], category: "Nicos Weg A2 · Start", curriculumTier: "core" as const, repetitions: 1, stage: "learning" as const, dueAt: "2026-07-25T10:00:00.000Z" },
+      { ...starterCards[1], category: "Nicos Weg A2 · Start", curriculumTier: "core" as const, repetitions: 0 },
+      { ...starterCards[2], category: "Nicos Weg A2 · Dom", curriculumTier: "core" as const, repetitions: 0 },
     ];
     expect(sessionCardsForCategory(cards, "Nicos Weg A2 · Start", "learn", now).map((card) => card.id)).toEqual([
       cards[0].id,
@@ -60,6 +60,7 @@ describe("nauka kategoriami", () => {
       ...card,
       id: `new-${index}`,
       category,
+      curriculumTier: "core" as const,
       stage: "new" as const,
       repetitions: 0,
     }));
@@ -72,7 +73,7 @@ describe("nauka kategoriami", () => {
     ]);
   });
 
-  it("najpierw wprowadza codzienne słowa, a nie dodaje nowych terminów specjalistycznych", () => {
+  it("wprowadza tylko oficjalny rdzeń, a rozszerzenia pozostawia w bibliotece", () => {
     const category = "Nicos Weg A2 · Zdrowie";
     const [template] = starterCards;
     const cards = [
@@ -81,8 +82,8 @@ describe("nauka kategoriami", () => {
       { ...template, id: "core", category, stage: "new" as const, curriculumTier: "core" as const },
     ];
     const plan = learningSessionPlan(cards, category, new Date("2026-07-26T10:00:00.000Z"));
-    expect(plan.newCards.map((card) => card.id)).toEqual(["core", "extension"]);
-    expect(buildCategoryProgress(cards)[0]).toMatchObject({ total: 2, specialist: 1 });
+    expect(plan.newCards.map((card) => card.id)).toEqual(["core"]);
+    expect(buildCategoryProgress(cards)[0]).toMatchObject({ total: 1, specialist: 2 });
   });
 
   it("odblokowuje rozwinięcie dopiero po aktywnym przypomnieniu słowa bazowego", () => {

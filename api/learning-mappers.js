@@ -13,11 +13,16 @@ export function mapCatalogRow(row) {
     examplePolish: row.example_polish,
     category: row.category,
     curriculumTier: row.curriculum_tier,
+    ...(Number.isInteger(row.curriculum_order)
+      ? { curriculumOrder: row.curriculum_order }
+      : {}),
     ...(row.word_family_id ? { wordFamilyId: row.word_family_id } : {}),
     ...(row.word_family_role ? { wordFamilyRole: row.word_family_role } : {}),
     ...(Array.isArray(row.prerequisite_ids) ? { prerequisiteIds: row.prerequisite_ids } : {}),
     ...(Array.isArray(row.word_parts) ? { wordParts: row.word_parts } : {}),
     level: row.level,
+    ...(row.goethe_level ? { goetheLevel: row.goethe_level } : {}),
+    ...(row.goethe_source_url ? { goetheSourceUrl: row.goethe_source_url } : {}),
     sourceLabel: row.source_label,
     sourceUrl: row.source_url,
     sourceGloss: row.source_gloss,

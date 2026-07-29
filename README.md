@@ -1,6 +1,6 @@
 # Wortschatz
 
-Mobilna aplikacja PWA do nauki niemieckiego po polsku. Łączy spokojny interfejs z aktywnym przypominaniem, adaptacyjnymi powtórkami i pełnym zestawem kart Nicos Weg. Działa przede wszystkim na iPhonie, zachowuje postęp offline i synchronizuje go przez Neon po odzyskaniu połączenia.
+Mobilna aplikacja PWA do nauki niemieckiego po polsku. Łączy spokojny interfejs z aktywnym przypominaniem, adaptacyjnymi powtórkami i oficjalnym rdzeniem słownictwa Goethe A2/B1. Pełny zestaw kart Nicos Weg pozostaje zachowany jako biblioteka rozszerzona. Aplikacja działa przede wszystkim na iPhonie, zachowuje postęp offline i synchronizuje go przez Neon po odzyskaniu połączenia.
 
 Interfejs jest zaprojektowany przede wszystkim dla Safari na iPhonie. Po pierwszym otwarciu aplikacja działa również offline.
 
@@ -9,7 +9,8 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 
 ## Co działa
 
-- pełne 1856 kart A2 i 1182 karty B1;
+- oficjalny rdzeń Goethe: 3041 pozycji źródłowych odwzorowanych na 3180 kart (1364 A2 i 1816 B1);
+- katalog 4937 kart, w tym zachowane wszystkie 3038 kart Nicos Weg;
 - pierwsze spotkanie jako zwykła fiszka z trzema ocenami: „Nie znam”, „Niepewnie”, „Znam”;
 - adaptacyjne powroty w tej samej lekcji: po 3–5, 6–8 albo 8–11 innych kartach;
 - wybór jednego tłumaczenia z trzech odpowiedzi i wpisywanie w obu kierunkach;
@@ -32,8 +33,8 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 - kolekcja z wyszukiwaniem, filtrami, edycją i usuwaniem;
 - ręczne dodawanie własnych kart;
 - postępy, dzienna seria i statystyki poziomów;
-- naturalna wymowa wszystkich 3038 haseł głosem Thorsten (Piper), z systemowym
-  lektorem `de-DE` jako fallbackiem;
+- naturalna wymowa 3038 zachowanych haseł Nicos Weg głosem Kokoro Martin, z systemowym
+  lektorem `de-DE` jako fallbackiem dla nowych kart Goethe i niedostępnych nagrań;
 - profil wybierany po imieniu bez rejestracji, zapamiętywany na urządzeniu;
 - zapis w IndexedDB, synchronizacja postępu imiennego w Neon oraz eksport i import kopii JSON;
 - jasny, ciemny i systemowy motyw;
@@ -41,17 +42,24 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 
 ## Źródła słownictwa
 
-Statyczny zestaw powstał z dwóch publicznych talii AnkiWeb:
+Prawdziwą podstawą domyślnego programu są oficjalne listy egzaminacyjne:
+
+- [Goethe-Zertifikat A2 Wortliste](https://www.goethe.de/pro/relaunch/prf/en/Goethe-Zertifikat_A2_Wortliste.pdf);
+- [Goethe-Zertifikat B1 Wortliste](https://www.goethe.de/pro/relaunch/prf/en/Goethe-Zertifikat_B1_Wortliste.pdf).
+
+Lista B1 jest traktowana jako kumulatywna. Po oczyszczeniu wariantów źródłowych katalog referencyjny zawiera 1277 pozycji A2 i 1764 dodatkowe pozycje B1. Zbieżne hasła wykorzystują istniejące, sprawdzone karty; brakujące zostały przetłumaczone jednorazowo w ChatGPT i dodane do rdzenia. Warianty płci, znaczeń i istniejące karty Nicos powodują, że 3041 pozycji źródłowych odpowiada 3180 kartom do nauki.
+
+Biblioteka rozszerzona pochodzi z dwóch publicznych talii AnkiWeb:
 
 - [Nicos Weg A2 Deutsch Welle (English)](https://ankiweb.net/shared/info/458469586) — 1856 kart;
 - [Nicos Weg B1 Deutsch Welle (Deutsch)](https://ankiweb.net/shared/info/492301569) — 1182 karty.
 
-Aplikacja nie kopiuje plików audio, obrazów ani szablonów Anki. Przechowuje tekst haseł, polskie tłumaczenia przygotowane jednorazowo przez AI oraz odnośniki do oryginalnych talii.
+Aplikacja nie kopiuje plików audio, obrazów ani szablonów Anki. Przechowuje tekst haseł, polskie tłumaczenia przygotowane jednorazowo przez AI oraz odnośniki do źródeł.
 Techniczne separatory z talii (`|`, `/`) są usuwane przed publikacją. Rekcja pozostaje jako opcjonalna wskazówka w nawiasie, więc użytkownik wpisuje naturalne hasło, np. `vergessen`, a nie `etwas/jemanden vergessen`.
 
 ## Jak działa nauka
 
-Nowe słowo jest najpierw prezentowane na dwustronnej fiszce. Trzy oceny są widoczne po obu stronach. „Znam” prowadzi do aktywnego wpisywania po kilku innych słowach, „Niepewnie” do prostszego quizu, a „Nie znam” do szybkiego ponownego pokazania fiszki.
+Nowe słowo jest najpierw prezentowane na dwustronnej fiszce. Trzy oceny są widoczne po obu stronach. „Znam” prowadzi do aktywnego wpisywania po kilku innych słowach, „Niepewnie” do odsłuchania i zapisania słowa po niemiecku, a „Nie znam” do szybkiego ponownego pokazania fiszki.
 
 Kolejne odpowiedzi aktualizują przegródkę, termin, serię, historię oraz zestaw zaliczonych typów ćwiczeń. Samo klikanie „Znam” nigdy nie wystarcza do opanowania. Ocena na zwykłej fiszce od razu otwiera kolejną kartę. Po wyborze jednej z trzech odpowiedzi lub wpisywaniu ekran wyniku pozostaje widoczny do kliknięcia „Dalej”.
 
@@ -66,7 +74,7 @@ ekranie do ręcznego kliknięcia „Dalej”.
 
 - Vite, React i TypeScript po stronie klienta;
 - Vercel Function `api/learning.js` jako wąski interfejs do danych;
-- Neon Postgres dla katalogu 3038 kart i postępu oddzielonego według imienia;
+- Neon Postgres dla katalogu 4937 kart i postępu oddzielonego według imienia;
 - IndexedDB jako pamięć lokalna i źródło działania offline;
 - service worker z dynamicznym zakresem dla Vercel i GitHub Pages;
 - 3038 jednorazowo wygenerowanych offline nagrań Piper, spakowanych do 64
@@ -113,7 +121,9 @@ Produkcja działa na Vercel. Projekt wymaga `DATABASE_URL` z integracji Neon. Po
 
 Workflow GitHub Pages pozostaje statycznym podglądem awaryjnym; bez Vercel Function korzysta z katalogu osadzonego w aplikacji i lokalnego IndexedDB.
 
-## Aktualizacja danych z Anki
+## Aktualizacja danych Goethe i Anki
+
+`scripts/goethe-curriculum.py` odtwarza referencyjny katalog z oficjalnych PDF-ów, dopasowuje go do zachowanych kart Nicos Weg i przygotowuje kolejkę brakujących tłumaczeń. Pliki `data/goetheTranslations-*.json` są walidowanymi wynikami jednorazowego tłumaczenia przez ChatGPT. `scripts/build-goethe-catalog.mjs` sprawdza kompletność identyfikatorów, pola i kategorie, po czym generuje statyczny katalog aplikacji.
 
 Skrypt `scripts/extract-anki-decks.mjs` wyodrębnia tekst wszystkich notatek z dwóch plików `.apkg`. Nie wykonuje tłumaczeń.
 
@@ -128,8 +138,8 @@ Tłumaczenia i pary zdań kontekstowych są przygotowywane jednorazowo przez mod
 ## Nagrania Kokoro Martin
 
 Audio nie jest generowane podczas używania aplikacji. Skrypt
-`scripts/piper-audio-source.mjs` przygotowuje dokładnie 3038 tekstów z bieżącego
-katalogu, a `scripts/generate-kokoro-audio.py` jednorazowo syntezuje je lokalnie
+`scripts/piper-audio-source.mjs` przygotowuje dokładnie 3038 tekstów zachowanej
+biblioteki Nicos Weg, a `scripts/generate-kokoro-audio.py` jednorazowo syntezuje je lokalnie
 przez Kokoro Martin i kompresuje kodekiem Opus w kontenerze WebM. Tekst do
 wymowy upraszcza techniczne znaki kart (`|`, `/`, nawiasy), a każde nagranie ma
 krótką ciszę przed i po słowie, aby początek nie był ucinany przy odtwarzaniu
@@ -173,10 +183,10 @@ lektor przeglądarki pozostaje fallbackiem, gdy plik nie jest dostępny.
 
 ```text
 src/
-  data/             3038 statycznych kart Nicos Weg A2/B1
+  data/             oficjalny rdzeń Goethe i zachowana biblioteka Nicos Weg
   lib/              ćwiczenia, sesje, SRS, synchronizacja, IndexedDB i wymowa
   App.tsx           interfejs i przepływy aplikacji
-scripts/            odczyt źródłowych talii Anki
+scripts/            odczyt Goethe/Anki, budowa katalogu, migracje i audio
 api/                funkcja synchronizacji Vercel + Neon
 public/             manifest, service worker i ikony PWA
 tests/              testy logiki i pamięci

@@ -1,4 +1,4 @@
-export const MIGRATION_ID = "20260729_002_word_families";
+export const MIGRATION_ID = "20260729_003_goethe_curriculum";
 
 export const legacySchemaStatements = [
   `CREATE TABLE catalog_cards (
@@ -48,11 +48,14 @@ export const expandStatements = [
     ADD COLUMN IF NOT EXISTS example_polish TEXT,
     ADD COLUMN IF NOT EXISTS category_id TEXT,
     ADD COLUMN IF NOT EXISTS curriculum_tier TEXT,
+    ADD COLUMN IF NOT EXISTS curriculum_order INTEGER,
     ADD COLUMN IF NOT EXISTS word_family_id TEXT,
     ADD COLUMN IF NOT EXISTS word_family_role TEXT,
     ADD COLUMN IF NOT EXISTS prerequisite_ids TEXT[],
     ADD COLUMN IF NOT EXISTS word_parts JSONB,
     ADD COLUMN IF NOT EXISTS level TEXT,
+    ADD COLUMN IF NOT EXISTS goethe_level TEXT,
+    ADD COLUMN IF NOT EXISTS goethe_source_url TEXT,
     ADD COLUMN IF NOT EXISTS source_label TEXT,
     ADD COLUMN IF NOT EXISTS source_url TEXT,
     ADD COLUMN IF NOT EXISTS source_gloss TEXT,
@@ -132,6 +135,11 @@ export const backfillStatements = [
      example_polish = content->>'examplePolish',
      category_id = 'category_' || substr(md5(content->>'category'), 1, 12),
      curriculum_tier = COALESCE(content->>'curriculumTier', 'core'),
+     curriculum_order = CASE
+       WHEN content->>'curriculumOrder' ~ '^[0-9]+$'
+       THEN (content->>'curriculumOrder')::integer
+       ELSE NULL
+     END,
      word_family_id = content->>'wordFamilyId',
      word_family_role = content->>'wordFamilyRole',
      prerequisite_ids = CASE
@@ -141,6 +149,8 @@ export const backfillStatements = [
      END,
      word_parts = content->'wordParts',
      level = content->>'level',
+     goethe_level = content->>'goetheLevel',
+     goethe_source_url = content->>'goetheSourceUrl',
      source_label = content->>'sourceLabel',
      source_url = content->>'sourceUrl',
      source_gloss = content->>'sourceGloss',
@@ -219,6 +229,8 @@ export const constraintStatements = [
     ON catalog_cards (category_id, level, position)`,
   `CREATE INDEX IF NOT EXISTS catalog_cards_curriculum_tier_idx
     ON catalog_cards (curriculum_tier, position)`,
+  `CREATE INDEX IF NOT EXISTS catalog_cards_goethe_curriculum_idx
+    ON catalog_cards (goethe_level, curriculum_order)`,
   `CREATE INDEX IF NOT EXISTS catalog_cards_word_family_idx
     ON catalog_cards (word_family_id, word_family_role, position)`,
   `CREATE INDEX IF NOT EXISTS card_progress_due_idx
@@ -250,6 +262,11 @@ export const constraintStatements = [
        ALTER TABLE catalog_cards
          ADD CONSTRAINT catalog_cards_curriculum_tier_check
          CHECK (curriculum_tier IN ('core', 'extension', 'specialist')) NOT VALID;
+     END IF;
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'catalog_cards_goethe_level_check' AND conrelid = 'catalog_cards'::regclass) THEN
+       ALTER TABLE catalog_cards
+         ADD CONSTRAINT catalog_cards_goethe_level_check
+         CHECK (goethe_level IS NULL OR goethe_level IN ('A2', 'B1')) NOT VALID;
      END IF;
      IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'catalog_cards_word_family_role_check' AND conrelid = 'catalog_cards'::regclass) THEN
        ALTER TABLE catalog_cards
@@ -294,6 +311,7 @@ export const constraintStatements = [
   `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_article_check`,
   `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_level_check`,
   `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_curriculum_tier_check`,
+  `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_goethe_level_check`,
   `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_word_family_role_check`,
   `ALTER TABLE card_progress VALIDATE CONSTRAINT card_progress_stage_check`,
   `ALTER TABLE card_progress VALIDATE CONSTRAINT card_progress_leitner_box_check`,
@@ -357,6 +375,15 @@ export const validationQuery = `
          'sourceLanguage', c.source_language
        ) || CASE
          WHEN c.content ? 'curriculumTier' THEN jsonb_build_object('curriculumTier', c.curriculum_tier)
+         ELSE '{}'::jsonb
+       END || CASE
+         WHEN c.content ? 'curriculumOrder' THEN jsonb_build_object('curriculumOrder', c.curriculum_order)
+         ELSE '{}'::jsonb
+       END || CASE
+         WHEN c.content ? 'goetheLevel' THEN jsonb_build_object('goetheLevel', c.goethe_level)
+         ELSE '{}'::jsonb
+       END || CASE
+         WHEN c.content ? 'goetheSourceUrl' THEN jsonb_build_object('goetheSourceUrl', c.goethe_source_url)
          ELSE '{}'::jsonb
        END || CASE
          WHEN c.content ? 'wordFamilyId' THEN jsonb_build_object('wordFamilyId', c.word_family_id)

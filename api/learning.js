@@ -81,6 +81,9 @@ async function ensureSchema(sql) {
       await sql`ALTER TABLE catalog_cards ADD COLUMN IF NOT EXISTS word_family_role TEXT`;
       await sql`ALTER TABLE catalog_cards ADD COLUMN IF NOT EXISTS prerequisite_ids TEXT[]`;
       await sql`ALTER TABLE catalog_cards ADD COLUMN IF NOT EXISTS word_parts JSONB`;
+      await sql`ALTER TABLE catalog_cards ADD COLUMN IF NOT EXISTS curriculum_order INTEGER`;
+      await sql`ALTER TABLE catalog_cards ADD COLUMN IF NOT EXISTS goethe_level TEXT`;
+      await sql`ALTER TABLE catalog_cards ADD COLUMN IF NOT EXISTS goethe_source_url TEXT`;
       await sql`CREATE UNIQUE INDEX IF NOT EXISTS learning_profiles_name_key_unique
         ON learning_profiles (name_key) WHERE name_key IS NOT NULL`;
       await sql`CREATE TABLE IF NOT EXISTS card_progress (
@@ -104,7 +107,7 @@ function progressPayload(cards) {
   if (!Array.isArray(cards)) return [];
   return cards
     .filter((card) => card && typeof card.id === "string")
-    .slice(0, 3038)
+    .slice(0, 10_000)
     .map((card) => Object.fromEntries(["id", ...progressKeys].map((key) => [key, card[key]])));
 }
 
@@ -223,6 +226,7 @@ export default async function handler(req, res) {
             card.id, card.german, card.polish, card.article, card.plural,
             card.example_german, card.example_polish, card.category_id, card.curriculum_tier, card.level,
             card.word_family_id, card.word_family_role, card.prerequisite_ids, card.word_parts,
+            card.curriculum_order, card.goethe_level, card.goethe_source_url,
             card.source_label, card.source_url, card.source_gloss, card.source_language
           FROM catalog_cards card
           ORDER BY card.position

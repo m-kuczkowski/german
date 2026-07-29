@@ -1,0 +1,1715 @@
+{
+  "schemaVersion": 1,
+  "translations": [
+    {
+      "id": "goethe-85d50719e186",
+      "german": "übertragen",
+      "polish": "przesyłać; transmitować",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Spiel wird heute Abend live übertragen.",
+      "examplePolish": "Mecz będzie dziś wieczorem transmitowany na żywo.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-7136486d06c2",
+      "german": "Norden",
+      "polish": "północ",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Im Norden des Landes ist es kühler.",
+      "examplePolish": "Na północy kraju jest chłodniej.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-ce14e8b84975",
+      "german": "grau",
+      "polish": "szary",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Himmel ist heute ganz grau.",
+      "examplePolish": "Niebo jest dziś całkiem szare.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-845afb3527e2",
+      "german": "Vogel",
+      "polish": "ptak",
+      "article": "der",
+      "plural": "Vögel",
+      "exampleGerman": "Ein Vogel sitzt auf dem Balkon.",
+      "examplePolish": "Ptak siedzi na balkonie.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-f98733d917e6",
+      "german": "Süden",
+      "polish": "południe",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Im Süden wachsen viele Weintrauben.",
+      "examplePolish": "Na południu rośnie wiele winogron.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-bba4cf842081",
+      "german": "demokratisch",
+      "polish": "demokratyczny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Entscheidung wurde demokratisch getroffen.",
+      "examplePolish": "Decyzja została podjęta demokratycznie.",
+      "category": "Społeczeństwo i polityka (Gesellschaft und Politik)"
+    },
+    {
+      "id": "goethe-81aa094d13b1",
+      "german": "westlich",
+      "polish": "na zachód; zachodni",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Dorf liegt westlich von Köln.",
+      "examplePolish": "Wioska leży na zachód od Kolonii.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-2a054709a624",
+      "german": "Fisch",
+      "polish": "ryba",
+      "article": "der",
+      "plural": "Fische",
+      "exampleGerman": "Zum Abendessen gibt es gebratenen Fisch.",
+      "examplePolish": "Na kolację jest smażona ryba.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-b141042c602d",
+      "german": "nochmal",
+      "polish": "jeszcze raz",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Kannst du das bitte nochmal erklären?",
+      "examplePolish": "Czy możesz to jeszcze raz wyjaśnić?",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-eeb0d477c601",
+      "german": "Katze",
+      "polish": "kot",
+      "article": "die",
+      "plural": "Katzen",
+      "exampleGerman": "Unsere Katze schläft auf dem Sofa.",
+      "examplePolish": "Nasz kot śpi na kanapie.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-c0b3655864e0",
+      "german": "braun",
+      "polish": "brązowy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Er trägt braune Schuhe.",
+      "examplePolish": "On nosi brązowe buty.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-19dfeab068ea",
+      "german": "Schreibtisch",
+      "polish": "biurko",
+      "article": "der",
+      "plural": "Schreibtische",
+      "exampleGerman": "Auf dem Schreibtisch steht ein Computer.",
+      "examplePolish": "Na biurku stoi komputer.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-d9c92bf01d26",
+      "german": "Philosophie",
+      "polish": "filozofia",
+      "article": "die",
+      "plural": "Philosophien",
+      "exampleGerman": "Sie studiert Philosophie an der Universität.",
+      "examplePolish": "Ona studiuje filozofię na uniwersytecie.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-2852d92739fa",
+      "german": "Schwein",
+      "polish": "świnia",
+      "article": "das",
+      "plural": "Schweine",
+      "exampleGerman": "Auf dem Bauernhof leben mehrere Schweine.",
+      "examplePolish": "W gospodarstwie żyje kilka świń.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-7e8275882986",
+      "german": "südlich",
+      "polish": "na południe; południowy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der See liegt südlich der Stadt.",
+      "examplePolish": "Jezioro leży na południe od miasta.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-ee9c012f203c",
+      "german": "Maus",
+      "polish": "mysz",
+      "article": "die",
+      "plural": "Mäuse",
+      "exampleGerman": "Im Keller habe ich eine Maus gesehen.",
+      "examplePolish": "W piwnicy widziałem mysz.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-2ebdaf0230e3",
+      "german": "nördlich",
+      "polish": "na północ; północny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Hotel liegt nördlich vom Zentrum.",
+      "examplePolish": "Hotel leży na północ od centrum.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-17ef695bf7af",
+      "german": "östlich",
+      "polish": "na wschód; wschodni",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Bahnhof liegt östlich der Altstadt.",
+      "examplePolish": "Dworzec leży na wschód od starego miasta.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-fb87aae54455",
+      "german": "Hühnchen",
+      "polish": "kurczak",
+      "article": "das",
+      "plural": "Hühnchen",
+      "exampleGerman": "Ich bestelle ein Hühnchen mit Gemüse.",
+      "examplePolish": "Zamawiam kurczaka z warzywami.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-c6c50b34a880",
+      "german": "herunterfahren",
+      "polish": "wyłączać; zjeżdżać w dół",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Bitte fahre den Computer vor Feierabend herunter.",
+      "examplePolish": "Proszę wyłączyć komputer przed końcem pracy.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-52ff10ac095b",
+      "german": "pensioniert",
+      "polish": "na emeryturze",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Mein ehemaliger Lehrer ist seit zwei Jahren pensioniert.",
+      "examplePolish": "Mój były nauczyciel jest od dwóch lat na emeryturze.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-1c42c72cf95a",
+      "german": "circa",
+      "polish": "około",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Fahrt dauert circa drei Stunden.",
+      "examplePolish": "Podróż trwa około trzech godzin.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-0c278a2892dc",
+      "german": "das heißt",
+      "polish": "to znaczy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Kurs ist kostenlos, das heißt, du musst nichts bezahlen.",
+      "examplePolish": "Kurs jest bezpłatny, to znaczy nie musisz nic płacić.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-793d6d7c60bd",
+      "german": "PC",
+      "polish": "komputer osobisty",
+      "article": "der",
+      "plural": "PCs",
+      "exampleGerman": "Mein PC startet heute sehr langsam.",
+      "examplePolish": "Mój komputer osobisty uruchamia się dziś bardzo wolno.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-83b04e265391",
+      "german": "SMS",
+      "polish": "SMS",
+      "article": "die",
+      "plural": "SMS",
+      "exampleGerman": "Ich schicke dir später eine SMS.",
+      "examplePolish": "Wyślę ci później SMS-a.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-806997106e5d",
+      "german": "und so weiter",
+      "polish": "i tak dalej",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir brauchen Brot, Milch, Eier und so weiter.",
+      "examplePolish": "Potrzebujemy chleba, mleka, jajek i tak dalej.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-146b5dae1228",
+      "german": "WC",
+      "polish": "toaleta",
+      "article": "das",
+      "plural": "WCs",
+      "exampleGerman": "Das WC befindet sich im Erdgeschoss.",
+      "examplePolish": "Toaleta znajduje się na parterze.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-39e357851a29",
+      "german": "zum Beispiel",
+      "polish": "na przykład",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Du kannst zum Beispiel mit dem Bus fahren.",
+      "examplePolish": "Możesz na przykład pojechać autobusem.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-3765923cc2e0",
+      "german": "Antwortbogen",
+      "polish": "arkusz odpowiedzi",
+      "article": "der",
+      "plural": "Antwortbögen",
+      "exampleGerman": "Tragen Sie Ihre Lösungen in den Antwortbogen ein.",
+      "examplePolish": "Proszę wpisać odpowiedzi do arkusza odpowiedzi.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-3c1afb9b4fcc",
+      "german": "Prüfer",
+      "polish": "egzaminator",
+      "article": "der",
+      "plural": "Prüfer",
+      "exampleGerman": "Der Prüfer erklärt zuerst die Aufgabe.",
+      "examplePolish": "Egzaminator najpierw wyjaśnia zadanie.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-40feb79545f7",
+      "german": "Prüferin",
+      "polish": "egzaminatorka",
+      "article": "die",
+      "plural": "Prüferinnen",
+      "exampleGerman": "Die Prüferin stellt mir zwei Fragen.",
+      "examplePolish": "Egzaminatorka zadaje mi dwa pytania.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-a76937824815",
+      "german": "Ärztin",
+      "polish": "lekarka",
+      "article": "die",
+      "plural": "Ärztinnen",
+      "exampleGerman": "Die Ärztin untersucht das Kind.",
+      "examplePolish": "Lekarka bada dziecko.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-46becb21ac54",
+      "german": "Auszubildender",
+      "polish": "uczeń zawodu",
+      "article": "der",
+      "plural": "Auszubildende",
+      "exampleGerman": "Der Auszubildende arbeitet heute in der Werkstatt.",
+      "examplePolish": "Uczeń zawodu pracuje dziś w warsztacie.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-8ce26ed0d4d1",
+      "german": "Babysitter",
+      "polish": "opiekun do dziecka",
+      "article": "der",
+      "plural": "Babysitter",
+      "exampleGerman": "Der Babysitter bleibt bis Mitternacht bei den Kindern.",
+      "examplePolish": "Opiekun zostaje z dziećmi do północy.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-5f6051a9588d",
+      "german": "Babysitterin",
+      "polish": "opiekunka do dziecka",
+      "article": "die",
+      "plural": "Babysitterinnen",
+      "exampleGerman": "Die Babysitterin liest den Kindern eine Geschichte vor.",
+      "examplePolish": "Opiekunka czyta dzieciom opowiadanie.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-7f64518f678b",
+      "german": "Bäcker",
+      "polish": "piekarz",
+      "article": "der",
+      "plural": "Bäcker",
+      "exampleGerman": "Der Bäcker beginnt früh am Morgen zu arbeiten.",
+      "examplePolish": "Piekarz zaczyna pracę wcześnie rano.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-fa762e2593a6",
+      "german": "Bäckerin",
+      "polish": "piekarka",
+      "article": "die",
+      "plural": "Bäckerinnen",
+      "exampleGerman": "Die Bäckerin verkauft frische Brötchen.",
+      "examplePolish": "Piekarka sprzedaje świeże bułki.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-f9321e17a2fe",
+      "german": "Doktorin",
+      "polish": "lekarka; doktor",
+      "article": "die",
+      "plural": "Doktorinnen",
+      "exampleGerman": "Die Doktorin arbeitet in einer kleinen Praxis.",
+      "examplePolish": "Lekarka pracuje w małym gabinecie.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-a0c8857ff425",
+      "german": "Fahrerin",
+      "polish": "kierowczyni",
+      "article": "die",
+      "plural": "Fahrerinnen",
+      "exampleGerman": "Die Fahrerin wartet vor dem Hotel.",
+      "examplePolish": "Kierowczyni czeka przed hotelem.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-da93cc6b051b",
+      "german": "Friseurin",
+      "polish": "fryzjerka",
+      "article": "die",
+      "plural": "Friseurinnen",
+      "exampleGerman": "Die Friseurin schneidet mir die Haare.",
+      "examplePolish": "Fryzjerka ścina mi włosy.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-0a3c2b6956b6",
+      "german": "Hausmann",
+      "polish": "gospodarz domowy",
+      "article": "der",
+      "plural": "Hausmänner",
+      "exampleGerman": "Er arbeitet als Hausmann und kümmert sich um die Kinder.",
+      "examplePolish": "On zajmuje się domem i opiekuje dziećmi.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-3114bdcac177",
+      "german": "Hausfrau",
+      "polish": "gospodyni domowa",
+      "article": "die",
+      "plural": "Hausfrauen",
+      "exampleGerman": "Die Hausfrau bereitet das Mittagessen vor.",
+      "examplePolish": "Gospodyni domowa przygotowuje obiad.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-0e8571cdea8d",
+      "german": "Kaufmann",
+      "polish": "handlowiec",
+      "article": "der",
+      "plural": "Kaufleute",
+      "exampleGerman": "Der Kaufmann bestellt neue Waren.",
+      "examplePolish": "Handlowiec zamawia nowy towar.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-96645560a42a",
+      "german": "Kauffrau",
+      "polish": "handlowczyni",
+      "article": "die",
+      "plural": "Kauffrauen",
+      "exampleGerman": "Die Kauffrau arbeitet in einem großen Unternehmen.",
+      "examplePolish": "Handlowczyni pracuje w dużej firmie.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-60985dbc9b02",
+      "german": "Kellnerin",
+      "polish": "kelnerka",
+      "article": "die",
+      "plural": "Kellnerinnen",
+      "exampleGerman": "Die Kellnerin bringt uns die Speisekarte.",
+      "examplePolish": "Kelnerka przynosi nam menu.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-b6b4eb2f2432",
+      "german": "Köchin",
+      "polish": "kucharka",
+      "article": "die",
+      "plural": "Köchinnen",
+      "exampleGerman": "Die Köchin bereitet eine Gemüsesuppe zu.",
+      "examplePolish": "Kucharka przygotowuje zupę warzywną.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-a6739687c05a",
+      "german": "Lehrerin",
+      "polish": "nauczycielka",
+      "article": "die",
+      "plural": "Lehrerinnen",
+      "exampleGerman": "Die Lehrerin erklärt die Grammatik sehr klar.",
+      "examplePolish": "Nauczycielka bardzo jasno wyjaśnia gramatykę.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-bca4a177e9b8",
+      "german": "Mechanikerin",
+      "polish": "mechaniczka",
+      "article": "die",
+      "plural": "Mechanikerinnen",
+      "exampleGerman": "Die Mechanikerin repariert mein Fahrrad.",
+      "examplePolish": "Mechaniczka naprawia mój rower.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-9227e75c65f3",
+      "german": "Musikerin",
+      "polish": "muzyczka",
+      "article": "die",
+      "plural": "Musikerinnen",
+      "exampleGerman": "Die Musikerin spielt Geige im Orchester.",
+      "examplePolish": "Muzyczka gra na skrzypcach w orkiestrze.",
+      "category": "Kultura i media (Kultur und Medien)"
+    },
+    {
+      "id": "goethe-4dbd788379b0",
+      "german": "Polizistin",
+      "polish": "policjantka",
+      "article": "die",
+      "plural": "Polizistinnen",
+      "exampleGerman": "Die Polizistin kontrolliert die Ausweise.",
+      "examplePolish": "Policjantka sprawdza dokumenty tożsamości.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-8a7d7b4e3030",
+      "german": "Verkäuferin",
+      "polish": "sprzedawczyni",
+      "article": "die",
+      "plural": "Verkäuferinnen",
+      "exampleGerman": "Die Verkäuferin hilft mir bei der Auswahl.",
+      "examplePolish": "Sprzedawczyni pomaga mi w wyborze.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-ea023a4c1925",
+      "german": "Cousine",
+      "polish": "kuzynka",
+      "article": "die",
+      "plural": "Cousinen",
+      "exampleGerman": "Meine Cousine wohnt in München.",
+      "examplePolish": "Moja kuzynka mieszka w Monachium.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-b7774ec94806",
+      "german": "Enkelin",
+      "polish": "wnuczka",
+      "article": "die",
+      "plural": "Enkelinnen",
+      "exampleGerman": "Meine Enkelin beginnt im Herbst die Schule.",
+      "examplePolish": "Moja wnuczka zaczyna jesienią szkołę.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-2cfae7c75f45",
+      "german": "Großeltern",
+      "polish": "dziadkowie",
+      "article": null,
+      "plural": "Großeltern",
+      "exampleGerman": "Meine Großeltern leben auf dem Land.",
+      "examplePolish": "Moi dziadkowie mieszkają na wsi.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-d6371137d8de",
+      "german": "Großmutter",
+      "polish": "babcia",
+      "article": "die",
+      "plural": "Großmütter",
+      "exampleGerman": "Meine Großmutter backt einen Apfelkuchen.",
+      "examplePolish": "Moja babcia piecze szarlotkę.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-9b5548cd92da",
+      "german": "Großvater",
+      "polish": "dziadek",
+      "article": "der",
+      "plural": "Großväter",
+      "exampleGerman": "Mein Großvater liest jeden Morgen die Zeitung.",
+      "examplePolish": "Mój dziadek czyta gazetę każdego ranka.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-7e3f15a5cc36",
+      "german": "getrennt",
+      "polish": "osobno; rozdzielony",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir bezahlen die Rechnung getrennt.",
+      "examplePolish": "Płacimy rachunek osobno.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-6101d347feb0",
+      "german": "lila",
+      "polish": "fioletowy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Sie trägt heute einen lila Pullover.",
+      "examplePolish": "Ona nosi dziś fioletowy sweter.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-5efc86ca883e",
+      "german": "rosa",
+      "polish": "różowy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Kinderzimmer ist rosa gestrichen.",
+      "examplePolish": "Pokój dziecięcy jest pomalowany na różowo.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-b02301266e93",
+      "german": "Deutschland",
+      "polish": "Niemcy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Deutschland liegt in Mitteleuropa.",
+      "examplePolish": "Niemcy leżą w Europie Środkowej.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-d8362a14e686",
+      "german": "deutsch",
+      "polish": "niemiecki",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Sie liest eine deutsche Zeitung.",
+      "examplePolish": "Ona czyta niemiecką gazetę.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-b21c4ab5b9d0",
+      "german": "Deutscher",
+      "polish": "Niemiec",
+      "article": "der",
+      "plural": "Deutsche",
+      "exampleGerman": "Ein Deutscher erklärte uns den Weg.",
+      "examplePolish": "Niemiec wyjaśnił nam drogę.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-2afdc7f0e24d",
+      "german": "Österreich",
+      "polish": "Austria",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Österreich ist für seine Berge bekannt.",
+      "examplePolish": "Austria jest znana ze swoich gór.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-30a0ef324ff5",
+      "german": "österreichisch",
+      "polish": "austriacki",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir probieren eine österreichische Spezialität.",
+      "examplePolish": "Próbujemy austriackiej specjalności.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-dce1e744887d",
+      "german": "Österreicher",
+      "polish": "Austriak",
+      "article": "der",
+      "plural": "Österreicher",
+      "exampleGerman": "Der Österreicher arbeitet seit Jahren in Berlin.",
+      "examplePolish": "Austriak pracuje od lat w Berlinie.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-73e725b9d409",
+      "german": "Österreicherin",
+      "polish": "Austriaczka",
+      "article": "die",
+      "plural": "Österreicherinnen",
+      "exampleGerman": "Die Österreicherin kommt aus Wien.",
+      "examplePolish": "Austriaczka pochodzi z Wiednia.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-f48aa6810683",
+      "german": "schweizerisch",
+      "polish": "szwajcarski",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das ist eine bekannte schweizerische Firma.",
+      "examplePolish": "To jest znana szwajcarska firma.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-cc778b280bb7",
+      "german": "Schweizer",
+      "polish": "Szwajcar",
+      "article": "der",
+      "plural": "Schweizer",
+      "exampleGerman": "Der Schweizer spricht auch Französisch.",
+      "examplePolish": "Szwajcar mówi również po francusku.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-5d49b1e770df",
+      "german": "Schweizerin",
+      "polish": "Szwajcarka",
+      "article": "die",
+      "plural": "Schweizerinnen",
+      "exampleGerman": "Die Schweizerin lebt in Zürich.",
+      "examplePolish": "Szwajcarka mieszka w Zurychu.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-e0e707252b93",
+      "german": "Luxemburg",
+      "polish": "Luksemburg",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Luxemburg ist ein kleines Land in Europa.",
+      "examplePolish": "Luksemburg jest małym krajem w Europie.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-1917f471370a",
+      "german": "luxemburgisch",
+      "polish": "luksemburski",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Er arbeitet für eine luxemburgische Bank.",
+      "examplePolish": "Pracuje dla luksemburskiego banku.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-5a242b016864",
+      "german": "Luxemburger",
+      "polish": "Luksemburczyk",
+      "article": "der",
+      "plural": "Luxemburger",
+      "exampleGerman": "Der Luxemburger spricht mehrere Sprachen.",
+      "examplePolish": "Luksemburczyk mówi w kilku językach.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-0f4b81e2a535",
+      "german": "Luxemburgerin",
+      "polish": "Luksemburka",
+      "article": "die",
+      "plural": "Luxemburgerinnen",
+      "exampleGerman": "Die Luxemburgerin studiert in Deutschland.",
+      "examplePolish": "Luksemburka studiuje w Niemczech.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-e98c45b725b2",
+      "german": "Europäer",
+      "polish": "Europejczyk",
+      "article": "der",
+      "plural": "Europäer",
+      "exampleGerman": "Viele Europäer reisen gern mit dem Zug.",
+      "examplePolish": "Wielu Europejczyków chętnie podróżuje pociągiem.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-18e9f96310b8",
+      "german": "Klassenfahrt",
+      "polish": "wycieczka szkolna",
+      "article": "die",
+      "plural": "Klassenfahrten",
+      "exampleGerman": "Unsere Klassenfahrt geht dieses Jahr nach Berlin.",
+      "examplePolish": "Nasza wycieczka szkolna jedzie w tym roku do Berlina.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-b45238b6e7ee",
+      "german": "Sekretariat",
+      "polish": "sekretariat",
+      "article": "das",
+      "plural": "Sekretariate",
+      "exampleGerman": "Die Anmeldung liegt im Sekretariat.",
+      "examplePolish": "Formularz zgłoszeniowy znajduje się w sekretariacie.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-7879756b82f8",
+      "german": "Englisch",
+      "polish": "angielski",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Im Büro sprechen wir oft Englisch.",
+      "examplePolish": "W biurze często mówimy po angielsku.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-ed98958c321b",
+      "german": "Französisch",
+      "polish": "francuski",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Meine Tochter lernt seit zwei Jahren Französisch.",
+      "examplePolish": "Moja córka uczy się francuskiego od dwóch lat.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-ffb8468baa13",
+      "german": "Geografie",
+      "polish": "geografia",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "In Geografie lernen wir etwas über Europa.",
+      "examplePolish": "Na geografii uczymy się o Europie.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-011360cc35bb",
+      "german": "Latein",
+      "polish": "łacina",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "An dieser Schule kann man Latein lernen.",
+      "examplePolish": "W tej szkole można uczyć się łaciny.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-6c1734ea529d",
+      "german": "Sozialkunde",
+      "polish": "wiedza o społeczeństwie",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "In Sozialkunde sprechen wir über Wahlen.",
+      "examplePolish": "Na wiedzy o społeczeństwie rozmawiamy o wyborach.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-0eb8b4484399",
+      "german": "Euro",
+      "polish": "euro",
+      "article": "der",
+      "plural": "Euro",
+      "exampleGerman": "Das Buch kostet zwanzig Euro.",
+      "examplePolish": "Książka kosztuje dwadzieścia euro.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-db9149cb38bc",
+      "german": "Cent",
+      "polish": "cent",
+      "article": "der",
+      "plural": "Cent",
+      "exampleGerman": "Die Flasche kostet neunundneunzig Cent.",
+      "examplePolish": "Butelka kosztuje dziewięćdziesiąt dziewięć centów.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-8cabdfa8850e",
+      "german": "Franken",
+      "polish": "frank",
+      "article": "der",
+      "plural": "Franken",
+      "exampleGerman": "Das Ticket kostet fünfzig Franken.",
+      "examplePolish": "Bilet kosztuje pięćdziesiąt franków.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-9408d42a9123",
+      "german": "Rappen",
+      "polish": "rap",
+      "article": "der",
+      "plural": "Rappen",
+      "exampleGerman": "Ein Franken hat hundert Rappen.",
+      "examplePolish": "Jeden frank ma sto rapów.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-17272b9d25ea",
+      "german": "Meter",
+      "polish": "metr",
+      "article": "der",
+      "plural": "Meter",
+      "exampleGerman": "Der Raum ist fünf Meter lang.",
+      "examplePolish": "Pomieszczenie ma pięć metrów długości.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-9c37ae8eba08",
+      "german": "Zentimeter",
+      "polish": "centymetr",
+      "article": "der",
+      "plural": "Zentimeter",
+      "exampleGerman": "Der Tisch ist achtzig Zentimeter hoch.",
+      "examplePolish": "Stół ma osiemdziesiąt centymetrów wysokości.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-54912a1989a6",
+      "german": "Liter",
+      "polish": "litr",
+      "article": "der",
+      "plural": "Liter",
+      "exampleGerman": "Ich kaufe zwei Liter Milch.",
+      "examplePolish": "Kupuję dwa litry mleka.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-bc60ceb7877d",
+      "german": "Gramm",
+      "polish": "gram",
+      "article": "das",
+      "plural": "Gramm",
+      "exampleGerman": "Für das Rezept brauche ich zweihundert Gramm Mehl.",
+      "examplePolish": "Do przepisu potrzebuję dwustu gramów mąki.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-f74578333edd",
+      "german": "Kilogramm",
+      "polish": "kilogram",
+      "article": "das",
+      "plural": "Kilogramm",
+      "exampleGerman": "Der Koffer wiegt fünfzehn Kilogramm.",
+      "examplePolish": "Walizka waży piętnaście kilogramów.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-00c2a288a8dd",
+      "german": "Grad Celsius",
+      "polish": "stopień Celsjusza",
+      "article": "das",
+      "plural": "Grad Celsius",
+      "exampleGerman": "Heute sind es zwanzig Grad Celsius.",
+      "examplePolish": "Dziś jest dwadzieścia stopni Celsjusza.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-5b6eff48dd0c",
+      "german": "Neujahr",
+      "polish": "Nowy Rok",
+      "article": "das",
+      "plural": null,
+      "exampleGerman": "An Neujahr besuchen wir unsere Familie.",
+      "examplePolish": "W Nowy Rok odwiedzamy rodzinę.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-c6ec8770b1cc",
+      "german": "Frühling",
+      "polish": "wiosna",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Im Frühling blühen viele Blumen.",
+      "examplePolish": "Wiosną kwitnie wiele kwiatów.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-83d3575eb82b",
+      "german": "Frühjahr",
+      "polish": "wiosna",
+      "article": "das",
+      "plural": "Frühjahre",
+      "exampleGerman": "Im Frühjahr beginnen die Bauarbeiten.",
+      "examplePolish": "Wiosną zaczynają się prace budowlane.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-1f59b9a4e250",
+      "german": "Sommer",
+      "polish": "lato",
+      "article": "der",
+      "plural": "Sommer",
+      "exampleGerman": "Im Sommer fahren wir ans Meer.",
+      "examplePolish": "Latem jedziemy nad morze.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-1530e265f6c0",
+      "german": "Herbst",
+      "polish": "jesień",
+      "article": "der",
+      "plural": "Herbste",
+      "exampleGerman": "Im Herbst fallen die Blätter von den Bäumen.",
+      "examplePolish": "Jesienią liście spadają z drzew.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-1ef41af4175f",
+      "german": "Winter",
+      "polish": "zima",
+      "article": "der",
+      "plural": "Winter",
+      "exampleGerman": "Im Winter liegt hier oft Schnee.",
+      "examplePolish": "Zimą często leży tutaj śnieg.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-2c0a0c9b8e04",
+      "german": "Januar",
+      "polish": "styczeń",
+      "article": "der",
+      "plural": "Januare",
+      "exampleGerman": "Der Kurs beginnt im Januar.",
+      "examplePolish": "Kurs zaczyna się w styczniu.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-2578a029cc68",
+      "german": "Februar",
+      "polish": "luty",
+      "article": "der",
+      "plural": "Februare",
+      "exampleGerman": "Im Februar fahren wir in die Berge.",
+      "examplePolish": "W lutym jedziemy w góry.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-8704aae67868",
+      "german": "März",
+      "polish": "marzec",
+      "article": "der",
+      "plural": "Märze",
+      "exampleGerman": "Im März wird es langsam wärmer.",
+      "examplePolish": "W marcu powoli robi się cieplej.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-8fa8a3c2de61",
+      "german": "April",
+      "polish": "kwiecień",
+      "article": "der",
+      "plural": "Aprile",
+      "exampleGerman": "Im April regnet es oft.",
+      "examplePolish": "W kwietniu często pada.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-ea4440bd9471",
+      "german": "Mai",
+      "polish": "maj",
+      "article": "der",
+      "plural": "Maie",
+      "exampleGerman": "Im Mai machen wir Urlaub.",
+      "examplePolish": "W maju bierzemy urlop.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-3beb942fe1ff",
+      "german": "Juni",
+      "polish": "czerwiec",
+      "article": "der",
+      "plural": "Junis",
+      "exampleGerman": "Die Prüfung findet im Juni statt.",
+      "examplePolish": "Egzamin odbywa się w czerwcu.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-0a834e13ab9c",
+      "german": "Juli",
+      "polish": "lipiec",
+      "article": "der",
+      "plural": "Julis",
+      "exampleGerman": "Im Juli sind die Tage besonders lang.",
+      "examplePolish": "W lipcu dni są szczególnie długie.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-9adc7a1161dd",
+      "german": "August",
+      "polish": "sierpień",
+      "article": "der",
+      "plural": "Auguste",
+      "exampleGerman": "Im August ist es oft sehr heiß.",
+      "examplePolish": "W sierpniu często jest bardzo gorąco.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-85f2aea244da",
+      "german": "September",
+      "polish": "wrzesień",
+      "article": "der",
+      "plural": "September",
+      "exampleGerman": "Die Schule beginnt im September.",
+      "examplePolish": "Szkoła zaczyna się we wrześniu.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-4c9ceaabd565",
+      "german": "Oktober",
+      "polish": "październik",
+      "article": "der",
+      "plural": "Oktober",
+      "exampleGerman": "Im Oktober werden die Blätter bunt.",
+      "examplePolish": "W październiku liście stają się kolorowe.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-982aa9d15171",
+      "german": "November",
+      "polish": "listopad",
+      "article": "der",
+      "plural": "November",
+      "exampleGerman": "Im November wird es früh dunkel.",
+      "examplePolish": "W listopadzie wcześnie robi się ciemno.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-05bd1d2a88d0",
+      "german": "Dezember",
+      "polish": "grudzień",
+      "article": "der",
+      "plural": "Dezember",
+      "exampleGerman": "Im Dezember feiern wir Weihnachten.",
+      "examplePolish": "W grudniu obchodzimy Boże Narodzenie.",
+      "category": "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)"
+    },
+    {
+      "id": "goethe-5e9b60f69165",
+      "german": "Tag",
+      "polish": "dzień",
+      "article": "der",
+      "plural": "Tage",
+      "exampleGerman": "Der Kurs dauert drei Tage.",
+      "examplePolish": "Kurs trwa trzy dni.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-e9f6b2a4a6c8",
+      "german": "Morgen",
+      "polish": "poranek",
+      "article": "der",
+      "plural": "Morgen",
+      "exampleGerman": "Am Morgen trinke ich zuerst Kaffee.",
+      "examplePolish": "Rano najpierw piję kawę.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-e05ee69df6bd",
+      "german": "Vormittag",
+      "polish": "przedpołudnie",
+      "article": "der",
+      "plural": "Vormittage",
+      "exampleGerman": "Am Vormittag habe ich einen Termin.",
+      "examplePolish": "Przed południem mam wizytę.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-91d86c5c9fc5",
+      "german": "Mittag",
+      "polish": "południe",
+      "article": "der",
+      "plural": "Mittage",
+      "exampleGerman": "Zu Mittag essen wir gemeinsam.",
+      "examplePolish": "W południe jemy razem.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-d3a50a001e6d",
+      "german": "Nachmittag",
+      "polish": "popołudnie",
+      "article": "der",
+      "plural": "Nachmittage",
+      "exampleGerman": "Am Nachmittag gehe ich einkaufen.",
+      "examplePolish": "Po południu idę na zakupy.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-12fde0d1fdb5",
+      "german": "Abend",
+      "polish": "wieczór",
+      "article": "der",
+      "plural": "Abende",
+      "exampleGerman": "Am Abend sehen wir einen Film.",
+      "examplePolish": "Wieczorem oglądamy film.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-59ac7ddf10b8",
+      "german": "Nacht",
+      "polish": "noc",
+      "article": "die",
+      "plural": "Nächte",
+      "exampleGerman": "In der Nacht hat es stark geregnet.",
+      "examplePolish": "W nocy mocno padało.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-82dfc43d8982",
+      "german": "Mitternacht",
+      "polish": "północ",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "Der Zug kommt kurz vor Mitternacht an.",
+      "examplePolish": "Pociąg przyjeżdża krótko przed północą.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-e729f7958178",
+      "german": "täglich",
+      "polish": "codziennie",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich gehe täglich eine Stunde spazieren.",
+      "examplePolish": "Codziennie spaceruję przez godzinę.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-70c0d9ac7a0a",
+      "german": "tagsüber",
+      "polish": "w ciągu dnia",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Tagsüber ist das Büro geöffnet.",
+      "examplePolish": "Biuro jest otwarte w ciągu dnia.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-8e1f0396d9bc",
+      "german": "morgens",
+      "polish": "rano",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Morgens fahre ich mit dem Bus zur Arbeit.",
+      "examplePolish": "Rano jeżdżę autobusem do pracy.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-ee375a297e0d",
+      "german": "vormittags",
+      "polish": "przed południem",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Vormittags besuche ich einen Deutschkurs.",
+      "examplePolish": "Przed południem chodzę na kurs niemieckiego.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-bf902f7823d4",
+      "german": "mittags",
+      "polish": "w południe",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Mittags essen wir in der Kantine.",
+      "examplePolish": "W południe jemy w stołówce.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-d4d6878e4f9b",
+      "german": "nachmittags",
+      "polish": "po południu",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Nachmittags arbeitet sie von zu Hause.",
+      "examplePolish": "Po południu pracuje z domu.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-b26b699b54fe",
+      "german": "abends",
+      "polish": "wieczorami",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Abends lese ich gern ein Buch.",
+      "examplePolish": "Wieczorami chętnie czytam książkę.",
+      "category": "Kultura i media (Kultur und Medien)"
+    },
+    {
+      "id": "goethe-0a2528830a93",
+      "german": "nachts",
+      "polish": "nocami",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Nachts ist es auf dieser Straße ruhig.",
+      "examplePolish": "Nocami na tej ulicy jest spokojnie.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-39d17ba1a140",
+      "german": "Montag",
+      "polish": "poniedziałek",
+      "article": "der",
+      "plural": "Montage",
+      "exampleGerman": "Am Montag beginnt die neue Woche.",
+      "examplePolish": "W poniedziałek zaczyna się nowy tydzień.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-db30decde133",
+      "german": "Dienstag",
+      "polish": "wtorek",
+      "article": "der",
+      "plural": "Dienstage",
+      "exampleGerman": "Am Dienstag habe ich einen Arzttermin.",
+      "examplePolish": "We wtorek mam wizytę u lekarza.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-f5d5cca73837",
+      "german": "Mittwoch",
+      "polish": "środa",
+      "article": "der",
+      "plural": "Mittwoche",
+      "exampleGerman": "Am Mittwoch treffen wir uns im Büro.",
+      "examplePolish": "W środę spotykamy się w biurze.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-298a7ed170da",
+      "german": "Donnerstag",
+      "polish": "czwartek",
+      "article": "der",
+      "plural": "Donnerstage",
+      "exampleGerman": "Der Kurs findet jeden Donnerstag statt.",
+      "examplePolish": "Kurs odbywa się w każdy czwartek.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-eeff856d1ee5",
+      "german": "Freitag",
+      "polish": "piątek",
+      "article": "der",
+      "plural": "Freitage",
+      "exampleGerman": "Am Freitag gehen wir ins Kino.",
+      "examplePolish": "W piątek idziemy do kina.",
+      "category": "Kultura i media (Kultur und Medien)"
+    },
+    {
+      "id": "goethe-06e4306472b4",
+      "german": "Samstag",
+      "polish": "sobota",
+      "article": "der",
+      "plural": "Samstage",
+      "exampleGerman": "Am Samstag kaufen wir Lebensmittel ein.",
+      "examplePolish": "W sobotę robimy zakupy spożywcze.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-6a27f639c75c",
+      "german": "Sonntag",
+      "polish": "niedziela",
+      "article": "der",
+      "plural": "Sonntage",
+      "exampleGerman": "Am Sonntag besuchen wir meine Eltern.",
+      "examplePolish": "W niedzielę odwiedzamy moich rodziców.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-529abcf0f163",
+      "german": "Wochenende",
+      "polish": "weekend",
+      "article": "das",
+      "plural": "Wochenenden",
+      "exampleGerman": "Am Wochenende fahren wir in die Berge.",
+      "examplePolish": "W weekend jedziemy w góry.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-39125d1fa1ee",
+      "german": "Arbeitstag",
+      "polish": "dzień roboczy",
+      "article": "der",
+      "plural": "Arbeitstage",
+      "exampleGerman": "Mein Arbeitstag beginnt um acht Uhr.",
+      "examplePolish": "Mój dzień pracy zaczyna się o ósmej.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-604ade76f941",
+      "german": "Werktag",
+      "polish": "dzień powszedni",
+      "article": "der",
+      "plural": "Werktage",
+      "exampleGerman": "Die Post ist an Werktagen geöffnet.",
+      "examplePolish": "Poczta jest otwarta w dni powszednie.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-752e362ca941",
+      "german": "Sekunde",
+      "polish": "sekunda",
+      "article": "die",
+      "plural": "Sekunden",
+      "exampleGerman": "Warten Sie bitte einige Sekunden.",
+      "examplePolish": "Proszę poczekać kilka sekund.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-04987fcab72a",
+      "german": "Minute",
+      "polish": "minuta",
+      "article": "die",
+      "plural": "Minuten",
+      "exampleGerman": "Der Bus kommt in fünf Minuten.",
+      "examplePolish": "Autobus przyjedzie za pięć minut.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-75a32016fe88",
+      "german": "Jahr",
+      "polish": "rok",
+      "article": "das",
+      "plural": "Jahre",
+      "exampleGerman": "Ich lebe seit drei Jahren in Zürich.",
+      "examplePolish": "Mieszkam w Zurychu od trzech lat.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-d79914a27101",
+      "german": "eins",
+      "polish": "jeden",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich brauche nur eins von diesen Büchern.",
+      "examplePolish": "Potrzebuję tylko jednej z tych książek.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-89f7b2e913c4",
+      "german": "zwei",
+      "polish": "dwa",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir bestellen zwei Tassen Kaffee.",
+      "examplePolish": "Zamawiamy dwie filiżanki kawy.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-7782517f7a79",
+      "german": "drei",
+      "polish": "trzy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Kurs dauert drei Monate.",
+      "examplePolish": "Kurs trwa trzy miesiące.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-76549157ec67",
+      "german": "vier",
+      "polish": "cztery",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Am Tisch sitzen vier Personen.",
+      "examplePolish": "Przy stole siedzą cztery osoby.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-5b3d49a2cd1e",
+      "german": "fünf",
+      "polish": "pięć",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Zug fährt in fünf Minuten ab.",
+      "examplePolish": "Pociąg odjeżdża za pięć minut.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-4dea3e5f654b",
+      "german": "sechs",
+      "polish": "sześć",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich stehe jeden Morgen um sechs Uhr auf.",
+      "examplePolish": "Wstaję codziennie rano o szóstej.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-7f3e71cc099e",
+      "german": "sieben",
+      "polish": "siedem",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir bleiben sieben Tage am Meer.",
+      "examplePolish": "Zostajemy siedem dni nad morzem.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-a673c13c9670",
+      "german": "acht",
+      "polish": "osiem",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Besprechung beginnt um acht Uhr.",
+      "examplePolish": "Spotkanie zaczyna się o ósmej.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-dab3bab179ec",
+      "german": "neun",
+      "polish": "dziewięć",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Geschäft öffnet um neun Uhr.",
+      "examplePolish": "Sklep otwiera się o dziewiątej.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-b884c2537d55",
+      "german": "zehn",
+      "polish": "dziesięć",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Fahrt kostet zehn Euro.",
+      "examplePolish": "Podróż kosztuje dziesięć euro.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-0761330c0681",
+      "german": "elf",
+      "polish": "jedenaście",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Film endet um elf Uhr.",
+      "examplePolish": "Film kończy się o jedenastej.",
+      "category": "Kultura i media (Kultur und Medien)"
+    },
+    {
+      "id": "goethe-873ef02fbb67",
+      "german": "zwölf",
+      "polish": "dwanaście",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Kurs hat zwölf Teilnehmer.",
+      "examplePolish": "Kurs ma dwunastu uczestników.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-420e1402ace5",
+      "german": "dreizehn",
+      "polish": "trzynaście",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Meine Nichte ist dreizehn Jahre alt.",
+      "examplePolish": "Moja siostrzenica ma trzynaście lat.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-ada1e0e0aefa",
+      "german": "vierzehn",
+      "polish": "czternaście",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Kind ist vierzehn Jahre alt.",
+      "examplePolish": "Dziecko ma czternaście lat.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-536b7745d18d",
+      "german": "fünfzehn",
+      "polish": "piętnaście",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir warten seit fünfzehn Minuten.",
+      "examplePolish": "Czekamy od piętnastu minut.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-0dca419bd185",
+      "german": "sechzehn",
+      "polish": "szesnaście",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Mit sechzehn Jahren begann er die Ausbildung.",
+      "examplePolish": "W wieku szesnastu lat rozpoczął naukę zawodu.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-7ad6a607cf15",
+      "german": "siebzehn",
+      "polish": "siedemnaście",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Sie ist siebzehn und besucht noch die Schule.",
+      "examplePolish": "Ma siedemnaście lat i nadal chodzi do szkoły.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-f5c64c5b3745",
+      "german": "achtzehn",
+      "polish": "osiemnaście",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Mit achtzehn darf man wählen.",
+      "examplePolish": "W wieku osiemnastu lat można głosować.",
+      "category": "Społeczeństwo i polityka (Gesellschaft und Politik)"
+    },
+    {
+      "id": "goethe-ec3f20d60dcb",
+      "german": "neunzehn",
+      "polish": "dziewiętnaście",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Er ist neunzehn Jahre alt.",
+      "examplePolish": "On ma dziewiętnaście lat.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-1b3d70eda83d",
+      "german": "zwanzig",
+      "polish": "dwadzieścia",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Für den Roman bezahle ich zwanzig Euro.",
+      "examplePolish": "Za powieść płacę dwadzieścia euro.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-33e73143bf40",
+      "german": "dreißig",
+      "polish": "trzydzieści",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Fahrt dauert dreißig Minuten.",
+      "examplePolish": "Podróż trwa trzydzieści minut.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-03e3417ddc18",
+      "german": "vierzig",
+      "polish": "czterdzieści",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Im Saal stehen vierzig Stühle.",
+      "examplePolish": "W sali stoi czterdzieści krzeseł.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-fcd181affe15",
+      "german": "fünfzig",
+      "polish": "pięćdziesiąt",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Hotelzimmer kostet fünfzig Euro pro Nacht.",
+      "examplePolish": "Pokój hotelowy kosztuje pięćdziesiąt euro za noc.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-05b42623c779",
+      "german": "sechzig",
+      "polish": "sześćdziesiąt",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Mein Vater wird nächstes Jahr sechzig.",
+      "examplePolish": "Mój ojciec skończy w przyszłym roku sześćdziesiąt lat.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-f54a714b494b",
+      "german": "siebzig",
+      "polish": "siedemdziesiąt",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Bus fährt höchstens siebzig Kilometer pro Stunde.",
+      "examplePolish": "Autobus jedzie najwyżej siedemdziesiąt kilometrów na godzinę.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-0b2656025023",
+      "german": "achtzig",
+      "polish": "osiemdziesiąt",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Tisch ist achtzig Zentimeter breit.",
+      "examplePolish": "Stół ma osiemdziesiąt centymetrów szerokości.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-7f4f9004e3cf",
+      "german": "neunzig",
+      "polish": "dziewięćdziesiąt",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Meine Großmutter ist neunzig Jahre alt.",
+      "examplePolish": "Moja babcia ma dziewięćdziesiąt lat.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-21fdc3f8d358",
+      "german": "hundert",
+      "polish": "sto",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Fahrrad kostet hundert Euro.",
+      "examplePolish": "Rower kosztuje sto euro.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-9a8a3441fc6b",
+      "german": "tausend",
+      "polish": "tysiąc",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "In dem Dorf leben tausend Menschen.",
+      "examplePolish": "W tej wiosce mieszka tysiąc osób.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-e8502058829c",
+      "german": "Million",
+      "polish": "milion",
+      "article": "die",
+      "plural": "Millionen",
+      "exampleGerman": "Die Stadt hat mehr als eine Million Einwohner.",
+      "examplePolish": "Miasto ma ponad milion mieszkańców.",
+      "category": "Społeczeństwo i polityka (Gesellschaft und Politik)"
+    },
+    {
+      "id": "goethe-5922a41b6b7a",
+      "german": "erstens",
+      "polish": "po pierwsze",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Erstens müssen wir die Kosten prüfen.",
+      "examplePolish": "Po pierwsze musimy sprawdzić koszty.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-c3f0f8324061",
+      "german": "zweitens",
+      "polish": "po drugie",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Zweitens brauchen wir einen genauen Plan.",
+      "examplePolish": "Po drugie potrzebujemy dokładnego planu.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-e27c5f03cb9c",
+      "german": "drittens",
+      "polish": "po trzecie",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Drittens sollten wir einen Termin vereinbaren.",
+      "examplePolish": "Po trzecie powinniśmy ustalić termin.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    }
+  ]
+}

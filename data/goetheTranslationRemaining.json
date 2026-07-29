@@ -1,0 +1,5 @@
+{
+  "instructions": "Translate only these missing official Goethe entries. Keep every id unchanged. German must be natural and learner-facing.",
+  "expectedEntries": 0,
+  "entries": []
+}

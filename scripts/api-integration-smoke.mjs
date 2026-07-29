@@ -74,7 +74,7 @@ const result = {};
 
 try {
   const maciej = await request("GET", "Maciej");
-  if (maciej.payload.cards.length !== 3038) throw new Error("Profil Maciej nie otrzymał 3038 kart.");
+  if (maciej.payload.cards.length !== 4937) throw new Error("Profil Maciej nie otrzymał 4937 kart.");
   result.existingProfile = {
     cards: maciej.payload.cards.length,
     progress: maciej.payload.progress.length,

@@ -19,7 +19,7 @@ function loadEnv(name) {
 const databaseUrl = process.env.DATABASE_URL_UNPOOLED || loadEnv("DATABASE_URL_UNPOOLED") || process.env.DATABASE_URL || loadEnv("DATABASE_URL");
 if (!databaseUrl) throw new Error("Brakuje DATABASE_URL_UNPOOLED w pliku środowiskowym.");
 
-const generated = readFileSync(resolve("src/data/nicosWegCards.ts"), "utf8");
+const generated = readFileSync(resolve("src/data/goetheCards.ts"), "utf8");
 const match = generated.match(/JSON\.parse\((.*)\) as CardContent\[\];/);
 if (!match) throw new Error("Nie udało się odczytać wygenerowanych kart.");
 const cards = JSON.parse(JSON.parse(match[1]));

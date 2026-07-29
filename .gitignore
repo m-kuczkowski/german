@@ -14,3 +14,5 @@ npm-debug.log*
 !.env.example
 .agents/
 skills-lock.json
+/tmp/
+**/__pycache__/

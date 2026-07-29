@@ -19,9 +19,9 @@ describe("lokalny zapis i kopie", () => {
 
   it("w trybie bez danych uruchamia gotowy zestaw startowy", async () => {
     const result = await loadOrSeed(starterCards);
-    expect(result.cards).toHaveLength(3038);
-    expect(result.meta.contentVersion).toBe(9);
-    expect(await loadCards()).toHaveLength(3038);
+    expect(result.cards).toHaveLength(4937);
+    expect(result.meta.contentVersion).toBe(10);
+    expect(await loadCards()).toHaveLength(4937);
   });
 
   it("zapisuje i odczytuje zmiany w IndexedDB", async () => {
@@ -36,12 +36,12 @@ describe("lokalny zapis i kopie", () => {
     await saveCards(starterCards.slice(0, 3));
     await saveMeta(defaultMeta);
     const migrated = await loadOrSeed(starterCards);
-    expect(migrated.cards).toHaveLength(3038);
-    expect(migrated.meta.contentVersion).toBe(9);
+    expect(migrated.cards).toHaveLength(4937);
+    expect(migrated.meta.contentVersion).toBe(10);
 
     await saveCards(migrated.cards.slice(1));
     const afterDeletion = await loadOrSeed(starterCards);
-    expect(afterDeletion.cards).toHaveLength(3037);
+    expect(afterDeletion.cards).toHaveLength(4936);
   });
 
   it("odświeża kategorię kart Nicos Weg bez kasowania ich powtórek", async () => {

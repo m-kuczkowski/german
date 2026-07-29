@@ -1,0 +1,3005 @@
+{
+  "schemaVersion": 1,
+  "translations": [
+    {
+      "id": "goethe-2bde6db7d278",
+      "german": "Reihenfolge",
+      "polish": "kolejność",
+      "article": "die",
+      "plural": "Reihenfolgen",
+      "exampleGerman": "Bitte beachten Sie die richtige Reihenfolge.",
+      "examplePolish": "Proszę zachować właściwą kolejność.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-96913d54be09",
+      "german": "rein",
+      "polish": "czysty",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Wasser ist so rein, dass man es trinken kann.",
+      "examplePolish": "Woda jest tak czysta, że można ją pić.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-0674528b3bb4",
+      "german": "Reinigung",
+      "polish": "czyszczenie; pralnia",
+      "article": "die",
+      "plural": "Reinigungen",
+      "exampleGerman": "Ich bringe den Mantel morgen in die Reinigung.",
+      "examplePolish": "Jutro oddaję płaszcz do pralni.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-5095b819f0ac",
+      "german": "Reis",
+      "polish": "ryż",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Zum Mittagessen gibt es Huhn mit Reis.",
+      "examplePolish": "Na obiad jest kurczak z ryżem.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-02deeead5c98",
+      "german": "reisen",
+      "polish": "podróżować",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich reise gern mit dem Zug.",
+      "examplePolish": "Lubię podróżować pociągiem.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-869040f4b704",
+      "german": "Reise",
+      "polish": "podróż",
+      "article": "die",
+      "plural": "Reisen",
+      "exampleGerman": "Unsere Reise nach Österreich dauerte eine Woche.",
+      "examplePolish": "Nasza podróż do Austrii trwała tydzień.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-fb2139a21824",
+      "german": "Reklame",
+      "polish": "reklama",
+      "article": "die",
+      "plural": "Reklamen",
+      "exampleGerman": "Ich möchte keine Reklame im Briefkasten.",
+      "examplePolish": "Nie chcę reklam w skrzynce pocztowej.",
+      "category": "Kultura i media (Kultur und Medien)"
+    },
+    {
+      "id": "goethe-f96483e9a15d",
+      "german": "Rekord",
+      "polish": "rekord",
+      "article": "der",
+      "plural": "Rekorde",
+      "exampleGerman": "Sie stellte einen neuen Rekord im Schwimmen auf.",
+      "examplePolish": "Ustanowiła nowy rekord w pływaniu.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-1fca1b0a0f3e",
+      "german": "relativ",
+      "polish": "stosunkowo",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Wohnung ist relativ groß.",
+      "examplePolish": "Mieszkanie jest stosunkowo duże.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-512f77e41fe8",
+      "german": "in Rente gehen",
+      "polish": "przejść na emeryturę",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Mein Vater geht Ende des Jahres in Rente.",
+      "examplePolish": "Mój ojciec przechodzi na emeryturę pod koniec roku.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-120174679ae4",
+      "german": "reservieren",
+      "polish": "rezerwować",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich möchte einen Tisch für vier Personen reservieren.",
+      "examplePolish": "Chcę zarezerwować stolik dla czterech osób.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-6055df863ce5",
+      "german": "Reservierung",
+      "polish": "rezerwacja",
+      "article": "die",
+      "plural": "Reservierungen",
+      "exampleGerman": "Die Reservierung kostet zehn Euro.",
+      "examplePolish": "Rezerwacja kosztuje dziesięć euro.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-27ad1672d8c9",
+      "german": "Rest",
+      "polish": "reszta",
+      "article": "der",
+      "plural": "Reste",
+      "exampleGerman": "Den Rest bezahle ich morgen.",
+      "examplePolish": "Resztę zapłacę jutro.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-32ac991d88d6",
+      "german": "Restaurant",
+      "polish": "restauracja",
+      "article": "das",
+      "plural": "Restaurants",
+      "exampleGerman": "Wir essen heute in einem italienischen Restaurant.",
+      "examplePolish": "Dziś jemy we włoskiej restauracji.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-3f188ba9a750",
+      "german": "Rezept",
+      "polish": "przepis; recepta",
+      "article": "das",
+      "plural": "Rezepte",
+      "exampleGerman": "Die Ärztin gibt mir ein Rezept für das Medikament.",
+      "examplePolish": "Lekarka daje mi receptę na lek.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-85767d69b748",
+      "german": "Richter",
+      "polish": "sędzia",
+      "article": "der",
+      "plural": "Richter",
+      "exampleGerman": "Der Richter spricht morgen das Urteil.",
+      "examplePolish": "Sędzia ogłosi jutro wyrok.",
+      "category": "Społeczeństwo i polityka (Gesellschaft und Politik)"
+    },
+    {
+      "id": "goethe-878223a13309",
+      "german": "Richtung",
+      "polish": "kierunek",
+      "article": "die",
+      "plural": "Richtungen",
+      "exampleGerman": "Der Zug fährt in Richtung Köln.",
+      "examplePolish": "Pociąg jedzie w kierunku Kolonii.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-2fb3a5fc4cc0",
+      "german": "riechen",
+      "polish": "pachnieć; wąchać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Suppe riecht sehr gut.",
+      "examplePolish": "Zupa bardzo ładnie pachnie.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-8de9827f3bf9",
+      "german": "Rind",
+      "polish": "bydło; wołowina",
+      "article": "das",
+      "plural": "Rinder",
+      "exampleGerman": "Ich esse gern Fleisch vom Rind.",
+      "examplePolish": "Chętnie jem wołowinę.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-38464bf083d9",
+      "german": "Rock",
+      "polish": "spódnica",
+      "article": "der",
+      "plural": "Röcke",
+      "exampleGerman": "Der schwarze Rock passt gut zur Bluse.",
+      "examplePolish": "Czarna spódnica dobrze pasuje do bluzki.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-4f23d95190b9",
+      "german": "Backofen",
+      "polish": "piekarnik",
+      "article": "der",
+      "plural": "Backöfen",
+      "exampleGerman": "Die Pizza ist noch im Backofen.",
+      "examplePolish": "Pizza jest jeszcze w piekarniku.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-7b7074fca36f",
+      "german": "Rose",
+      "polish": "róża",
+      "article": "die",
+      "plural": "Rosen",
+      "exampleGerman": "Er schenkt ihr rote Rosen.",
+      "examplePolish": "Daje jej czerwone róże.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-3ea803685968",
+      "german": "Rucksack",
+      "polish": "plecak",
+      "article": "der",
+      "plural": "Rucksäcke",
+      "exampleGerman": "Für die Wanderung nehme ich einen kleinen Rucksack.",
+      "examplePolish": "Na wędrówkę zabieram mały plecak.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-a103374385ce",
+      "german": "Rückkehr",
+      "polish": "powrót",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "Nach meiner Rückkehr rufe ich dich an.",
+      "examplePolish": "Zadzwonię do ciebie po powrocie.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-2e1a3831632e",
+      "german": "rückwärts",
+      "polish": "do tyłu",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Fahr bitte langsam rückwärts.",
+      "examplePolish": "Jedź proszę powoli do tyłu.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-e211aadf748d",
+      "german": "Rücken",
+      "polish": "plecy",
+      "article": "der",
+      "plural": "Rücken",
+      "exampleGerman": "Nach der Arbeit tut mir der Rücken weh.",
+      "examplePolish": "Po pracy bolą mnie plecy.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-02cc0bb12ea4",
+      "german": "Rücksicht",
+      "polish": "wzgląd",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "Bitte nehmen Sie Rücksicht auf die Nachbarn.",
+      "examplePolish": "Proszę mieć wzgląd na sąsiadów.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-8bcbf1360378",
+      "german": "Möhre",
+      "polish": "marchew",
+      "article": "die",
+      "plural": "Möhren",
+      "exampleGerman": "Der Hase frisst gern Möhren.",
+      "examplePolish": "Królik chętnie je marchewki.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-302565d26950",
+      "german": "Rufnummer",
+      "polish": "numer telefonu",
+      "article": "die",
+      "plural": "Rufnummern",
+      "exampleGerman": "Bitte geben Sie Ihre Rufnummer an.",
+      "examplePolish": "Proszę podać numer telefonu.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-d63ca62b956c",
+      "german": "Ruhe",
+      "polish": "spokój",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "Nach der Arbeit brauche ich etwas Ruhe.",
+      "examplePolish": "Po pracy potrzebuję trochę spokoju.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-1a1202ec6d4a",
+      "german": "ruhig",
+      "polish": "spokojny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir suchen ein ruhiges Hotelzimmer.",
+      "examplePolish": "Szukamy spokojnego pokoju hotelowego.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-0a183cc2e58b",
+      "german": "Runde",
+      "polish": "runda; krąg",
+      "article": "die",
+      "plural": "Runden",
+      "exampleGerman": "Ich laufe jeden Morgen drei Runden im Park.",
+      "examplePolish": "Każdego ranka przebiegam trzy rundy w parku.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-f6f532562124",
+      "german": "Rundfahrt",
+      "polish": "wycieczka objazdowa",
+      "article": "die",
+      "plural": "Rundfahrten",
+      "exampleGerman": "Wir machen eine Rundfahrt durch den Hafen.",
+      "examplePolish": "Jedziemy na wycieczkę objazdową po porcie.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-68604d54e1b8",
+      "german": "Saal",
+      "polish": "sala",
+      "article": "der",
+      "plural": "Säle",
+      "exampleGerman": "Die Feier findet in einem großen Saal statt.",
+      "examplePolish": "Uroczystość odbywa się w dużej sali.",
+      "category": "Kultura i media (Kultur und Medien)"
+    },
+    {
+      "id": "goethe-da1448178492",
+      "german": "Sache",
+      "polish": "rzecz; sprawa",
+      "article": "die",
+      "plural": "Sachen",
+      "exampleGerman": "Das ist eine wichtige Sache.",
+      "examplePolish": "To jest ważna sprawa.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-085c1e1d567b",
+      "german": "Sack",
+      "polish": "worek",
+      "article": "der",
+      "plural": "Säcke",
+      "exampleGerman": "Der Sack mit Kartoffeln ist sehr schwer.",
+      "examplePolish": "Worek ziemniaków jest bardzo ciężki.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-6c53907a6137",
+      "german": "Saft",
+      "polish": "sok",
+      "article": "der",
+      "plural": "Säfte",
+      "exampleGerman": "Zum Frühstück trinke ich Orangensaft.",
+      "examplePolish": "Na śniadanie piję sok pomarańczowy.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-a646c46e6b21",
+      "german": "sagen",
+      "polish": "mówić",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Kannst du mir den Weg sagen?",
+      "examplePolish": "Czy możesz mi powiedzieć drogę?",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-edb957cbfef5",
+      "german": "Sahne",
+      "polish": "śmietana",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "Ich nehme ein Stück Torte mit Sahne.",
+      "examplePolish": "Wezmę kawałek tortu ze śmietaną.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-39be0f22b65b",
+      "german": "Saison",
+      "polish": "sezon",
+      "article": "die",
+      "plural": "Saisons",
+      "exampleGerman": "In der Saison sind die Hotels teurer.",
+      "examplePolish": "W sezonie hotele są droższe.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-68b83a698ac6",
+      "german": "Salat",
+      "polish": "sałatka",
+      "article": "der",
+      "plural": "Salate",
+      "exampleGerman": "Zum Fisch bestelle ich einen Salat.",
+      "examplePolish": "Do ryby zamawiam sałatkę.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-a00d35d67f39",
+      "german": "Salon",
+      "polish": "salon",
+      "article": "der",
+      "plural": "Salons",
+      "exampleGerman": "Sie arbeitet in einem Friseursalon.",
+      "examplePolish": "Pracuje w salonie fryzjerskim.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-f744c49a4ee7",
+      "german": "Salz",
+      "polish": "sól",
+      "article": "das",
+      "plural": null,
+      "exampleGerman": "Gib bitte etwas Salz in die Suppe.",
+      "examplePolish": "Dodaj proszę trochę soli do zupy.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-793c3778d1a7",
+      "german": "sämtliche",
+      "polish": "wszystkie",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Sämtliche Türen müssen geschlossen bleiben.",
+      "examplePolish": "Wszystkie drzwi muszą pozostać zamknięte.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-42625bfecef1",
+      "german": "Sand",
+      "polish": "piasek",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Die Kinder spielen am Strand im Sand.",
+      "examplePolish": "Dzieci bawią się na plaży w piasku.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-47166808f171",
+      "german": "satt",
+      "polish": "najedzony",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Danke, ich bin schon satt.",
+      "examplePolish": "Dziękuję, jestem już najedzony.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-1dff74d3dfd9",
+      "german": "Satz",
+      "polish": "zdanie",
+      "article": "der",
+      "plural": "Sätze",
+      "exampleGerman": "Schreiben Sie bitte einen vollständigen Satz.",
+      "examplePolish": "Proszę napisać pełne zdanie.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-e4e4a9933183",
+      "german": "sauber",
+      "polish": "czysty",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Bad ist wieder sauber.",
+      "examplePolish": "Łazienka jest znowu czysta.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-4a88e08602bc",
+      "german": "Schachtel",
+      "polish": "pudełko",
+      "article": "die",
+      "plural": "Schachteln",
+      "exampleGerman": "Sie schenkt ihrer Mutter eine Schachtel Pralinen.",
+      "examplePolish": "Daje mamie pudełko pralinek.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-1e20e933148f",
+      "german": "schädlich",
+      "polish": "szkodliwy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Rauchen ist schädlich für die Gesundheit.",
+      "examplePolish": "Palenie jest szkodliwe dla zdrowia.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-bcdc39ba7324",
+      "german": "schalten",
+      "polish": "przełączać; włączać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Schalten Sie bitte das Licht aus.",
+      "examplePolish": "Proszę wyłączyć światło.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-7c86b4996371",
+      "german": "scharf",
+      "polish": "ostry",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Soße ist mir zu scharf.",
+      "examplePolish": "Sos jest dla mnie zbyt ostry.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-f75dc094f34f",
+      "german": "Schatten",
+      "polish": "cień",
+      "article": "der",
+      "plural": "Schatten",
+      "exampleGerman": "Wir sitzen im Schatten eines Baumes.",
+      "examplePolish": "Siedzimy w cieniu drzewa.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-0b89cacb8860",
+      "german": "zuschauen",
+      "polish": "przyglądać się",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Kinder schauen beim Fußballspiel zu.",
+      "examplePolish": "Dzieci przyglądają się meczowi piłki nożnej.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-8e3ad760665a",
+      "german": "Schaufenster",
+      "polish": "witryna sklepowa",
+      "article": "das",
+      "plural": "Schaufenster",
+      "exampleGerman": "Im Schaufenster hängt ein schönes Kleid.",
+      "examplePolish": "W witrynie sklepowej wisi piękna sukienka.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-692ec6e3b3f1",
+      "german": "Scheibe",
+      "polish": "plaster; szyba",
+      "article": "die",
+      "plural": "Scheiben",
+      "exampleGerman": "Ich hätte gern fünf Scheiben Käse.",
+      "examplePolish": "Poproszę pięć plastrów sera.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-be52d28be638",
+      "german": "Schein",
+      "polish": "banknot",
+      "article": "der",
+      "plural": "Scheine",
+      "exampleGerman": "Ich habe nur einen Zwanzig-Euro-Schein.",
+      "examplePolish": "Mam tylko banknot dwudziestoeurowy.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-5ac6df67677f",
+      "german": "scheinen",
+      "polish": "świecić; wydawać się",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Heute scheint wieder die Sonne.",
+      "examplePolish": "Dziś znowu świeci słońce.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-27221e7cb161",
+      "german": "schenken",
+      "polish": "dawać w prezencie",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir schenken ihm ein Buch zum Geburtstag.",
+      "examplePolish": "Dajemy mu książkę na urodziny.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-1fb77b86ac6b",
+      "german": "Schere",
+      "polish": "nożyczki",
+      "article": "die",
+      "plural": "Scheren",
+      "exampleGerman": "Die Schere liegt auf dem Schreibtisch.",
+      "examplePolish": "Nożyczki leżą na biurku.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-4410424b0a37",
+      "german": "schicken",
+      "polish": "wysyłać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich schicke dir die Fotos per E-Mail.",
+      "examplePolish": "Wyślę ci zdjęcia e-mailem.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-3a21773eeeca",
+      "german": "schief",
+      "polish": "krzywy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Bild hängt schief an der Wand.",
+      "examplePolish": "Obraz wisi krzywo na ścianie.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-7cd442260ecf",
+      "german": "Schild",
+      "polish": "tablica; znak",
+      "article": "das",
+      "plural": "Schilder",
+      "exampleGerman": "Auf dem Schild steht „Parken verboten“.",
+      "examplePolish": "Na znaku jest napisane „Zakaz parkowania”.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-1c9b57fb99ec",
+      "german": "schimpfen",
+      "polish": "besztać; narzekać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Vater schimpft mit seinem Sohn.",
+      "examplePolish": "Ojciec beszta swojego syna.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-03d1569cf5b6",
+      "german": "Schinken",
+      "polish": "szynka",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Ich nehme ein Brötchen mit Schinken.",
+      "examplePolish": "Wezmę bułkę z szynką.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-97788619d886",
+      "german": "Regenschirm",
+      "polish": "parasol",
+      "article": "der",
+      "plural": "Regenschirme",
+      "exampleGerman": "Nimm einen Regenschirm mit, es regnet.",
+      "examplePolish": "Weź parasol, pada deszcz.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-dde402c7bcf8",
+      "german": "schlafen",
+      "polish": "spać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich habe letzte Nacht schlecht geschlafen.",
+      "examplePolish": "Źle spałem ostatniej nocy.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-8c5473098198",
+      "german": "Schlaf",
+      "polish": "sen",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Genügend Schlaf ist wichtig für die Gesundheit.",
+      "examplePolish": "Wystarczająca ilość snu jest ważna dla zdrowia.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-7d44c33cf9a8",
+      "german": "Sahne",
+      "polish": "bita śmietana",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "Zur Torte möchte ich etwas Sahne.",
+      "examplePolish": "Do tortu chcę trochę bitej śmietany.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-a116f74da870",
+      "german": "schlecht",
+      "polish": "zły",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Wetter ist heute schlecht.",
+      "examplePolish": "Pogoda jest dziś zła.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-00440253cf00",
+      "german": "schlimm",
+      "polish": "okropny; poważny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Keine Sorge, die Verletzung ist nicht schlimm.",
+      "examplePolish": "Nie martw się, uraz nie jest poważny.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-c2c4518cd167",
+      "german": "Schluss",
+      "polish": "koniec",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Zum Schluss bedanke ich mich bei allen.",
+      "examplePolish": "Na koniec dziękuję wszystkim.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-36d2e84746c5",
+      "german": "Schlüssel",
+      "polish": "klucz",
+      "article": "der",
+      "plural": "Schlüssel",
+      "exampleGerman": "Ich kann meinen Schlüssel nicht finden.",
+      "examplePolish": "Nie mogę znaleźć klucza.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-0c8765981264",
+      "german": "schmal",
+      "polish": "wąski",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Straße ist zu schmal für zwei Autos.",
+      "examplePolish": "Ulica jest zbyt wąska dla dwóch samochodów.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-c320a50f4773",
+      "german": "schmecken",
+      "polish": "smakować",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Suppe schmeckt nach Knoblauch.",
+      "examplePolish": "Zupa smakuje czosnkiem.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-17195150c6ef",
+      "german": "Schmerz",
+      "polish": "ból",
+      "article": "der",
+      "plural": "Schmerzen",
+      "exampleGerman": "Ich habe starke Schmerzen im Rücken.",
+      "examplePolish": "Mam silny ból pleców.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-da401580e12c",
+      "german": "Schmerzmittel",
+      "polish": "środek przeciwbólowy",
+      "article": "das",
+      "plural": "Schmerzmittel",
+      "exampleGerman": "Die Ärztin verschreibt mir ein Schmerzmittel.",
+      "examplePolish": "Lekarka przepisuje mi środek przeciwbólowy.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-c03f91d84b60",
+      "german": "Schmutz",
+      "polish": "brud",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "An deinen Schuhen ist viel Schmutz.",
+      "examplePolish": "Na twoich butach jest dużo brudu.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-779287043027",
+      "german": "schmutzig",
+      "polish": "brudny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Handtuch ist schmutzig.",
+      "examplePolish": "Ręcznik jest brudny.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-fd24fcaae1b4",
+      "german": "verschmutzen",
+      "polish": "zanieczyszczać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Fabrik verschmutzt den Fluss.",
+      "examplePolish": "Fabryka zanieczyszcza rzekę.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-f9ac5cf289e1",
+      "german": "Schnee",
+      "polish": "śnieg",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Im Winter liegt hier oft viel Schnee.",
+      "examplePolish": "Zimą często leży tutaj dużo śniegu.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-b3bbaa45081d",
+      "german": "schneien",
+      "polish": "padać śnieg",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Heute Nacht hat es geschneit.",
+      "examplePolish": "Dziś w nocy padał śnieg.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-5db660272fab",
+      "german": "schnell",
+      "polish": "szybki",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Bitte fahren Sie nicht so schnell.",
+      "examplePolish": "Proszę nie jechać tak szybko.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-feea88531641",
+      "german": "Schnitzel",
+      "polish": "sznycel",
+      "article": "das",
+      "plural": "Schnitzel",
+      "exampleGerman": "Ich bestelle ein Schnitzel mit Kartoffeln.",
+      "examplePolish": "Zamawiam sznycel z ziemniakami.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-b81af8ba35e4",
+      "german": "Schnupfen",
+      "polish": "katar",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Ich habe seit gestern Schnupfen.",
+      "examplePolish": "Od wczoraj mam katar.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-552d31e1deb1",
+      "german": "Schokolade",
+      "polish": "czekolada",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "Ich esse gern dunkle Schokolade.",
+      "examplePolish": "Chętnie jem gorzką czekoladę.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-a581021a64e8",
+      "german": "schon",
+      "polish": "już",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Essen ist schon fertig.",
+      "examplePolish": "Jedzenie jest już gotowe.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-0cc795801c8a",
+      "german": "schön",
+      "polish": "ładny; piękny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Eure Wohnung ist sehr schön.",
+      "examplePolish": "Wasze mieszkanie jest bardzo ładne.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-5de1a3256fde",
+      "german": "Schrank",
+      "polish": "szafa",
+      "article": "der",
+      "plural": "Schränke",
+      "exampleGerman": "Die Handtücher liegen im Schrank.",
+      "examplePolish": "Ręczniki leżą w szafie.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-5fce55ddb973",
+      "german": "Schrecken",
+      "polish": "przestrach",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Der laute Knall gab mir einen Schrecken.",
+      "examplePolish": "Głośny huk mnie przestraszył.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-c777453da965",
+      "german": "schreiben",
+      "polish": "pisać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich schreibe dir morgen eine E-Mail.",
+      "examplePolish": "Napiszę ci jutro e-mail.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-18efa8f46a30",
+      "german": "aufschreiben",
+      "polish": "zapisywać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich schreibe mir die Telefonnummer auf.",
+      "examplePolish": "Zapisuję sobie numer telefonu.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-7d33c553b0e5",
+      "german": "schreien",
+      "polish": "krzyczeć",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Bitte hör auf, so laut zu schreien.",
+      "examplePolish": "Proszę, przestań tak głośno krzyczeć.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-213cf669c241",
+      "german": "Schrift",
+      "polish": "pismo",
+      "article": "die",
+      "plural": "Schriften",
+      "exampleGerman": "Ich kann deine Schrift kaum lesen.",
+      "examplePolish": "Prawie nie mogę odczytać twojego pisma.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-792f2648b079",
+      "german": "schriftlich",
+      "polish": "pisemny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Sie müssen sich schriftlich anmelden.",
+      "examplePolish": "Musi się pan zgłosić pisemnie.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-b3ac344efc3e",
+      "german": "Schuh",
+      "polish": "but",
+      "article": "der",
+      "plural": "Schuhe",
+      "exampleGerman": "Die neuen Schuhe sind zu eng.",
+      "examplePolish": "Nowe buty są zbyt ciasne.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-342773eddbc5",
+      "german": "Schuld",
+      "polish": "wina",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "Es ist nicht meine Schuld.",
+      "examplePolish": "To nie jest moja wina.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-366b94429d0f",
+      "german": "schuldig",
+      "polish": "winny; należny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Fahrer war an dem Unfall nicht schuldig.",
+      "examplePolish": "Kierowca nie był winny wypadku.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-541278ced0f2",
+      "german": "Schule",
+      "polish": "szkoła",
+      "article": "die",
+      "plural": "Schulen",
+      "exampleGerman": "Meine Tochter geht schon zur Schule.",
+      "examplePolish": "Moja córka już chodzi do szkoły.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-7160b367e261",
+      "german": "Klassenarbeit",
+      "polish": "sprawdzian",
+      "article": "die",
+      "plural": "Klassenarbeiten",
+      "exampleGerman": "Morgen schreiben wir eine Klassenarbeit.",
+      "examplePolish": "Jutro piszemy sprawdzian.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-cb02cf5c9f55",
+      "german": "Schüler",
+      "polish": "uczeń",
+      "article": "der",
+      "plural": "Schüler",
+      "exampleGerman": "Der Schüler stellt eine Frage.",
+      "examplePolish": "Uczeń zadaje pytanie.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-dd846c592942",
+      "german": "Schulter",
+      "polish": "ramię; bark",
+      "article": "die",
+      "plural": "Schultern",
+      "exampleGerman": "Meine rechte Schulter tut weh.",
+      "examplePolish": "Boli mnie prawy bark.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-4327fd90b352",
+      "german": "schütteln",
+      "polish": "wstrząsać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Schütteln Sie die Flasche vor dem Öffnen.",
+      "examplePolish": "Proszę wstrząsnąć butelką przed otwarciem.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-67a6f4dcf0dd",
+      "german": "schützen",
+      "polish": "chronić",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Diese Impfung schützt vor Grippe.",
+      "examplePolish": "To szczepienie chroni przed grypą.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-c9edbf37d1ab",
+      "german": "Schutz",
+      "polish": "ochrona",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Wir brauchen besseren Schutz vor der Kälte.",
+      "examplePolish": "Potrzebujemy lepszej ochrony przed zimnem.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-2daca9e59c92",
+      "german": "Pilz",
+      "polish": "grzyb",
+      "article": "der",
+      "plural": "Pilze",
+      "exampleGerman": "Auf dem Markt gibt es frische Pilze.",
+      "examplePolish": "Na targu są świeże grzyby.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-87c84c6aceeb",
+      "german": "schweigen",
+      "polish": "milczeć",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Er schwieg während des ganzen Gesprächs.",
+      "examplePolish": "Milczał podczas całej rozmowy.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-98a0407ec2da",
+      "german": "schwer",
+      "polish": "ciężki; trudny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Koffer ist viel zu schwer.",
+      "examplePolish": "Walizka jest zdecydowanie za ciężka.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-cb40b14a6fff",
+      "german": "Schwester",
+      "polish": "siostra",
+      "article": "die",
+      "plural": "Schwestern",
+      "exampleGerman": "Meine Schwester lebt in Wien.",
+      "examplePolish": "Moja siostra mieszka w Wiedniu.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-513d9812cca0",
+      "german": "Schwiegereltern",
+      "polish": "teściowie",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Am Sonntag besuchen wir meine Schwiegereltern.",
+      "examplePolish": "W niedzielę odwiedzamy moich teściów.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-73719498e296",
+      "german": "schwimmen",
+      "polish": "pływać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Im Sommer gehe ich oft schwimmen.",
+      "examplePolish": "Latem często chodzę pływać.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-39b32c3cc90a",
+      "german": "Schwimmbad",
+      "polish": "basen",
+      "article": "das",
+      "plural": "Schwimmbäder",
+      "exampleGerman": "Das Schwimmbad öffnet um acht Uhr.",
+      "examplePolish": "Basen otwiera się o ósmej.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-04fc7ecac0d1",
+      "german": "schwitzen",
+      "polish": "pocić się",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Bei der Hitze schwitzen wir stark.",
+      "examplePolish": "W tym upale mocno się pocimy.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-3d637fc60499",
+      "german": "See",
+      "polish": "jezioro",
+      "article": "der",
+      "plural": "Seen",
+      "exampleGerman": "Unser Hotel liegt direkt am See.",
+      "examplePolish": "Nasz hotel leży bezpośrednio nad jeziorem.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-c1e58600b23f",
+      "german": "Ostsee",
+      "polish": "Morze Bałtyckie",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "Im Sommer fahren wir an die Ostsee.",
+      "examplePolish": "Latem jedziemy nad Morze Bałtyckie.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-bab4062303cb",
+      "german": "Sehenswürdigkeit",
+      "polish": "zabytek; atrakcja",
+      "article": "die",
+      "plural": "Sehenswürdigkeiten",
+      "exampleGerman": "Welche Sehenswürdigkeiten gibt es hier?",
+      "examplePolish": "Jakie atrakcje są tutaj?",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-de989202ffc6",
+      "german": "sehr",
+      "polish": "bardzo",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Wetter ist heute sehr schön.",
+      "examplePolish": "Pogoda jest dziś bardzo ładna.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-acdc21e7d597",
+      "german": "sein",
+      "polish": "być",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich bin heute müde.",
+      "examplePolish": "Jestem dziś zmęczony.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-e83457ba92b0",
+      "german": "Sekretär",
+      "polish": "sekretarz",
+      "article": "der",
+      "plural": "Sekretäre",
+      "exampleGerman": "Der Sekretär organisiert den Termin.",
+      "examplePolish": "Sekretarz organizuje termin.",
+      "category": "Praca i kariera (Arbeit und Karriere)"
+    },
+    {
+      "id": "goethe-e6ec449c761b",
+      "german": "derselbe",
+      "polish": "ten sam",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir haben am selben Tag Geburtstag.",
+      "examplePolish": "Mamy urodziny tego samego dnia.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-3ff24fabc038",
+      "german": "selten",
+      "polish": "rzadko",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich gehe nur selten ins Kino.",
+      "examplePolish": "Rzadko chodzę do kina.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-82978cdf0d44",
+      "german": "seltsam",
+      "polish": "dziwny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich hörte ein seltsames Geräusch.",
+      "examplePolish": "Usłyszałem dziwny odgłos.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-7d9879f7985c",
+      "german": "Brötchen",
+      "polish": "bułka",
+      "article": "das",
+      "plural": "Brötchen",
+      "exampleGerman": "Zum Frühstück hole ich frische Brötchen.",
+      "examplePolish": "Na śniadanie kupuję świeże bułki.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-6dd2d85a9c2f",
+      "german": "senden",
+      "polish": "wysyłać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Bitte senden Sie uns die Unterlagen per E-Mail.",
+      "examplePolish": "Proszę przesłać nam dokumenty e-mailem.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-acc6a31daa43",
+      "german": "Sender",
+      "polish": "stacja; nadawca",
+      "article": "der",
+      "plural": "Sender",
+      "exampleGerman": "Welchen Sender hörst du am liebsten?",
+      "examplePolish": "Której stacji słuchasz najchętniej?",
+      "category": "Kultura i media (Kultur und Medien)"
+    },
+    {
+      "id": "goethe-09823d8abc42",
+      "german": "Sendung",
+      "polish": "audycja; przesyłka",
+      "article": "die",
+      "plural": "Sendungen",
+      "exampleGerman": "Die Sendung beginnt um zwanzig Uhr.",
+      "examplePolish": "Audycja zaczyna się o dwudziestej.",
+      "category": "Kultura i media (Kultur und Medien)"
+    },
+    {
+      "id": "goethe-a3603fa202a5",
+      "german": "Senior",
+      "polish": "senior",
+      "article": "der",
+      "plural": "Senioren",
+      "exampleGerman": "Der Computerkurs ist für Senioren.",
+      "examplePolish": "Kurs komputerowy jest dla seniorów.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-7357da8c0dad",
+      "german": "senkrecht",
+      "polish": "pionowy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ziehen Sie eine senkrechte Linie.",
+      "examplePolish": "Proszę narysować pionową linię.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-1bd2b8ab644b",
+      "german": "Kellner",
+      "polish": "kelner",
+      "article": "der",
+      "plural": "Kellner",
+      "exampleGerman": "Der Kellner bringt die Speisekarte.",
+      "examplePolish": "Kelner przynosi menu.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-95751ae71f4a",
+      "german": "Sessel",
+      "polish": "fotel",
+      "article": "der",
+      "plural": "Sessel",
+      "exampleGerman": "Wir kaufen einen bequemen Sessel.",
+      "examplePolish": "Kupujemy wygodny fotel.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-12e1dc585e2e",
+      "german": "sichern",
+      "polish": "zabezpieczać; zapisywać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Du musst alle Daten regelmäßig sichern.",
+      "examplePolish": "Musisz regularnie zapisywać wszystkie dane.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-8dbd38e3c040",
+      "german": "sichtbar",
+      "polish": "widoczny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Verletzung ist kaum sichtbar.",
+      "examplePolish": "Uraz jest prawie niewidoczny.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-eece73a095bb",
+      "german": "siegen",
+      "polish": "zwyciężać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Unsere Mannschaft siegte mit zwei zu null.",
+      "examplePolish": "Nasza drużyna zwyciężyła dwa do zera.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-9d843d165b81",
+      "german": "Sieg",
+      "polish": "zwycięstwo",
+      "article": "der",
+      "plural": "Siege",
+      "exampleGerman": "Wir freuen uns über den Sieg.",
+      "examplePolish": "Cieszymy się ze zwycięstwa.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-60ed8f5ca942",
+      "german": "Sieger",
+      "polish": "zwycięzca",
+      "article": "der",
+      "plural": "Sieger",
+      "exampleGerman": "Der Sieger bekommt einen Pokal.",
+      "examplePolish": "Zwycięzca otrzymuje puchar.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-9bdd3709fc92",
+      "german": "siezen",
+      "polish": "zwracać się do kogoś per pan lub pani",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Im Büro siezen sich alle.",
+      "examplePolish": "W biurze wszyscy zwracają się do siebie per pan lub pani.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-312965d09ce0",
+      "german": "singen",
+      "polish": "śpiewać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Meine Tochter singt im Chor.",
+      "examplePolish": "Moja córka śpiewa w chórze.",
+      "category": "Kultura i media (Kultur und Medien)"
+    },
+    {
+      "id": "goethe-1a84ebb60340",
+      "german": "sinnlos",
+      "polish": "bezsensowny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Diese Diskussion ist völlig sinnlos.",
+      "examplePolish": "Ta dyskusja jest całkowicie bezsensowna.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-124e140ebb91",
+      "german": "sitzen",
+      "polish": "siedzieć",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir sitzen in der letzten Reihe.",
+      "examplePolish": "Siedzimy w ostatnim rzędzie.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-9bc1ee6e215e",
+      "german": "Sitz",
+      "polish": "siedzenie",
+      "article": "der",
+      "plural": "Sitze",
+      "exampleGerman": "Dieser Sitz ist noch frei.",
+      "examplePolish": "To siedzenie jest jeszcze wolne.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-03c970b1aded",
+      "german": "Ski",
+      "polish": "narta",
+      "article": "der",
+      "plural": "Skier",
+      "exampleGerman": "Im Winter fahre ich gern Ski.",
+      "examplePolish": "Zimą chętnie jeżdżę na nartach.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-69e49c38ab8f",
+      "german": "sobald",
+      "polish": "gdy tylko",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Sobald ich mehr weiß, rufe ich dich an.",
+      "examplePolish": "Gdy tylko dowiem się więcej, zadzwonię do ciebie.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-03444357ad90",
+      "german": "Socke",
+      "polish": "skarpetka",
+      "article": "die",
+      "plural": "Socken",
+      "exampleGerman": "Im Winter trage ich warme Socken.",
+      "examplePolish": "Zimą noszę ciepłe skarpetki.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-81360c0272a1",
+      "german": "sodass",
+      "polish": "tak że",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Zug hatte Verspätung, sodass ich zu spät kam.",
+      "examplePolish": "Pociąg miał opóźnienie, tak że przyjechałem za późno.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-68e0dce54a9e",
+      "german": "Sofa",
+      "polish": "sofa",
+      "article": "das",
+      "plural": "Sofas",
+      "exampleGerman": "Das neue Sofa steht im Wohnzimmer.",
+      "examplePolish": "Nowa sofa stoi w salonie.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-c3db5669174e",
+      "german": "sofort",
+      "polish": "natychmiast",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Bitte rufen Sie sofort einen Arzt.",
+      "examplePolish": "Proszę natychmiast wezwać lekarza.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-27660f22c90d",
+      "german": "sogenannt",
+      "polish": "tak zwany",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das ist ein sogenanntes Energiesparhaus.",
+      "examplePolish": "To jest tak zwany dom energooszczędny.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-df4b9f3e641b",
+      "german": "sogar",
+      "polish": "nawet",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Auf dem Berg hat es sogar geschneit.",
+      "examplePolish": "W górach nawet padał śnieg.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-f5f89cf4f976",
+      "german": "Sohn",
+      "polish": "syn",
+      "article": "der",
+      "plural": "Söhne",
+      "exampleGerman": "Mein jüngster Sohn ist vier Jahre alt.",
+      "examplePolish": "Mój najmłodszy syn ma cztery lata.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-d4393e552be4",
+      "german": "solange",
+      "polish": "dopóki",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Solange du Fieber hast, bleibst du zu Hause.",
+      "examplePolish": "Dopóki masz gorączkę, zostajesz w domu.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-ec59f22b541d",
+      "german": "solche",
+      "polish": "taki",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Solche Schuhe gefallen mir.",
+      "examplePolish": "Podobają mi się takie buty.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-7adbef9c1925",
+      "german": "Sonne",
+      "polish": "słońce",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "Heute scheint die Sonne.",
+      "examplePolish": "Dziś świeci słońce.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-bbe5b2e4f07c",
+      "german": "sonnig",
+      "polish": "słoneczny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Morgen wird es sonnig und warm.",
+      "examplePolish": "Jutro będzie słonecznie i ciepło.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-810aff46dc34",
+      "german": "sonst",
+      "polish": "w przeciwnym razie; poza tym",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir müssen gehen, sonst wird es zu spät.",
+      "examplePolish": "Musimy iść, w przeciwnym razie będzie za późno.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-59bc7da178b8",
+      "german": "sorgen",
+      "polish": "dbać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wer sorgt heute für die Kinder?",
+      "examplePolish": "Kto dziś zajmuje się dziećmi?",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-7fde2e5a7c2b",
+      "german": "Soße",
+      "polish": "sos",
+      "article": "die",
+      "plural": "Soßen",
+      "exampleGerman": "Gibst du mir bitte die Soße?",
+      "examplePolish": "Podasz mi proszę sos?",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-e59e3db3939e",
+      "german": "Souvenir",
+      "polish": "pamiątka",
+      "article": "das",
+      "plural": "Souvenirs",
+      "exampleGerman": "Ich bringe ein Souvenir aus Berlin mit.",
+      "examplePolish": "Przywożę pamiątkę z Berlina.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-8c9e47b14208",
+      "german": "soviel",
+      "polish": "o ile",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Soviel ich weiß, ist das Geschäft geschlossen.",
+      "examplePolish": "O ile wiem, sklep jest zamknięty.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-9b75bf60aa37",
+      "german": "so viel",
+      "polish": "tak dużo",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich habe heute so viel gearbeitet.",
+      "examplePolish": "Dziś tak dużo pracowałem.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-71565b2f5cc1",
+      "german": "sowohl … als auch",
+      "polish": "zarówno… jak i",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Sowohl Anna als auch Paul müssen unterschreiben.",
+      "examplePolish": "Zarówno Anna, jak i Paul muszą podpisać.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-498d6d268608",
+      "german": "Sozialarbeiter",
+      "polish": "pracownik socjalny",
+      "article": "der",
+      "plural": "Sozialarbeiter",
+      "exampleGerman": "Der Sozialarbeiter hilft der Familie.",
+      "examplePolish": "Pracownik socjalny pomaga rodzinie.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-f893701a2bdd",
+      "german": "spannend",
+      "polish": "emocjonujący",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Spiel war bis zum Ende spannend.",
+      "examplePolish": "Mecz był emocjonujący do końca.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-91057d0a11fd",
+      "german": "Spaß",
+      "polish": "zabawa; przyjemność",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Die Arbeit macht mir viel Spaß.",
+      "examplePolish": "Praca sprawia mi dużo przyjemności.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-fed970a2cc26",
+      "german": "spät",
+      "polish": "późny; późno",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Es ist schon spät, wir müssen gehen.",
+      "examplePolish": "Jest już późno, musimy iść.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-89ac926ef862",
+      "german": "spazieren gehen",
+      "polish": "iść na spacer",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir gehen jeden Sonntag spazieren.",
+      "examplePolish": "W każdą niedzielę idziemy na spacer.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-808d02188a48",
+      "german": "Spaziergang",
+      "polish": "spacer",
+      "article": "der",
+      "plural": "Spaziergänge",
+      "exampleGerman": "Am Abend mache ich einen Spaziergang.",
+      "examplePolish": "Wieczorem idę na spacer.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-223430d51a1d",
+      "german": "Speise",
+      "polish": "potrawa",
+      "article": "die",
+      "plural": "Speisen",
+      "exampleGerman": "Als Vorspeise nehme ich eine Suppe.",
+      "examplePolish": "Na przystawkę wezmę zupę.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-1c8ed6f2a3dc",
+      "german": "Speisekarte",
+      "polish": "menu",
+      "article": "die",
+      "plural": "Speisekarten",
+      "exampleGerman": "Bitte bringen Sie uns die Speisekarte.",
+      "examplePolish": "Proszę przynieść nam menu.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-cb40653277ac",
+      "german": "Speisewagen",
+      "polish": "wagon restauracyjny",
+      "article": "der",
+      "plural": "Speisewagen",
+      "exampleGerman": "Der Speisewagen ist in der Mitte des Zuges.",
+      "examplePolish": "Wagon restauracyjny znajduje się w środku pociągu.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-1e03e94a7db9",
+      "german": "Spezialpflege",
+      "polish": "specjalna pielęgnacja",
+      "article": "die",
+      "plural": null,
+      "exampleGerman": "Ich brauche eine Spezialpflege für trockenes Haar.",
+      "examplePolish": "Potrzebuję specjalnej pielęgnacji do suchych włosów.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-56cc61999e97",
+      "german": "Spezialist",
+      "polish": "specjalista",
+      "article": "der",
+      "plural": "Spezialisten",
+      "exampleGerman": "Mein Arzt schickt mich zu einem Spezialisten.",
+      "examplePolish": "Mój lekarz kieruje mnie do specjalisty.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-e0137d865799",
+      "german": "speziell",
+      "polish": "specjalny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich suche ein spezielles Geschenk.",
+      "examplePolish": "Szukam specjalnego prezentu.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-3a2246a364b4",
+      "german": "Spiegel",
+      "polish": "lustro",
+      "article": "der",
+      "plural": "Spiegel",
+      "exampleGerman": "Im Flur hängt ein großer Spiegel.",
+      "examplePolish": "Na korytarzu wisi duże lustro.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-9310fce78b58",
+      "german": "Spiel",
+      "polish": "gra; mecz",
+      "article": "das",
+      "plural": "Spiele",
+      "exampleGerman": "Dieses Spiel ist für vier Personen.",
+      "examplePolish": "Ta gra jest dla czterech osób.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-9f651c37563b",
+      "german": "Spieler",
+      "polish": "gracz",
+      "article": "der",
+      "plural": "Spieler",
+      "exampleGerman": "Für das Spiel brauchen wir vier Spieler.",
+      "examplePolish": "Do gry potrzebujemy czterech graczy.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-5e8ce9dda047",
+      "german": "Spielplatz",
+      "polish": "plac zabaw",
+      "article": "der",
+      "plural": "Spielplätze",
+      "exampleGerman": "Die Kinder spielen auf dem Spielplatz.",
+      "examplePolish": "Dzieci bawią się na placu zabaw.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-59004d9314ac",
+      "german": "spitz",
+      "polish": "ostry",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Bleistift ist nicht spitz.",
+      "examplePolish": "Ołówek nie jest ostry.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-8ab6a8a0cf06",
+      "german": "Sport",
+      "polish": "sport",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Ich mache dreimal pro Woche Sport.",
+      "examplePolish": "Uprawiam sport trzy razy w tygodniu.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-4b4fccb16f40",
+      "german": "Sportart",
+      "polish": "dyscyplina sportowa",
+      "article": "die",
+      "plural": "Sportarten",
+      "exampleGerman": "Welche Sportart magst du am liebsten?",
+      "examplePolish": "Którą dyscyplinę sportową lubisz najbardziej?",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-a328bc7a575b",
+      "german": "Sportler",
+      "polish": "sportowiec",
+      "article": "der",
+      "plural": "Sportler",
+      "exampleGerman": "Der Sportler trainiert jeden Tag.",
+      "examplePolish": "Sportowiec trenuje codziennie.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-3b3fa885bf9b",
+      "german": "sportlich",
+      "polish": "wysportowany; sportowy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Sie ist sehr sportlich.",
+      "examplePolish": "Ona jest bardzo wysportowana.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-5a9b472f58dd",
+      "german": "Sprache",
+      "polish": "język",
+      "article": "die",
+      "plural": "Sprachen",
+      "exampleGerman": "Er spricht mehrere Sprachen.",
+      "examplePolish": "On mówi w kilku językach.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-856ed3ba856e",
+      "german": "Fremdsprache",
+      "polish": "język obcy",
+      "article": "die",
+      "plural": "Fremdsprachen",
+      "exampleGerman": "Ich lerne zwei Fremdsprachen.",
+      "examplePolish": "Uczę się dwóch języków obcych.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-167e3789750c",
+      "german": "Muttersprache",
+      "polish": "język ojczysty",
+      "article": "die",
+      "plural": "Muttersprachen",
+      "exampleGerman": "Polnisch ist meine Muttersprache.",
+      "examplePolish": "Polski jest moim językiem ojczystym.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-1f7fde0525b4",
+      "german": "Zweitsprache",
+      "polish": "drugi język",
+      "article": "die",
+      "plural": "Zweitsprachen",
+      "exampleGerman": "Deutsch ist seine Zweitsprache.",
+      "examplePolish": "Niemiecki jest jego drugim językiem.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-6f43892e78f0",
+      "german": "sprechen",
+      "polish": "mówić",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Können Sie bitte langsamer sprechen?",
+      "examplePolish": "Czy może pan mówić wolniej?",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-470e4ddcaaa3",
+      "german": "Sprechstunde",
+      "polish": "godziny przyjęć",
+      "article": "die",
+      "plural": "Sprechstunden",
+      "exampleGerman": "Die Ärztin hat heute Sprechstunde.",
+      "examplePolish": "Lekarka przyjmuje dziś pacjentów.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-89851a3f0da3",
+      "german": "springen",
+      "polish": "skakać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Kind springt ins Wasser.",
+      "examplePolish": "Dziecko skacze do wody.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-69b4932df2c5",
+      "german": "Spritze",
+      "polish": "zastrzyk",
+      "article": "die",
+      "plural": "Spritzen",
+      "exampleGerman": "Die Ärztin gibt mir eine Spritze.",
+      "examplePolish": "Lekarka robi mi zastrzyk.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-6a2a6c54f136",
+      "german": "spülen",
+      "polish": "płukać; zmywać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Bitte spülen Sie den Mund aus.",
+      "examplePolish": "Proszę wypłukać usta.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-f3ed6710528e",
+      "german": "Spur",
+      "polish": "pas ruchu; ślad",
+      "article": "die",
+      "plural": "Spuren",
+      "exampleGerman": "Fahren Sie auf der linken Spur.",
+      "examplePolish": "Proszę jechać lewym pasem.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-1b4bbb445553",
+      "german": "Stadt",
+      "polish": "miasto",
+      "article": "die",
+      "plural": "Städte",
+      "exampleGerman": "Heidelberg ist eine schöne Stadt.",
+      "examplePolish": "Heidelberg jest pięknym miastem.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-5dbd455614da",
+      "german": "Stadtplan",
+      "polish": "plan miasta",
+      "article": "der",
+      "plural": "Stadtpläne",
+      "exampleGerman": "Haben Sie einen Stadtplan?",
+      "examplePolish": "Czy ma pan plan miasta?",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-399430b2e18f",
+      "german": "stammen",
+      "polish": "pochodzić",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich stamme aus einer kleinen Stadt.",
+      "examplePolish": "Pochodzę z małego miasta.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-65d9e3e9dd12",
+      "german": "ständig",
+      "polish": "ciągle",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Telefon ist ständig besetzt.",
+      "examplePolish": "Telefon jest ciągle zajęty.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-ee7c3975a054",
+      "german": "Standpunkt",
+      "polish": "punkt widzenia",
+      "article": "der",
+      "plural": "Standpunkte",
+      "exampleGerman": "Von meinem Standpunkt aus ist das richtig.",
+      "examplePolish": "Z mojego punktu widzenia to jest właściwe.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-ec595fb76d78",
+      "german": "stark",
+      "polish": "silny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich habe starke Kopfschmerzen.",
+      "examplePolish": "Mam silny ból głowy.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-2da36ff30a38",
+      "german": "Station",
+      "polish": "stacja; oddział",
+      "article": "die",
+      "plural": "Stationen",
+      "exampleGerman": "Steigen Sie an der nächsten Station aus.",
+      "examplePolish": "Proszę wysiąść na następnej stacji.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-5ffc117397be",
+      "german": "Stau",
+      "polish": "korek",
+      "article": "der",
+      "plural": "Staus",
+      "exampleGerman": "Wir standen eine Stunde im Stau.",
+      "examplePolish": "Staliśmy godzinę w korku.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-d998c403bf75",
+      "german": "staubsaugen",
+      "polish": "odkurzać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Heute muss ich die Wohnung staubsaugen.",
+      "examplePolish": "Dziś muszę odkurzyć mieszkanie.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-959a12195b39",
+      "german": "stechen",
+      "polish": "kłuć; żądlić",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Eine Mücke hat mich gestochen.",
+      "examplePolish": "Ugryzł mnie komar.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-6c5499cbeee4",
+      "german": "Steckdose",
+      "polish": "gniazdko",
+      "article": "die",
+      "plural": "Steckdosen",
+      "exampleGerman": "Die Steckdose ist hinter dem Schrank.",
+      "examplePolish": "Gniazdko jest za szafą.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-378763e29041",
+      "german": "Stecker",
+      "polish": "wtyczka",
+      "article": "der",
+      "plural": "Stecker",
+      "exampleGerman": "Der Stecker passt nicht in die Steckdose.",
+      "examplePolish": "Wtyczka nie pasuje do gniazdka.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-3f3072042ca3",
+      "german": "stehen",
+      "polish": "stać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Bus steht an der Haltestelle.",
+      "examplePolish": "Autobus stoi na przystanku.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-dc756915eb68",
+      "german": "stehen bleiben",
+      "polish": "zatrzymać się",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Bitte bleiben Sie hier stehen.",
+      "examplePolish": "Proszę zatrzymać się tutaj.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-e27c42b53560",
+      "german": "steil",
+      "polish": "stromy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Straße zum Haus ist sehr steil.",
+      "examplePolish": "Droga do domu jest bardzo stroma.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-3172d90a0955",
+      "german": "Stein",
+      "polish": "kamień",
+      "article": "der",
+      "plural": "Steine",
+      "exampleGerman": "Die Kinder werfen Steine ins Wasser.",
+      "examplePolish": "Dzieci wrzucają kamienie do wody.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-cf0b7c53689f",
+      "german": "Stempel",
+      "polish": "stempel",
+      "article": "der",
+      "plural": "Stempel",
+      "exampleGerman": "Auf dem Formular fehlt der Stempel.",
+      "examplePolish": "Na formularzu brakuje stempla.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-75ea6bb7bfc1",
+      "german": "Stern",
+      "polish": "gwiazda",
+      "article": "der",
+      "plural": "Sterne",
+      "exampleGerman": "Heute sieht man viele Sterne.",
+      "examplePolish": "Dziś widać wiele gwiazd.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-d4ad74906a97",
+      "german": "Stift",
+      "polish": "długopis; ołówek",
+      "article": "der",
+      "plural": "Stifte",
+      "exampleGerman": "Kannst du mir einen Stift geben?",
+      "examplePolish": "Czy możesz mi dać długopis?",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-0321a92b7d26",
+      "german": "stilistisch",
+      "polish": "stylistyczny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Text ist stilistisch sehr gut.",
+      "examplePolish": "Tekst jest bardzo dobry stylistycznie.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-677c1bfa3a03",
+      "german": "still",
+      "polish": "cichy; nieruchomy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Bitte seid einen Moment still.",
+      "examplePolish": "Proszę, bądźcie przez chwilę cicho.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-2d3d683a9871",
+      "german": "Stiefel",
+      "polish": "but z cholewką",
+      "article": "der",
+      "plural": "Stiefel",
+      "exampleGerman": "Im Winter trage ich warme Stiefel.",
+      "examplePolish": "Zimą noszę ciepłe buty.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-52efc0d633e7",
+      "german": "Treppe",
+      "polish": "schody",
+      "article": "die",
+      "plural": "Treppen",
+      "exampleGerman": "Die Toilette ist die Treppe hoch.",
+      "examplePolish": "Toaleta jest na górze po schodach.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-3fe24a04ea19",
+      "german": "Treppenhaus",
+      "polish": "klatka schodowa",
+      "article": "das",
+      "plural": "Treppenhäuser",
+      "exampleGerman": "Im Treppenhaus ist das Licht kaputt.",
+      "examplePolish": "Światło na klatce schodowej jest zepsute.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-036bdcaa7481",
+      "german": "stimmen",
+      "polish": "zgadzać się; być poprawnym",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Adresse stimmt nicht mehr.",
+      "examplePolish": "Adres nie jest już aktualny.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-ed487e1e87c6",
+      "german": "Etage",
+      "polish": "piętro",
+      "article": "die",
+      "plural": "Etagen",
+      "exampleGerman": "Das Büro ist in der dritten Etage.",
+      "examplePolish": "Biuro jest na trzecim piętrze.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-de71774b29a0",
+      "german": "Stockwerk",
+      "polish": "piętro",
+      "article": "das",
+      "plural": "Stockwerke",
+      "exampleGerman": "Das Gebäude hat zehn Stockwerke.",
+      "examplePolish": "Budynek ma dziesięć pięter.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-f201c23df577",
+      "german": "Stoff",
+      "polish": "materiał; substancja",
+      "article": "der",
+      "plural": "Stoffe",
+      "exampleGerman": "Der Mantel ist aus einem warmen Stoff.",
+      "examplePolish": "Płaszcz jest z ciepłego materiału.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-0563d3e0da95",
+      "german": "stolz",
+      "polish": "dumny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich bin stolz auf dich.",
+      "examplePolish": "Jestem z ciebie dumny.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-d08e4cbddd6d",
+      "german": "stoppen",
+      "polish": "zatrzymywać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Polizei stoppte das Auto.",
+      "examplePolish": "Policja zatrzymała samochód.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-eba10b8520d7",
+      "german": "Störung",
+      "polish": "zakłócenie; awaria",
+      "article": "die",
+      "plural": "Störungen",
+      "exampleGerman": "Wegen einer Störung fährt der Zug später.",
+      "examplePolish": "Z powodu awarii pociąg jedzie później.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-ab22ad211707",
+      "german": "strafbar",
+      "polish": "karalny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Diese Handlung ist strafbar.",
+      "examplePolish": "To działanie jest karalne.",
+      "category": "Społeczeństwo i polityka (Gesellschaft und Politik)"
+    },
+    {
+      "id": "goethe-d6ed2f81b978",
+      "german": "Strand",
+      "polish": "plaża",
+      "article": "der",
+      "plural": "Strände",
+      "exampleGerman": "Im Urlaub liegen wir gern am Strand.",
+      "examplePolish": "Na urlopie chętnie leżymy na plaży.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-62394a9f2939",
+      "german": "Straße",
+      "polish": "ulica",
+      "article": "die",
+      "plural": "Straßen",
+      "exampleGerman": "Wir wohnen in einer ruhigen Straße.",
+      "examplePolish": "Mieszkamy przy spokojnej ulicy.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-73c4aace79fc",
+      "german": "Streichholz",
+      "polish": "zapałka",
+      "article": "das",
+      "plural": "Streichhölzer",
+      "exampleGerman": "Ich brauche ein Streichholz für die Kerze.",
+      "examplePolish": "Potrzebuję zapałki do świecy.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-71fa8edd7fa0",
+      "german": "streiken",
+      "polish": "strajkować",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Arbeiter streiken für höhere Löhne.",
+      "examplePolish": "Pracownicy strajkują o wyższe płace.",
+      "category": "Społeczeństwo i polityka (Gesellschaft und Politik)"
+    },
+    {
+      "id": "goethe-e0cf7388f9c3",
+      "german": "Streik",
+      "polish": "strajk",
+      "article": "der",
+      "plural": "Streiks",
+      "exampleGerman": "Wegen des Streiks fallen viele Züge aus.",
+      "examplePolish": "Z powodu strajku wiele pociągów jest odwołanych.",
+      "category": "Społeczeństwo i polityka (Gesellschaft und Politik)"
+    },
+    {
+      "id": "goethe-2a2fc52745ad",
+      "german": "sich streiten",
+      "polish": "kłócić się",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Kinder streiten sich oft.",
+      "examplePolish": "Dzieci często się kłócą.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-af1134a200a8",
+      "german": "Streit",
+      "polish": "kłótnia",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Ich möchte keinen Streit mit den Nachbarn.",
+      "examplePolish": "Nie chcę kłótni z sąsiadami.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-165bd364fed9",
+      "german": "Stress",
+      "polish": "stres",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Bei der Arbeit habe ich viel Stress.",
+      "examplePolish": "Mam dużo stresu w pracy.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-9a147070aff5",
+      "german": "Strumpf",
+      "polish": "pończocha; skarpeta",
+      "article": "der",
+      "plural": "Strümpfe",
+      "exampleGerman": "Wo sind meine schwarzen Strümpfe?",
+      "examplePolish": "Gdzie są moje czarne skarpety?",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-c430fdf421c0",
+      "german": "studieren",
+      "polish": "studiować",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Mein Sohn studiert Medizin.",
+      "examplePolish": "Mój syn studiuje medycynę.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-204036a1ef6e",
+      "german": "Student",
+      "polish": "student",
+      "article": "der",
+      "plural": "Studenten",
+      "exampleGerman": "Der Student schreibt seine Abschlussarbeit.",
+      "examplePolish": "Student pisze pracę dyplomową.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-6a5b4968d7e6",
+      "german": "Studierender",
+      "polish": "student",
+      "article": "der",
+      "plural": "Studierende",
+      "exampleGerman": "Zehn Studierende besuchen das Seminar.",
+      "examplePolish": "Dziesięciu studentów uczestniczy w seminarium.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-93ae961f98d6",
+      "german": "Stufe",
+      "polish": "stopień; poziom",
+      "article": "die",
+      "plural": "Stufen",
+      "exampleGerman": "Der Kurs wird auf drei Stufen angeboten.",
+      "examplePolish": "Kurs jest oferowany na trzech poziomach.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-e155af158ecd",
+      "german": "Stuhl",
+      "polish": "krzesło",
+      "article": "der",
+      "plural": "Stühle",
+      "exampleGerman": "Im Zimmer steht nur ein Stuhl.",
+      "examplePolish": "W pokoju stoi tylko jedno krzesło.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-4502ca8d4234",
+      "german": "stumm",
+      "polish": "wyciszony; niemy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Stell bitte dein Handy auf stumm.",
+      "examplePolish": "Ustaw proszę telefon na wyciszenie.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-3800c56622fe",
+      "german": "Stunde",
+      "polish": "godzina",
+      "article": "die",
+      "plural": "Stunden",
+      "exampleGerman": "Die Fahrt dauert zwei Stunden.",
+      "examplePolish": "Podróż trwa dwie godziny.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-09b6f5035f2e",
+      "german": "suchen",
+      "polish": "szukać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir suchen eine größere Wohnung.",
+      "examplePolish": "Szukamy większego mieszkania.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-7849f216c961",
+      "german": "Sucht",
+      "polish": "uzależnienie",
+      "article": "die",
+      "plural": "Süchte",
+      "exampleGerman": "Internetsucht kann ein ernstes Problem sein.",
+      "examplePolish": "Uzależnienie od internetu może być poważnym problemem.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-4bc292b74c39",
+      "german": "süchtig",
+      "polish": "uzależniony",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Er ist süchtig nach Nikotin.",
+      "examplePolish": "On jest uzależniony od nikotyny.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-a806149978dd",
+      "german": "Suchtmittel",
+      "polish": "substancja uzależniająca",
+      "article": "das",
+      "plural": "Suchtmittel",
+      "exampleGerman": "Manche Medikamente sind Suchtmittel.",
+      "examplePolish": "Niektóre leki są substancjami uzależniającymi.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-515d0d70dad6",
+      "german": "Summe",
+      "polish": "suma",
+      "article": "die",
+      "plural": "Summen",
+      "exampleGerman": "Die Summe auf der Rechnung ist zu hoch.",
+      "examplePolish": "Suma na rachunku jest zbyt wysoka.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-8451ba8a14d7",
+      "german": "super",
+      "polish": "świetny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der Film war wirklich super.",
+      "examplePolish": "Film był naprawdę świetny.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-c3edaad8e26d",
+      "german": "Supermarkt",
+      "polish": "supermarket",
+      "article": "der",
+      "plural": "Supermärkte",
+      "exampleGerman": "Ich kaufe im Supermarkt ein.",
+      "examplePolish": "Robię zakupy w supermarkecie.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-7f9283eb3cbf",
+      "german": "Suppe",
+      "polish": "zupa",
+      "article": "die",
+      "plural": "Suppen",
+      "exampleGerman": "Die Suppe schmeckt sehr gut.",
+      "examplePolish": "Zupa smakuje bardzo dobrze.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-878b32341f06",
+      "german": "sympathisch",
+      "polish": "sympatyczny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Unsere neue Kollegin ist sehr sympathisch.",
+      "examplePolish": "Nasza nowa koleżanka jest bardzo sympatyczna.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-f5ece6d08e02",
+      "german": "Tabelle",
+      "polish": "tabela",
+      "article": "die",
+      "plural": "Tabellen",
+      "exampleGerman": "Tragen Sie die Daten in die Tabelle ein.",
+      "examplePolish": "Proszę wpisać dane do tabeli.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-a8bcb3ce621f",
+      "german": "Tafel",
+      "polish": "tablica; tabliczka",
+      "article": "die",
+      "plural": "Tafeln",
+      "exampleGerman": "Der Lehrer schreibt das Wort an die Tafel.",
+      "examplePolish": "Nauczyciel zapisuje słowo na tablicy.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-6eb24f54eaf7",
+      "german": "Tal",
+      "polish": "dolina",
+      "article": "das",
+      "plural": "Täler",
+      "exampleGerman": "Unser Dorf liegt in einem Tal.",
+      "examplePolish": "Nasza wieś leży w dolinie.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-dcf3af69ed29",
+      "german": "Tankstelle",
+      "polish": "stacja benzynowa",
+      "article": "die",
+      "plural": "Tankstellen",
+      "exampleGerman": "Die nächste Tankstelle ist fünf Kilometer entfernt.",
+      "examplePolish": "Najbliższa stacja benzynowa jest oddalona o pięć kilometrów.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-3c1f5b936f05",
+      "german": "Tante",
+      "polish": "ciotka",
+      "article": "die",
+      "plural": "Tanten",
+      "exampleGerman": "Meine Tante wohnt in Hamburg.",
+      "examplePolish": "Moja ciotka mieszka w Hamburgu.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-a14a10362e57",
+      "german": "tanzen",
+      "polish": "tańczyć",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Auf der Hochzeit haben wir viel getanzt.",
+      "examplePolish": "Na weselu dużo tańczyliśmy.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-57c0ce584a57",
+      "german": "Tasche",
+      "polish": "torba; kieszeń",
+      "article": "die",
+      "plural": "Taschen",
+      "exampleGerman": "Meine Tasche ist sehr schwer.",
+      "examplePolish": "Moja torba jest bardzo ciężka.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-64310c89e7ab",
+      "german": "Taschentuch",
+      "polish": "chusteczka",
+      "article": "das",
+      "plural": "Taschentücher",
+      "exampleGerman": "Hast du ein Taschentuch für mich?",
+      "examplePolish": "Masz dla mnie chusteczkę?",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-13fccadb3db3",
+      "german": "Tasse",
+      "polish": "filiżanka",
+      "article": "die",
+      "plural": "Tassen",
+      "exampleGerman": "Möchten Sie eine Tasse Kaffee?",
+      "examplePolish": "Czy chce pan filiżankę kawy?",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-1764a75eff41",
+      "german": "Tastatur",
+      "polish": "klawiatura",
+      "article": "die",
+      "plural": "Tastaturen",
+      "exampleGerman": "Die Tastatur ist ganz neu.",
+      "examplePolish": "Klawiatura jest całkiem nowa.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-3811d14d3bf7",
+      "german": "Tat",
+      "polish": "czyn",
+      "article": "die",
+      "plural": "Taten",
+      "exampleGerman": "Mit dieser Tat half er vielen Menschen.",
+      "examplePolish": "Tym czynem pomógł wielu ludziom.",
+      "category": "Społeczeństwo i polityka (Gesellschaft und Politik)"
+    },
+    {
+      "id": "goethe-127a463399e1",
+      "german": "Täter",
+      "polish": "sprawca",
+      "article": "der",
+      "plural": "Täter",
+      "exampleGerman": "Die Polizei hat den Täter gefunden.",
+      "examplePolish": "Policja znalazła sprawcę.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-6952b1cb1645",
+      "german": "tatsächlich",
+      "polish": "rzeczywiście",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die Hose ist tatsächlich zu klein.",
+      "examplePolish": "Spodnie są rzeczywiście za małe.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-4e7615bfb1a6",
+      "german": "taub",
+      "polish": "głuchy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der alte Mann ist fast taub.",
+      "examplePolish": "Starszy mężczyzna jest prawie głuchy.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-7ccdd75af1b1",
+      "german": "tauchen",
+      "polish": "nurkować",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Im Urlaub möchte ich tauchen.",
+      "examplePolish": "Na urlopie chcę nurkować.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-0a4776073b2a",
+      "german": "tauschen",
+      "polish": "wymieniać",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wollen wir die Plätze tauschen?",
+      "examplePolish": "Chcesz zamienić się miejscami?",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-ee6bfd9edd66",
+      "german": "Technologie",
+      "polish": "technologia",
+      "article": "die",
+      "plural": "Technologien",
+      "exampleGerman": "Neue Technologien verändern die Arbeitswelt.",
+      "examplePolish": "Nowe technologie zmieniają świat pracy.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-62a2f664b058",
+      "german": "Tee",
+      "polish": "herbata",
+      "article": "der",
+      "plural": "Tees",
+      "exampleGerman": "Ich trinke Tee mit Zitrone.",
+      "examplePolish": "Piję herbatę z cytryną.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-e2ebc533f563",
+      "german": "Tee ziehen lassen",
+      "polish": "parzyć herbatę",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Lassen Sie den Tee fünf Minuten ziehen.",
+      "examplePolish": "Proszę parzyć herbatę przez pięć minut.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-d269f1c4e0aa",
+      "german": "teilnehmen",
+      "polish": "uczestniczyć",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich nehme an einem Deutschkurs teil.",
+      "examplePolish": "Uczestniczę w kursie niemieckiego.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-94fb4297295f",
+      "german": "Teilnahme",
+      "polish": "udział",
+      "article": "die",
+      "plural": "Teilnahmen",
+      "exampleGerman": "Die Teilnahme am Kurs ist kostenlos.",
+      "examplePolish": "Udział w kursie jest bezpłatny.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-1000ed0ee55a",
+      "german": "Teilnehmer",
+      "polish": "uczestnik",
+      "article": "der",
+      "plural": "Teilnehmer",
+      "exampleGerman": "Alle Teilnehmer bekommen ein Zertifikat.",
+      "examplePolish": "Wszyscy uczestnicy otrzymują certyfikat.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-0a7fe3ed0fd4",
+      "german": "telefonieren",
+      "polish": "rozmawiać przez telefon",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Ich telefoniere gerade mit meiner Schwester.",
+      "examplePolish": "Właśnie rozmawiam przez telefon z siostrą.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-e4edfacb99e0",
+      "german": "Telefon",
+      "polish": "telefon",
+      "article": "das",
+      "plural": "Telefone",
+      "exampleGerman": "Darf ich Ihr Telefon benutzen?",
+      "examplePolish": "Czy mogę użyć pana telefonu?",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-89c0d92410fb",
+      "german": "Teller",
+      "polish": "talerz",
+      "article": "der",
+      "plural": "Teller",
+      "exampleGerman": "Stell bitte die Teller auf den Tisch.",
+      "examplePolish": "Postaw proszę talerze na stole.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-65e336e20c50",
+      "german": "Tempo",
+      "polish": "prędkość",
+      "article": "das",
+      "plural": null,
+      "exampleGerman": "Hier gilt Tempo dreißig.",
+      "examplePolish": "Tutaj obowiązuje prędkość trzydziestu kilometrów na godzinę.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-9c881bdb6bc9",
+      "german": "Tennis",
+      "polish": "tenis",
+      "article": "das",
+      "plural": null,
+      "exampleGerman": "Ich spiele jeden Freitag Tennis.",
+      "examplePolish": "Gram w tenisa w każdy piątek.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-33e76457f7e2",
+      "german": "Teppich",
+      "polish": "dywan",
+      "article": "der",
+      "plural": "Teppiche",
+      "exampleGerman": "Wir kaufen einen neuen Teppich.",
+      "examplePolish": "Kupujemy nowy dywan.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-73185e3fd124",
+      "german": "Termin",
+      "polish": "termin",
+      "article": "der",
+      "plural": "Termine",
+      "exampleGerman": "Ich habe morgen einen Termin beim Arzt.",
+      "examplePolish": "Mam jutro wizytę u lekarza.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-5bda76944e17",
+      "german": "Terminkalender",
+      "polish": "kalendarz terminów",
+      "article": "der",
+      "plural": "Terminkalender",
+      "exampleGerman": "Der Termin steht in meinem Terminkalender.",
+      "examplePolish": "Termin jest zapisany w moim kalendarzu.",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-d1342513076e",
+      "german": "Terrasse",
+      "polish": "taras",
+      "article": "die",
+      "plural": "Terrassen",
+      "exampleGerman": "Wir sitzen auf der Terrasse.",
+      "examplePolish": "Siedzimy na tarasie.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-c35aa33b79c9",
+      "german": "teuer",
+      "polish": "drogi",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Das Hotel ist mir zu teuer.",
+      "examplePolish": "Hotel jest dla mnie zbyt drogi.",
+      "category": "Finanse i usługi (Geld und Dienstleistungen)"
+    },
+    {
+      "id": "goethe-372ea08cab33",
+      "german": "Text",
+      "polish": "tekst",
+      "article": "der",
+      "plural": "Texte",
+      "exampleGerman": "Lesen Sie bitte den Text.",
+      "examplePolish": "Proszę przeczytać tekst.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-d19df7d3f221",
+      "german": "Theater",
+      "polish": "teatr",
+      "article": "das",
+      "plural": "Theater",
+      "exampleGerman": "Am Samstag gehen wir ins Theater.",
+      "examplePolish": "W sobotę idziemy do teatru.",
+      "category": "Kultura i media (Kultur und Medien)"
+    },
+    {
+      "id": "goethe-e5bfae7bab07",
+      "german": "theoretisch",
+      "polish": "teoretyczny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Die theoretische Prüfung war schwierig.",
+      "examplePolish": "Egzamin teoretyczny był trudny.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-6527988171a4",
+      "german": "Theorie",
+      "polish": "teoria",
+      "article": "die",
+      "plural": "Theorien",
+      "exampleGerman": "In der Theorie klingt der Plan gut.",
+      "examplePolish": "W teorii plan brzmi dobrze.",
+      "category": "Edukacja i język (Bildung und Sprache)"
+    },
+    {
+      "id": "goethe-8170403e1d01",
+      "german": "Tierpark",
+      "polish": "ogród zoologiczny",
+      "article": "der",
+      "plural": "Tierparks",
+      "exampleGerman": "Am Sonntag besuchen wir den Tierpark.",
+      "examplePolish": "W niedzielę odwiedzamy ogród zoologiczny.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    },
+    {
+      "id": "goethe-102675255075",
+      "german": "Tipp",
+      "polish": "wskazówka",
+      "article": "der",
+      "plural": "Tipps",
+      "exampleGerman": "Kannst du mir einen Tipp geben?",
+      "examplePolish": "Czy możesz dać mi wskazówkę?",
+      "category": "Codzienność i problemy (Alltag und Probleme)"
+    },
+    {
+      "id": "goethe-49c4698f0d53",
+      "german": "tippen",
+      "polish": "pisać na klawiaturze",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Sie kann sehr schnell tippen.",
+      "examplePolish": "Ona potrafi bardzo szybko pisać na klawiaturze.",
+      "category": "Technologia i komunikacja (Technik und Kommunikation)"
+    },
+    {
+      "id": "goethe-abc4bc01b77d",
+      "german": "Tisch",
+      "polish": "stół",
+      "article": "der",
+      "plural": "Tische",
+      "exampleGerman": "Das Essen steht auf dem Tisch.",
+      "examplePolish": "Jedzenie stoi na stole.",
+      "category": "Dom i mieszkanie (Wohnen und Haushalt)"
+    },
+    {
+      "id": "goethe-b7d49c2f437c",
+      "german": "Titel",
+      "polish": "tytuł",
+      "article": "der",
+      "plural": "Titel",
+      "exampleGerman": "Wie lautet der Titel des Films?",
+      "examplePolish": "Jaki jest tytuł filmu?",
+      "category": "Kultura i media (Kultur und Medien)"
+    },
+    {
+      "id": "goethe-9dcdee9e11a0",
+      "german": "Tochter",
+      "polish": "córka",
+      "article": "die",
+      "plural": "Töchter",
+      "exampleGerman": "Meine Tochter studiert in Berlin.",
+      "examplePolish": "Moja córka studiuje w Berlinie.",
+      "category": "Życie i relacje (Leben und Beziehungen)"
+    },
+    {
+      "id": "goethe-871f59b13a0c",
+      "german": "tödlich",
+      "polish": "śmiertelny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Dieses Gift kann tödlich sein.",
+      "examplePolish": "Ta trucizna może być śmiertelna.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-e27833484ad5",
+      "german": "Toilette",
+      "polish": "toaleta",
+      "article": "die",
+      "plural": "Toiletten",
+      "exampleGerman": "Wo ist die nächste Toilette?",
+      "examplePolish": "Gdzie jest najbliższa toaleta?",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-3cc82b670487",
+      "german": "toll",
+      "polish": "świetny",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Unser Urlaub war toll.",
+      "examplePolish": "Nasz urlop był świetny.",
+      "category": "Emocje i opinie (Gefühle und Meinungen)"
+    },
+    {
+      "id": "goethe-13f20098aaeb",
+      "german": "Tomate",
+      "polish": "pomidor",
+      "article": "die",
+      "plural": "Tomaten",
+      "exampleGerman": "Kauf bitte noch Tomaten.",
+      "examplePolish": "Kup proszę jeszcze pomidory.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-de435d979cca",
+      "german": "Torte",
+      "polish": "tort",
+      "article": "die",
+      "plural": "Torten",
+      "exampleGerman": "Zum Geburtstag backe ich eine Torte.",
+      "examplePolish": "Na urodziny piekę tort.",
+      "category": "Jedzenie i zakupy (Essen und Einkaufen)"
+    },
+    {
+      "id": "goethe-ac571013c2f2",
+      "german": "tot",
+      "polish": "martwy",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Der alte Baum ist tot.",
+      "examplePolish": "Stare drzewo jest martwe.",
+      "category": "Przyroda i środowisko (Natur und Umwelt)"
+    },
+    {
+      "id": "goethe-94a514da8543",
+      "german": "Toter",
+      "polish": "zmarły",
+      "article": "der",
+      "plural": "Tote",
+      "exampleGerman": "Bei dem Unfall gab es zwei Tote.",
+      "examplePolish": "W wypadku zginęły dwie osoby.",
+      "category": "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)"
+    },
+    {
+      "id": "goethe-da29a3da9315",
+      "german": "Tourismus",
+      "polish": "turystyka",
+      "article": "der",
+      "plural": null,
+      "exampleGerman": "Der Tourismus ist für die Region wichtig.",
+      "examplePolish": "Turystyka jest ważna dla regionu.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-3f2c9248ee95",
+      "german": "Tourist",
+      "polish": "turysta",
+      "article": "der",
+      "plural": "Touristen",
+      "exampleGerman": "Viele Touristen besuchen die Altstadt.",
+      "examplePolish": "Wielu turystów odwiedza stare miasto.",
+      "category": "Podróże i miasto (Reisen und Stadt)"
+    },
+    {
+      "id": "goethe-79d04530b7db",
+      "german": "trainieren",
+      "polish": "trenować",
+      "article": null,
+      "plural": null,
+      "exampleGerman": "Wir trainieren einmal pro Woche im Verein.",
+      "examplePolish": "Trenujemy raz w tygodniu w klubie.",
+      "category": "Czas wolny i sport (Freizeit und Sport)"
+    }
+  ]
+}

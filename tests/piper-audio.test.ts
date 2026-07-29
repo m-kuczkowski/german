@@ -16,13 +16,16 @@ describe("nagrania niemieckiego lektora", () => {
     expect(spokenGerman({ german: "zuhören (jemandem)" })).toBe("jemandem zuhören");
   });
 
-  it("posiada nagranie dla każdej z 3038 kart i żadnych obcych identyfikatorów", () => {
+  it("posiada nagranie dla każdej zachowanej karty Nicos Weg i używa fallbacku dla Goethe", () => {
     const cardIds = new Set(starterCards.map((card) => card.id));
     const audioIds = Object.keys(piperAudioClips);
-    expect(starterCards).toHaveLength(3038);
+    const nicosCards = starterCards.filter((card) => card.id.startsWith("nicos-"));
+    const goetheCards = starterCards.filter((card) => card.id.startsWith("goethe-"));
+    expect(starterCards).toHaveLength(4937);
     expect(audioIds).toHaveLength(3038);
     expect(audioIds.every((id) => cardIds.has(id))).toBe(true);
-    expect(starterCards.every((card) => piperAudioClips[card.id])).toBe(true);
+    expect(nicosCards.every((card) => piperAudioClips[card.id])).toBe(true);
+    expect(goetheCards.every((card) => !piperAudioClips[card.id])).toBe(true);
   });
 
   it("ma poprawne, bezpieczne czasy segmentów i publiczną bazę WebM/Opus", () => {

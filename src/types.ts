@@ -62,11 +62,14 @@ export interface CardContent {
   examplePolish: string;
   category: string;
   curriculumTier?: CurriculumTier;
+  curriculumOrder?: number;
   wordFamilyId?: string;
   wordFamilyRole?: WordFamilyRole;
   prerequisiteIds?: string[];
   wordParts?: WordPart[];
   level?: "A2" | "B1";
+  goetheLevel?: "A2" | "B1";
+  goetheSourceUrl?: string;
   sourceLabel?: string;
   sourceUrl?: string;
   sourceGloss?: string;

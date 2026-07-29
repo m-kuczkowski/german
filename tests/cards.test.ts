@@ -3,11 +3,15 @@ import { starterCards } from "../src/data/starterCards";
 import { isDuplicate, mergeUnique, normalizeGerman, toFlashcard } from "../src/lib/cards";
 
 describe("kolekcja fiszek", () => {
-  it("zawiera wszystkie unikalne karty Nicos Weg A2 i B1", () => {
-    expect(starterCards).toHaveLength(3038);
-    expect(new Set(starterCards.map((card) => card.id)).size).toBe(3038);
-    expect(starterCards.filter((card) => card.level === "A2")).toHaveLength(1856);
-    expect(starterCards.filter((card) => card.level === "B1")).toHaveLength(1182);
+  it("zawiera oficjalny rdzeń Goethe i zachowaną bibliotekę Nicos Weg", () => {
+    expect(starterCards).toHaveLength(4937);
+    expect(new Set(starterCards.map((card) => card.id)).size).toBe(4937);
+    expect(starterCards.filter((card) => card.id.startsWith("nicos-"))).toHaveLength(3038);
+    expect(starterCards.filter((card) => card.goetheLevel === "A2")).toHaveLength(1364);
+    expect(starterCards.filter((card) => card.goetheLevel === "B1")).toHaveLength(1816);
+    expect(starterCards.filter((card) => card.curriculumTier === "core")).toHaveLength(3180);
+    expect(starterCards.find((card) => card.german === "Montag"))
+      .toMatchObject({ article: "der", plural: "Montage", goetheLevel: "A2" });
     expect(starterCards.find((card) => card.german === "Kreislaufzusammenbruch"))
       .toMatchObject({ curriculumTier: "specialist" });
     expect(starterCards.find((card) => card.german === "ohnmächtig"))
@@ -24,6 +28,7 @@ describe("kolekcja fiszek", () => {
       .toMatchObject({
         german: "jemanden pflegen",
         curriculumTier: "core",
+        goetheLevel: "B1",
         wordFamilyId: "pflege",
         wordFamilyRole: "base",
         prerequisiteIds: [],
@@ -31,6 +36,7 @@ describe("kolekcja fiszek", () => {
     expect(starterCards.find((card) => card.id === "nicos-a2-4ec3d0495161"))
       .toMatchObject({
         german: "Pflegeheim",
+        curriculumTier: "extension",
         wordFamilyId: "pflege",
         wordFamilyRole: "compound",
         prerequisiteIds: ["nicos-b1-7c8fba159d9f"],
@@ -73,6 +79,6 @@ describe("kolekcja fiszek", () => {
     );
     const result = mergeUnique(starterCards, [starterCards[0], unique]);
     expect(result.skipped).toBe(1);
-    expect(result.cards).toHaveLength(3039);
+    expect(result.cards).toHaveLength(4938);
   });
 });
