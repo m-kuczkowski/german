@@ -47,6 +47,7 @@ export const expandStatements = [
     ADD COLUMN IF NOT EXISTS example_german TEXT,
     ADD COLUMN IF NOT EXISTS example_polish TEXT,
     ADD COLUMN IF NOT EXISTS category_id TEXT,
+    ADD COLUMN IF NOT EXISTS curriculum_tier TEXT,
     ADD COLUMN IF NOT EXISTS level TEXT,
     ADD COLUMN IF NOT EXISTS source_label TEXT,
     ADD COLUMN IF NOT EXISTS source_url TEXT,
@@ -126,6 +127,7 @@ export const backfillStatements = [
      example_german = content->>'exampleGerman',
      example_polish = content->>'examplePolish',
      category_id = 'category_' || substr(md5(content->>'category'), 1, 12),
+     curriculum_tier = COALESCE(content->>'curriculumTier', 'core'),
      level = content->>'level',
      source_label = content->>'sourceLabel',
      source_url = content->>'sourceUrl',
@@ -203,6 +205,8 @@ export const backfillStatements = [
 export const constraintStatements = [
   `CREATE INDEX IF NOT EXISTS catalog_cards_category_level_idx
     ON catalog_cards (category_id, level, position)`,
+  `CREATE INDEX IF NOT EXISTS catalog_cards_curriculum_tier_idx
+    ON catalog_cards (curriculum_tier, position)`,
   `CREATE INDEX IF NOT EXISTS card_progress_due_idx
     ON card_progress (profile_id, due_at)`,
   `CREATE INDEX IF NOT EXISTS card_progress_box_stage_idx
@@ -213,37 +217,42 @@ export const constraintStatements = [
     ON card_review_history (mode, correct)`,
   `DO $$
    BEGIN
-     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'catalog_cards_category_fkey') THEN
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'catalog_cards_category_fkey' AND conrelid = 'catalog_cards'::regclass) THEN
        ALTER TABLE catalog_cards
          ADD CONSTRAINT catalog_cards_category_fkey
          FOREIGN KEY (category_id) REFERENCES categories(id) NOT VALID;
      END IF;
-     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'catalog_cards_article_check') THEN
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'catalog_cards_article_check' AND conrelid = 'catalog_cards'::regclass) THEN
        ALTER TABLE catalog_cards
          ADD CONSTRAINT catalog_cards_article_check
          CHECK (article IS NULL OR article IN ('der', 'die', 'das')) NOT VALID;
      END IF;
-     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'catalog_cards_level_check') THEN
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'catalog_cards_level_check' AND conrelid = 'catalog_cards'::regclass) THEN
        ALTER TABLE catalog_cards
          ADD CONSTRAINT catalog_cards_level_check
          CHECK (level IN ('A2', 'B1')) NOT VALID;
      END IF;
-     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_progress_stage_check') THEN
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'catalog_cards_curriculum_tier_check' AND conrelid = 'catalog_cards'::regclass) THEN
+       ALTER TABLE catalog_cards
+         ADD CONSTRAINT catalog_cards_curriculum_tier_check
+         CHECK (curriculum_tier IN ('core', 'extension', 'specialist')) NOT VALID;
+     END IF;
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_progress_stage_check' AND conrelid = 'card_progress'::regclass) THEN
        ALTER TABLE card_progress
          ADD CONSTRAINT card_progress_stage_check
          CHECK (stage IN ('new', 'learning', 'uncertain', 'known', 'mastered')) NOT VALID;
      END IF;
-     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_progress_leitner_box_check') THEN
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_progress_leitner_box_check' AND conrelid = 'card_progress'::regclass) THEN
        ALTER TABLE card_progress
          ADD CONSTRAINT card_progress_leitner_box_check
          CHECK (leitner_box BETWEEN 1 AND 5) NOT VALID;
      END IF;
-     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'learning_profiles_theme_check') THEN
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'learning_profiles_theme_check' AND conrelid = 'learning_profiles'::regclass) THEN
        ALTER TABLE learning_profiles
          ADD CONSTRAINT learning_profiles_theme_check
          CHECK (theme IS NULL OR theme IN ('system', 'light', 'dark')) NOT VALID;
      END IF;
-     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_review_history_mode_check') THEN
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_review_history_mode_check' AND conrelid = 'card_review_history'::regclass) THEN
        ALTER TABLE card_review_history
          ADD CONSTRAINT card_review_history_mode_check
          CHECK (mode IN (
@@ -251,12 +260,12 @@ export const constraintStatements = [
            'type-de-pl', 'type-pl-de', 'type-listen-de'
          )) NOT VALID;
      END IF;
-     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_review_history_rating_check') THEN
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_review_history_rating_check' AND conrelid = 'card_review_history'::regclass) THEN
        ALTER TABLE card_review_history
          ADD CONSTRAINT card_review_history_rating_check
          CHECK (rating IN ('again', 'hard', 'good')) NOT VALID;
      END IF;
-     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_review_history_boxes_check') THEN
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_review_history_boxes_check' AND conrelid = 'card_review_history'::regclass) THEN
        ALTER TABLE card_review_history
          ADD CONSTRAINT card_review_history_boxes_check
          CHECK (from_box BETWEEN 1 AND 5 AND to_box BETWEEN 1 AND 5) NOT VALID;
@@ -265,6 +274,7 @@ export const constraintStatements = [
   `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_category_fkey`,
   `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_article_check`,
   `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_level_check`,
+  `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_curriculum_tier_check`,
   `ALTER TABLE card_progress VALIDATE CONSTRAINT card_progress_stage_check`,
   `ALTER TABLE card_progress VALIDATE CONSTRAINT card_progress_leitner_box_check`,
   `ALTER TABLE learning_profiles VALIDATE CONSTRAINT learning_profiles_theme_check`,
@@ -325,7 +335,10 @@ export const validationQuery = `
          'sourceUrl', c.source_url,
          'sourceGloss', c.source_gloss,
          'sourceLanguage', c.source_language
-       )) AS catalog_mismatches,
+       ) || CASE
+         WHEN c.content ? 'curriculumTier' THEN jsonb_build_object('curriculumTier', c.curriculum_tier)
+         ELSE '{}'::jsonb
+       END) AS catalog_mismatches,
       (SELECT COUNT(*) FROM card_progress p
        LEFT JOIN reconstructed_history h
          ON h.profile_id = p.profile_id AND h.card_id = p.card_id
@@ -350,11 +363,16 @@ export const validationQuery = `
          'reviewHistory', COALESCE(h.history, '[]'::jsonb),
          'lastSchedulingReason', p.last_scheduling_reason,
          'successfulReviewDays', to_jsonb(p.successful_review_days)
-       )) AS progress_mismatches,
+       ) || CASE
+         WHEN p.data ? 'challengeStats' THEN jsonb_build_object('challengeStats', p.data->'challengeStats')
+         ELSE '{}'::jsonb
+       END) AS progress_mismatches,
       (SELECT COUNT(*) FROM learning_profiles p
        WHERE
          (p.meta ? 'streak' AND p.streak IS DISTINCT FROM (p.meta->>'streak')::integer)
-         OR (p.meta ? 'lastStudyDate' AND p.last_study_date IS DISTINCT FROM NULLIF(p.meta->>'lastStudyDate', '')::date)
+         OR (p.meta ? 'lastStudyDate' AND p.last_study_date IS DISTINCT FROM CASE
+           WHEN p.meta->>'lastStudyDate' ~ '^\\d{4}-\\d{2}-\\d{2}$'
+           THEN (p.meta->>'lastStudyDate')::date ELSE NULL END)
          OR (p.meta ? 'completedToday' AND p.completed_today IS DISTINCT FROM (p.meta->>'completedToday')::integer)
          OR (p.meta ? 'totalReviews' AND p.total_reviews IS DISTINCT FROM (p.meta->>'totalReviews')::integer)
          OR (p.meta ? 'theme' AND p.theme IS DISTINCT FROM p.meta->>'theme')

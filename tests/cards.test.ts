@@ -8,6 +8,10 @@ describe("kolekcja fiszek", () => {
     expect(new Set(starterCards.map((card) => card.id)).size).toBe(3038);
     expect(starterCards.filter((card) => card.level === "A2")).toHaveLength(1856);
     expect(starterCards.filter((card) => card.level === "B1")).toHaveLength(1182);
+    expect(starterCards.find((card) => card.german === "Kreislaufzusammenbruch"))
+      .toMatchObject({ curriculumTier: "specialist" });
+    expect(starterCards.find((card) => card.german === "ohnmächtig"))
+      .toMatchObject({ curriculumTier: "extension" });
   });
 
   it("nie pokazuje technicznych separatorów z talii źródłowej", () => {

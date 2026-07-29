@@ -1,4 +1,4 @@
-import type { Flashcard } from "../types";
+import type { CurriculumTier, Flashcard } from "../types";
 import { isDue, sortForLearning } from "./srs";
 
 export interface CategoryProgress {
@@ -14,6 +14,20 @@ export interface CategoryProgress {
   retained: number;
   due: number;
   percent: number;
+  specialist: number;
+}
+
+export function curriculumTier(card: Pick<Flashcard, "curriculumTier">): CurriculumTier {
+  return card.curriculumTier ?? "core";
+}
+
+export function isDefaultCurriculumCard(card: Pick<Flashcard, "curriculumTier">): boolean {
+  return curriculumTier(card) !== "specialist";
+}
+
+function newCardOrder(card: Flashcard): number {
+  const order: Record<CurriculumTier, number> = { core: 0, extension: 1, specialist: 2 };
+  return order[curriculumTier(card)];
 }
 
 export function categoryTitle(category: string): string {
@@ -29,23 +43,25 @@ export function buildCategoryProgress(cards: Flashcard[], now = new Date()): Cat
   }
 
   return [...grouped.entries()].map(([id, categoryCards]) => {
-    const introduced = categoryCards.filter((card) => card.stage !== "new").length;
-    const mastered = categoryCards.filter((card) => card.stage === "mastered").length;
-    const known = categoryCards.filter((card) => card.stage === "known").length;
+    const courseCards = categoryCards.filter(isDefaultCurriculumCard);
+    const introduced = courseCards.filter((card) => card.stage !== "new").length;
+    const mastered = courseCards.filter((card) => card.stage === "mastered").length;
+    const known = courseCards.filter((card) => card.stage === "known").length;
     const retained = known + mastered;
     return {
       id,
       title: categoryTitle(id),
-      cards: categoryCards,
-      total: categoryCards.length,
+      cards: courseCards,
+      total: courseCards.length,
       introduced,
-      learning: categoryCards.filter((card) => card.stage === "learning").length,
-      uncertain: categoryCards.filter((card) => card.stage === "uncertain").length,
+      learning: courseCards.filter((card) => card.stage === "learning").length,
+      uncertain: courseCards.filter((card) => card.stage === "uncertain").length,
       known,
       mastered,
       retained,
       due: categoryCards.filter((card) => card.stage !== "new" && isDue(card, now)).length,
-      percent: categoryCards.length ? Math.round((retained / categoryCards.length) * 100) : 0,
+      percent: courseCards.length ? Math.round((retained / courseCards.length) * 100) : 0,
+      specialist: categoryCards.length - courseCards.length,
     };
   });
 }
@@ -86,7 +102,8 @@ export function learningSessionPlan(
     Math.max(0, limit - due.length),
   );
   const newCards = inCategory
-    .filter((card) => card.stage === "new")
+    .filter((card) => card.stage === "new" && isDefaultCurriculumCard(card))
+    .sort((left, right) => newCardOrder(left) - newCardOrder(right))
     .slice(0, newLimit);
   return { due, newCards, cards: [...due, ...newCards] };
 }

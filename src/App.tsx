@@ -17,6 +17,7 @@ import {
 import {
   buildCategoryProgress,
   categoryTitle,
+  curriculumTier,
   difficultCards,
   learningSessionPlan,
   sessionCardsForCategory,
@@ -1034,6 +1035,7 @@ function LearnView(props: SessionProps & {
   const category = props.selectedCategory;
   const newCount = category?.cards.filter((card) => card.stage === "new").length ?? 0;
   const categoryDue = category?.due ?? 0;
+  const specialistCount = category?.specialist ?? 0;
   const sessionPlan = category
     ? learningSessionPlan(props.cards, category.id)
     : null;
@@ -1072,6 +1074,11 @@ function LearnView(props: SessionProps & {
             Ta lekcja: {lessonCount(sessionPlan.due.length, "powtórka", "powtórek")}
             {" + "}
             {lessonCount(sessionPlan.newCards.length, "nowe", "nowych")}
+          </p>
+        )}
+        {specialistCount > 0 && (
+          <p className="curriculum-note">
+            {lessonCount(specialistCount, "termin specjalistyczny jest", "terminów specjalistycznych jest")} dostępnych w Kolekcji — nie trafiają automatycznie do lekcji.
           </p>
         )}
         <button className="primary-button wide" onClick={props.onStart} disabled={!category || category.mastered === category.total}>
@@ -1176,6 +1183,7 @@ function CollectionView({
 }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Wszystkie");
+  const [tier, setTier] = useState<"Wszystkie" | "core" | "extension" | "specialist">("Wszystkie");
   const [showEditor, setShowEditor] = useState(false);
   const [editing, setEditing] = useState<Flashcard | null>(null);
   const [draft, setDraft] = useState(emptyContent);
@@ -1186,6 +1194,7 @@ function CollectionView({
     const phrase = `${card.german} ${card.polish}`.toLocaleLowerCase("pl-PL");
     return (
       (category === "Wszystkie" || categoryFor(card) === category) &&
+      (tier === "Wszystkie" || curriculumTier(card) === tier) &&
       phrase.includes(search.toLocaleLowerCase("pl-PL"))
     );
   });
@@ -1245,7 +1254,7 @@ function CollectionView({
           <a href="https://ankiweb.net/shared/info/458469586" target="_blank" rel="noreferrer">A2</a>
           {" "}oraz{" "}
           <a href="https://ankiweb.net/shared/info/492301569" target="_blank" rel="noreferrer">B1</a>.
-          Poziom A2 ma pierwszeństwo w nauce.
+          Najpierw pokazujemy codzienne słownictwo, potem rozszerzenia. Terminy specjalistyczne zostają w kolekcji.
         </p>
       </div>
 
@@ -1267,6 +1276,23 @@ function CollectionView({
         ))}
       </div>
 
+      <div className="category-scroll tier-scroll" aria-label="Filtr etapu ścieżki">
+        {([
+          ["Wszystkie", "Wszystkie"],
+          ["core", "Codzienne"],
+          ["extension", "Rozszerzenia"],
+          ["specialist", "Specjalistyczne"],
+        ] as const).map(([value, label]) => (
+          <button
+            key={value}
+            className={tier === value ? "active" : ""}
+            onClick={() => setTier(value)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       <div className="collection-count">{filtered.length} {filtered.length === 1 ? "fiszka" : "fiszek"}</div>
       <div className="card-list">
         {filtered.map((card) => (
@@ -1277,6 +1303,7 @@ function CollectionView({
                 <small>{card.polish}</small>
               </span>
               <span className="mini-category">{card.category.replace(/^Nicos Weg (A2|B1) · /, "")}</span>
+              {curriculumTier(card) === "specialist" && <span className="mini-tier">specjalistyczne</span>}
             </button>
             <button
               className="delete-button"

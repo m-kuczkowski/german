@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createHash } from "node:crypto";
 import { LESSON_CATEGORIES } from "./life-categories.mjs";
+import { curriculumTierFor } from "./curriculum-tiers.mjs";
 
 const [sourcePath, translationsPath, outputPath = "src/data/nicosWegCards.ts"] =
   process.argv.slice(2);
@@ -152,6 +153,11 @@ for (const sourceCard of source.cards) {
     exampleGerman: translation.exampleGerman,
     examplePolish: translation.examplePolish,
     category,
+    curriculumTier: curriculumTierFor({
+      german: parsed.german,
+      lesson: sourceCard.lesson,
+      level: sourceCard.level,
+    }),
     level: sourceCard.level,
     sourceLabel: `Nicos Weg ${sourceCard.level} · Deutsche Welle`,
     sourceUrl: sourceCard.sourceUrl,

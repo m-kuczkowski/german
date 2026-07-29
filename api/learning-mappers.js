@@ -12,6 +12,7 @@ export function mapCatalogRow(row) {
     exampleGerman: row.example_german,
     examplePolish: row.example_polish,
     category: row.category,
+    curriculumTier: row.curriculum_tier,
     level: row.level,
     sourceLabel: row.source_label,
     sourceUrl: row.source_url,

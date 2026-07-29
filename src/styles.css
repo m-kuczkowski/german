@@ -2316,6 +2316,15 @@ h1 em {
   border-color: var(--green);
 }
 
+.tier-scroll {
+  margin-top: 7px;
+}
+
+.tier-scroll button {
+  min-height: 38px;
+  padding-block: 8px;
+}
+
 .collection-count {
   margin: 17px 2px 8px;
   color: var(--muted);
@@ -2381,6 +2390,24 @@ h1 em {
   border-radius: 99px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.mini-tier {
+  flex: 0 0 auto;
+  padding: 5px 7px;
+  color: var(--orange);
+  background: var(--cream);
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.curriculum-note {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 .delete-button {

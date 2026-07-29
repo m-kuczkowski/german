@@ -1,5 +1,6 @@
 export type CardSource = "starter" | "anki" | "manual" | "ai" | "import";
 export type LearningStage = "new" | "learning" | "uncertain" | "known" | "mastered";
+export type CurriculumTier = "core" | "extension" | "specialist";
 export type ReviewRating = "again" | "hard" | "good";
 export type LeitnerBox = 1 | 2 | 3 | 4 | 5;
 export type ExerciseMode =
@@ -54,6 +55,7 @@ export interface CardContent {
   exampleGerman: string;
   examplePolish: string;
   category: string;
+  curriculumTier?: CurriculumTier;
   level?: "A2" | "B1";
   sourceLabel?: string;
   sourceUrl?: string;

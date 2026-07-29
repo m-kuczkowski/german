@@ -72,6 +72,19 @@ describe("nauka kategoriami", () => {
     ]);
   });
 
+  it("najpierw wprowadza codzienne słowa, a nie dodaje nowych terminów specjalistycznych", () => {
+    const category = "Nicos Weg A2 · Zdrowie";
+    const [template] = starterCards;
+    const cards = [
+      { ...template, id: "extension", category, stage: "new" as const, curriculumTier: "extension" as const },
+      { ...template, id: "specialist", category, stage: "new" as const, curriculumTier: "specialist" as const },
+      { ...template, id: "core", category, stage: "new" as const, curriculumTier: "core" as const },
+    ];
+    const plan = learningSessionPlan(cards, category, new Date("2026-07-26T10:00:00.000Z"));
+    expect(plan.newCards.map((card) => card.id)).toEqual(["core", "extension"]);
+    expect(buildCategoryProgress(cards)[0]).toMatchObject({ total: 2, specialist: 1 });
+  });
+
   it("nie dodaje słowa do trudnych wyłącznie przez błąd w wyzwaniu", () => {
     const card = {
       ...starterCards[0],
