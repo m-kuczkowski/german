@@ -1302,8 +1302,10 @@ function CollectionView({
                 <strong>{card.article && <i>{card.article} </i>}{card.german}</strong>
                 <small>{card.polish}</small>
               </span>
-              <span className="mini-category">{card.category.replace(/^Nicos Weg (A2|B1) · /, "")}</span>
-              {curriculumTier(card) === "specialist" && <span className="mini-tier">specjalistyczne</span>}
+              <span className="collection-tags">
+                <span className="mini-category">{card.category.replace(/^Nicos Weg (A2|B1) · /, "")}</span>
+                {curriculumTier(card) === "specialist" && <span className="mini-tier">specjalistyczne</span>}
+              </span>
             </button>
             <button
               className="delete-button"
