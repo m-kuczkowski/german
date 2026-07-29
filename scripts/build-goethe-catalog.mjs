@@ -7,6 +7,9 @@ const root = resolve(".");
 const source = JSON.parse(
   readFileSync(resolve(root, "data/goetheOfficialSource.json"), "utf8"),
 );
+const learningPriorities = JSON.parse(
+  readFileSync(resolve(root, "data/goetheLearningPriorities.json"), "utf8"),
+);
 const generated = readFileSync(resolve(root, "src/data/nicosWegCards.ts"), "utf8");
 const nicosMatch = generated.match(/JSON\.parse\((.*)\) as CardContent\[\];/);
 if (!nicosMatch) throw new Error("Nie udało się odczytać kart Nicos Weg.");
@@ -201,7 +204,53 @@ for (const id of expectedIds) {
   missingCards.push(card);
 }
 
-const cards = [...mappedNicos, ...missingCards];
+const rawCards = [...mappedNicos, ...missingCards];
+const priorityById = new Map(
+  learningPriorities.entries.map((entry) => [entry.id, entry]),
+);
+const coreCards = rawCards.filter((card) => card.curriculumTier === "core");
+if (
+  learningPriorities.version !== 1 ||
+  learningPriorities.entries.length !== coreCards.length ||
+  coreCards.some((card) => !priorityById.has(card.id))
+) {
+  throw new Error("Priorytety nauki nie pokrywają całego rdzenia Goethe.");
+}
+const prioritiesByCategory = new Map();
+for (const entry of learningPriorities.entries) {
+  prioritiesByCategory.set(
+    entry.category,
+    [...(prioritiesByCategory.get(entry.category) ?? []), entry],
+  );
+}
+for (const [category, entries] of prioritiesByCategory) {
+  const orders = entries
+    .map((entry) => entry.learningOrder)
+    .sort((left, right) => left - right);
+  if (orders.some((order, index) => order !== index)) {
+    throw new Error(`Nieciągła lub powtórzona kolejność w kategorii ${category}.`);
+  }
+  for (const entry of entries) {
+    const base = entry.relationBaseId
+      ? priorityById.get(entry.relationBaseId)
+      : null;
+    if (
+      base
+      && (
+        base.category !== entry.category
+        || base.learningOrder >= entry.learningOrder
+      )
+    ) {
+      throw new Error(`Podstawa słowotwórcza nie poprzedza karty ${entry.id}.`);
+    }
+  }
+}
+const cards = rawCards.map((card) => {
+  const priority = priorityById.get(card.id);
+  return priority
+    ? { ...card, curriculumOrder: priority.learningOrder }
+    : card;
+});
 const cardIds = new Set(cards.map((card) => card.id));
 if (cardIds.size !== cards.length) throw new Error("Powtórzone identyfikatory kart.");
 

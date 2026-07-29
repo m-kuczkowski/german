@@ -19,6 +19,7 @@ Anki/FSRS potraktowano jako źródło wdrożeniowe, nie dowód rozstrzygający.
 | Forma dźwiękowa | Trening percepcji dźwięków L2 poprawia przede wszystkim percepcję, a w mniejszym stopniu również produkcję. Eksperyment ze słownictwem mówionym pokazał przewagę odtwarzania z informacją zwrotną nad samym powtarzaniem wzorca. | Dodano dyktando: użytkownik słucha niemieckiego hasła i odtwarza jego zapis. Dźwięk pochodzi z bezpłatnej syntezy mowy urządzenia, a po odpowiedzi pojawia się tekst, kontekst i możliwość ponownego odsłuchu. |
 | Informacja o formie gramatycznej | Metaanaliza korekty w nauce L2 wskazuje na trwałe korzyści informacji zwrotnej, szczególnie w zadaniach wymagających samodzielnej odpowiedzi. Wyniki zależą jednak od struktury, wieku i rodzaju zadania. | Dla rzeczowników dodano osobne rozpoznawanie `der/die/das`. Błąd rodzajnika jest błędem aktywnego sprawdzenia i kieruje kartę do wcześniejszej powtórki. |
 | Zakres A2–B1 | CEFR oraz Goethe traktują rozumienie ze słuchu, czytanie, pisanie i mówienie jako odrębne, potrzebne kompetencje. Goethe A2 obejmuje codzienne rozmowy, komunikaty i wiadomości; B1 wymaga rozumienia głównych punktów i szczegółów jasnej mowy standardowej. | Fiszki pozostają narzędziem słownikowym, ale nie udają pełnego kursu. Dyktando uzupełnia największą lukę — brak aktywnego sprawdzania formy słyszanej — bez obietnicy zastąpienia ćwiczeń rozmowy i dłuższych tekstów. |
+| Kolejność słownictwa | Częstość, długość i konkretność przewidują znajomość słów u dorosłych uczących się L2. CEFR A2/B1 akcentuje codzienne potrzeby, rodzinę, zakupy, pracę i podróże. Bliskie znaczeniowo słowa podane seriami mogą zwiększać interferencję podczas pierwszego uczenia. | Oficjalny rdzeń Goethe pozostaje kompletny, lecz nowe karty mają kolejność pedagogiczną: praktyczne A2 przed B1, częstsze i prostsze formy wcześniej, a identyczne i blisko powiązane hasła są rozdzielane. Rozpoznane podstawy słowotwórcze poprzedzają pochodne i złożenia. |
 
 ## Audyt funkcji i priorytety
 
@@ -92,6 +93,20 @@ Anki/FSRS potraktowano jako źródło wdrożeniowe, nie dowód rozstrzygający.
     [Oficjalny PDF](https://rm.coe.int/cefr-companion-volume-with-new-descriptors-2018/1680787989.pdf).
 18. Goethe-Institut, [Goethe-Zertifikat A2 — materiały i zakres](https://www.goethe.de/en/m/spr/prf/ueb/pa2.html)
     oraz [Goethe-Zertifikat B1 — moduły i wymagania](https://www.goethe.de/ins/us/en/spr/prf/gzb1.cfm).
+19. Vanbuel (2025), *Predicting vocabulary knowledge in adult L2 learners:
+    the role of word-level variables across educational backgrounds*,
+    `doi:10.1017/S1366728924000889`.
+    [Ghent University](https://biblio.ugent.be/publication/01JAAJFHRQZ306605JA9MS57NA).
+20. Brysbaert i in. (2011), *The word frequency effect: a review of recent
+    developments and implications for the choice of frequency estimates in
+    German*. [PubMed](https://pubmed.ncbi.nlm.nih.gov/21768069/).
+21. Nakata i Suzuki, *Effects of massing and spacing on the learning of
+    semantically related and unrelated words*.
+    [Studies in Second Language Acquisition](https://www.cambridge.org/core/journals/studies-in-second-language-acquisition/article/effects-of-massing-and-spacing-on-the-learning-of-semantically-related-and-unrelated-words/F58BA8D70385603B9C42E408BFCB8A10).
+22. Zhang i Koda (2019), *The development of vocabulary and morphological
+    awareness: A longitudinal study with college EFL students*,
+    `doi:10.1017/S014271641900002X`.
+    [Applied Psycholinguistics](https://www.cambridge.org/core/journals/applied-psycholinguistics/article/development-of-vocabulary-and-morphological-awareness-a-longitudinal-study-with-college-efl-students/C205352164BFC394BF960FCA53AF20DC).
 
 ## Konfiguracja i jej uzasadnienie
 
@@ -108,6 +123,12 @@ Anki/FSRS potraktowano jako źródło wdrożeniowe, nie dowód rozstrzygający.
   Liczba nowych kart jest adaptacyjna: od 6 przy pustej kolejce do 0 przy co
   najmniej 10 zaległych. Konkretne progi są ostrożną regułą produktu, nie
   uniwersalnymi wartościami wyprowadzonymi z jednego badania.
+- Nowe karty korzystają z pięciu pasm trudności wyliczanych z poziomu Goethe,
+  częstości współczesnej niemczyzny oraz złożoności formy. Częstość jest
+  priorytetem, ale nie jedynym kryterium: podstawowe słowa funkcyjne nie mogą
+  wyprzeć całej puli praktycznych czasowników i rzeczowników. Identyczne hasła
+  mają odstęp co najmniej 8 pozycji, a podstawa rozpoznanej rodziny zawsze
+  poprzedza jej pochodną.
 - Historia przechowuje ostatnie 50 decyzji na kartę. To wystarcza do wyjaśnienia
   działania bez nieograniczonego wzrostu danych synchronizowanych z telefonem.
 

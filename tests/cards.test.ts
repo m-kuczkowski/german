@@ -18,6 +18,53 @@ describe("kolekcja fiszek", () => {
       .toMatchObject({ curriculumTier: "extension" });
   });
 
+  it("ma kompletną pedagogiczną kolejność w każdej kategorii rdzenia", () => {
+    const categories = new Map<string, typeof starterCards>();
+    for (const card of starterCards.filter((entry) => entry.curriculumTier === "core")) {
+      categories.set(card.category, [...(categories.get(card.category) ?? []), card]);
+    }
+
+    for (const cards of categories.values()) {
+      const orders = cards
+        .map((card) => card.curriculumOrder)
+        .sort((left, right) => (left ?? 0) - (right ?? 0));
+      expect(orders).toEqual(Array.from({ length: cards.length }, (_, index) => index));
+    }
+  });
+
+  it("nie podaje identycznego hasła drugi raz w tej samej krótkiej partii", () => {
+    const categories = new Map<string, typeof starterCards>();
+    for (const card of starterCards.filter((entry) => entry.curriculumTier === "core")) {
+      categories.set(card.category, [...(categories.get(card.category) ?? []), card]);
+    }
+
+    for (const cards of categories.values()) {
+      const ordered = [...cards].sort(
+        (left, right) => (left.curriculumOrder ?? 0) - (right.curriculumOrder ?? 0),
+      );
+      const previousByPrompt = new Map<string, number>();
+      for (const [index, card] of ordered.entries()) {
+        const prompt = card.german.toLocaleLowerCase("de-DE");
+        const previous = previousByPrompt.get(prompt);
+        if (previous !== undefined) expect(index - previous).toBeGreaterThanOrEqual(8);
+        previousByPrompt.set(prompt, index);
+      }
+    }
+  });
+
+  it("umieszcza proste podstawy przed ich rozwinięciami", () => {
+    const category = starterCards
+      .filter((card) =>
+        card.curriculumTier === "core"
+        && card.category === "Codzienność i problemy (Alltag und Probleme)")
+      .sort((left, right) => (left.curriculumOrder ?? 0) - (right.curriculumOrder ?? 0));
+    const position = (german: string) => category.findIndex((card) => card.german === german);
+
+    expect(position("Zahl")).toBeLessThan(position("zahlen"));
+    expect(position("Traum")).toBeLessThan(position("träumen"));
+    expect(position("Alltag")).toBeLessThan(position("alltäglich"));
+  });
+
   it("prowadzi od podstaw słowotwórczych do trudniejszych rozwinięć", () => {
     expect(new Set(
       starterCards

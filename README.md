@@ -17,6 +17,8 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 - osobne ćwiczenia rodzajnika i dyktanda ze słuchu;
 - wskaźniki znajomości znaczenia, formy, rodzajnika i brzmienia słowa;
 - adaptacyjna liczba nowych kart zależna od kolejki powtórek;
+- pedagogiczna kolejność nowych słów zamiast alfabetycznej kolejności PDF:
+  najpierw codzienne A2, częstsze i prostsze formy oraz podstawy rodzin słów;
 - ocena podobieństwa wpisanej odpowiedzi z progiem 90%, bez ignorowania rodzajników i umlautów;
 - pięć przegródek Leitnera z odstępami 1, 3, 7, 14 i 30 dni;
 - widok zawartości przegródek, terminów i historii decyzji dla każdej karty;
@@ -69,6 +71,23 @@ konkretną umiejętność (np. rodzajnik albo słuch) i dodaje ją do trudniejsz
 słów, ale nie cofa pozostałej wiedzy ani nie zmienia terminu zwykłej powtórki.
 Po każdym zadaniu wynik, pełna odpowiedź i zdanie kontekstowe pozostają na
 ekranie do ręcznego kliknięcia „Dalej”.
+
+### Kolejność nowych słów
+
+Kolejka powtórek zawsze ma pierwszeństwo przed nowymi kartami. Same nowe słowa
+nie są już podawane w alfabetycznej kolejności list Goethe. Generator przypisuje
+każdej z 3180 kart rdzenia pasmo i miejsce w kategorii, biorąc pod uwagę:
+
+- poziom Goethe A2 przed B1, z ograniczoną pulą najczęstszych słów B1 wcześniej;
+- współczesną częstość w języku niemieckim;
+- długość, liczbę elementów i złożoność formy;
+- praktyczną kolejność kategorii, od codzienności, relacji i domu;
+- podstawę przed bezpiecznie rozpoznanym derywatem lub złożeniem;
+- odstęp między identycznymi hasłami i przeplatanie typów wyrazów.
+
+Słowa funkcyjne pozostają w oficjalnym programie, lecz nie zajmują całego
+początku kursu. Kolejność dotyczy wyłącznie kart jeszcze niepoznanych, dlatego
+aktualizacja nie resetuje ani nie przesuwa dotychczasowych powtórek użytkownika.
 
 ## Architektura
 
@@ -123,7 +142,14 @@ Workflow GitHub Pages pozostaje statycznym podglądem awaryjnym; bez Vercel Func
 
 ## Aktualizacja danych Goethe i Anki
 
-`scripts/goethe-curriculum.py` odtwarza referencyjny katalog z oficjalnych PDF-ów, dopasowuje go do zachowanych kart Nicos Weg i przygotowuje kolejkę brakujących tłumaczeń. Pliki `data/goetheTranslations-*.json` są walidowanymi wynikami jednorazowego tłumaczenia przez ChatGPT. `scripts/build-goethe-catalog.mjs` sprawdza kompletność identyfikatorów, pola i kategorie, po czym generuje statyczny katalog aplikacji.
+`scripts/goethe-curriculum.py` odtwarza referencyjny katalog z oficjalnych PDF-ów, dopasowuje go do zachowanych kart Nicos Weg i przygotowuje kolejkę brakujących tłumaczeń. Pliki `data/goetheTranslations-*.json` są walidowanymi wynikami jednorazowego tłumaczenia przez ChatGPT. `scripts/build-learning-priority.py` wylicza pedagogiczną kolejność na podstawie metadanych i niemieckiej częstości `wordfreq`, a `scripts/build-goethe-catalog.mjs` sprawdza kompletność identyfikatorów, pól i priorytetów, po czym generuje statyczny katalog aplikacji.
+
+```bash
+python3 -m venv .venv-curriculum
+.venv-curriculum/bin/pip install -r scripts/requirements-curriculum.txt
+.venv-curriculum/bin/python scripts/build-learning-priority.py
+node scripts/build-goethe-catalog.mjs
+```
 
 Skrypt `scripts/extract-anki-decks.mjs` wyodrębnia tekst wszystkich notatek z dwóch plików `.apkg`. Nie wykonuje tłumaczeń.
 

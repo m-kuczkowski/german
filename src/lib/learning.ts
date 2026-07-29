@@ -49,6 +49,26 @@ export function categoryTitle(category: string): string {
   return category.replace(/^Nicos Weg (A2|B1) · /, "");
 }
 
+export const categoryLearningOrder = [
+  "Codzienność i problemy (Alltag und Probleme)",
+  "Życie i relacje (Leben und Beziehungen)",
+  "Dom i mieszkanie (Wohnen und Haushalt)",
+  "Jedzenie i zakupy (Essen und Einkaufen)",
+  "Podróże i miasto (Reisen und Stadt)",
+  "Zdrowie i bezpieczeństwo (Gesundheit und Sicherheit)",
+  "Edukacja i język (Bildung und Sprache)",
+  "Praca i kariera (Arbeit und Karriere)",
+  "Finanse i usługi (Geld und Dienstleistungen)",
+  "Czas wolny i sport (Freizeit und Sport)",
+  "Technologia i komunikacja (Technik und Kommunikation)",
+  "Emocje i opinie (Gefühle und Meinungen)",
+  "Przyroda i środowisko (Natur und Umwelt)",
+  "Kultura i media (Kultur und Medien)",
+  "Społeczeństwo i polityka (Gesellschaft und Politik)",
+  "Plany i przyszłość (Pläne und Zukunft)",
+  "Historia i życie w Niemczech (Geschichte und Leben in Deutschland)",
+] as const;
+
 export function buildCategoryProgress(cards: Flashcard[], now = new Date()): CategoryProgress[] {
   const grouped = new Map<string, Flashcard[]>();
   for (const card of cards) {
@@ -78,6 +98,17 @@ export function buildCategoryProgress(cards: Flashcard[], now = new Date()): Cat
       percent: courseCards.length ? Math.round((retained / courseCards.length) * 100) : 0,
       specialist: categoryCards.length - courseCards.length,
     };
+  }).sort((left, right) => {
+    const leftOrder = categoryLearningOrder.indexOf(
+      left.id as (typeof categoryLearningOrder)[number],
+    );
+    const rightOrder = categoryLearningOrder.indexOf(
+      right.id as (typeof categoryLearningOrder)[number],
+    );
+    if (leftOrder === -1 && rightOrder === -1) return 0;
+    if (leftOrder === -1) return 1;
+    if (rightOrder === -1) return -1;
+    return leftOrder - rightOrder;
   });
 }
 

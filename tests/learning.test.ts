@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { starterCards } from "../src/data/starterCards";
 import {
   buildCategoryProgress,
+  categoryLearningOrder,
   difficultCards,
   learningSessionPlan,
   recommendedNewCardLimit,
@@ -9,6 +10,33 @@ import {
 } from "../src/lib/learning";
 
 describe("nauka kategoriami", () => {
+  it("prowadzi przez kategorie od najbardziej codziennych do uzupełniających", () => {
+    const cards = categoryLearningOrder.slice(0, 5).reverse().map((category, index) => ({
+      ...starterCards[index],
+      id: `category-${index}`,
+      category,
+    }));
+
+    expect(buildCategoryProgress(cards).map((category) => category.id)).toEqual(
+      categoryLearningOrder.slice(0, 5),
+    );
+  });
+
+  it("zaczyna od praktycznych haseł, a nie alfabetycznego początku listy Goethe", () => {
+    const category = "Dom i mieszkanie (Wohnen und Haushalt)";
+    const plan = learningSessionPlan(starterCards, category);
+
+    expect(plan.newCards.map((card) => card.german)).toEqual([
+      "kommen",
+      "sollen",
+      "Seite",
+      "Haus",
+      "neu",
+      "direkt",
+    ]);
+    expect(plan.newCards.some((card) => card.german === "Abfall")).toBe(false);
+  });
+
   it("liczy postęp osobno dla każdej lekcji", () => {
     const cards = [
       { ...starterCards[0], category: "Nicos Weg A2 · Start", curriculumTier: "core" as const, repetitions: 1, stage: "learning" as const, learned: false },
