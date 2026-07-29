@@ -28,6 +28,41 @@ export const exerciseGuide = [
   { icon: "der", title: "Rodzajniki", description: "Ćwiczysz der, die i das przy rzeczownikach." },
 ] as const;
 
+export const methodologyGuide = [
+  {
+    number: "01",
+    title: "Przypominasz sobie",
+    description: "Samodzielna odpowiedź utrwala pamięć lepiej niż samo ponowne czytanie.",
+  },
+  {
+    number: "02",
+    title: "Wracasz w odstępach",
+    description: "Powtórki są rozłożone w czasie, zamiast skupione w jednej sesji.",
+  },
+  {
+    number: "03",
+    title: "Utrwalasz przez sesje",
+    description: "Słowo musi być poprawnie odtworzone więcej niż raz i w różne dni.",
+  },
+] as const;
+
+export const methodologySources = [
+  {
+    label: "Roediger i Karpicke, 2006",
+    url: "https://pubmed.ncbi.nlm.nih.gov/16507066/",
+  },
+  {
+    label: "Dunlosky i in., 2013",
+    url: "https://pubmed.ncbi.nlm.nih.gov/26173288/",
+  },
+  {
+    label: "Rawson i Dunlosky, 2013",
+    url: "https://pubmed.ncbi.nlm.nih.gov/23088488/",
+  },
+] as const;
+
+export const onboardingStepCount = 3;
+
 export function GettingStarted({
   name,
   onFinish,
@@ -37,7 +72,7 @@ export function GettingStarted({
 }) {
   const [step, setStep] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const lastStep = step === 1;
+  const lastStep = step === onboardingStepCount - 1;
 
   useEffect(() => {
     headingRef.current?.focus();
@@ -66,10 +101,14 @@ export function GettingStarted({
           </button>
         </header>
 
-        <div className="onboarding-progress" aria-label={`Krok ${step + 1} z 2`}>
-          <span className={step === 0 ? "active" : ""} />
-          <span className={step === 1 ? "active" : ""} />
-          <small>{step + 1} z 2</small>
+        <div
+          className="onboarding-progress"
+          aria-label={`Krok ${step + 1} z ${onboardingStepCount}`}
+        >
+          {Array.from({ length: onboardingStepCount }, (_, index) => (
+            <span className={step === index ? "active" : ""} key={index} />
+          ))}
+          <small>{step + 1} z {onboardingStepCount}</small>
         </div>
 
         {step === 0 ? (
@@ -103,7 +142,7 @@ export function GettingStarted({
               ))}
             </div>
           </div>
-        ) : (
+        ) : step === 1 ? (
           <div className="onboarding-content">
             <p className="eyebrow">Aktywne przypominanie</p>
             <h1 id="onboarding-title" ref={headingRef} tabIndex={-1}>
@@ -126,18 +165,68 @@ export function GettingStarted({
               która pomoże Ci je przypomnieć.
             </p>
           </div>
+        ) : (
+          <div className="onboarding-content methodology-content">
+            <p className="eyebrow">Dlaczego to działa</p>
+            <h1 id="onboarding-title" ref={headingRef} tabIndex={-1}>
+              Pamięć potrzebuje powrotów.
+            </h1>
+            <p className="onboarding-lead">
+              Łączymy system przegródek Leitnera z trzema dobrze zbadanymi
+              zasadami uczenia się.
+            </p>
+            <div className="leitner-method" aria-label="Pięć przegródek od częstych do rzadkich powtórek">
+              <small>Częściej</small>
+              <div aria-hidden="true">
+                {[1, 2, 3, 4, 5].map((box) => <span key={box}>{box}</span>)}
+              </div>
+              <small>Rzadziej</small>
+            </div>
+            <p className="leitner-explanation">
+              Poprawna aktywna odpowiedź przesuwa słowo dalej. Błąd przybliża
+              je do przegródki 1. Samo kliknięcie „Znam” nie oznacza jeszcze
+              opanowania.
+            </p>
+            <div className="methodology-guide">
+              {methodologyGuide.map((item) => (
+                <article key={item.number}>
+                  <span aria-hidden="true">{item.number}</span>
+                  <div><strong>{item.title}</strong><p>{item.description}</p></div>
+                </article>
+              ))}
+            </div>
+            <div className="methodology-sources">
+              <strong>Podstawa naukowa</strong>
+              <p>
+                {methodologySources.map((source, index) => (
+                  <span key={source.url}>
+                    {index > 0 ? " · " : ""}
+                    <a href={source.url} target="_blank" rel="noreferrer">
+                      {source.label}
+                    </a>
+                  </span>
+                ))}
+              </p>
+            </div>
+          </div>
         )}
 
         <footer className="onboarding-actions">
           {step > 0 ? (
-            <button className="secondary-button" type="button" onClick={() => setStep(0)}>
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => setStep((current) => Math.max(0, current - 1))}
+            >
               Wstecz
             </button>
           ) : null}
           <button
             className="primary-button"
             type="button"
-            onClick={() => lastStep ? onFinish() : setStep(1)}
+            onClick={() => lastStep
+              ? onFinish()
+              : setStep((current) => Math.min(onboardingStepCount - 1, current + 1))}
           >
             {lastStep ? "Zaczynam naukę" : "Dalej"}
           </button>

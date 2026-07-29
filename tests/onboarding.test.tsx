@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   exerciseGuide,
   GettingStarted,
+  methodologyGuide,
+  methodologySources,
+  onboardingStepCount,
   ratingGuide,
 } from "../src/components/GettingStarted";
 import { isNewRemoteProfile, type RemoteState } from "../src/lib/remote";
@@ -45,5 +48,18 @@ describe("instrukcja pierwszego uruchomienia", () => {
       "Wybór",
       "Rodzajniki",
     ]);
+  });
+
+  it("ma trzeci krok wyjaśniający naukowe podstawy metody", () => {
+    expect(onboardingStepCount).toBe(3);
+    expect(methodologyGuide.map((item) => item.title)).toEqual([
+      "Przypominasz sobie",
+      "Wracasz w odstępach",
+      "Utrwalasz przez sesje",
+    ]);
+    expect(methodologySources).toHaveLength(3);
+    for (const source of methodologySources) {
+      expect(source.url).toMatch(/^https:\/\/pubmed\.ncbi\.nlm\.nih\.gov\//);
+    }
   });
 });
