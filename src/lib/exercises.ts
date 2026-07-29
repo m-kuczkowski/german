@@ -45,6 +45,14 @@ export function normalizeAnswer(value: string): string {
     .replace(/\s+/g, " ");
 }
 
+function normalizeGermanKeyboardVariants(value: string): string {
+  return normalizeAnswer(value)
+    .replace(/ß/g, "ss")
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue");
+}
+
 function polishAnswers(card: Flashcard): string[] {
   const variants = [card.polish, ...card.polish.split(/[;,/]/)];
   return [...new Set(variants.map((value) => value.trim()).filter(Boolean))];
@@ -242,9 +250,14 @@ function levenshtein(left: string, right: string): number {
   return previous[right.length];
 }
 
-export function answerSimilarity(answer: string, accepted: string): number {
-  const normalizedAnswer = normalizeAnswer(answer);
-  const normalizedAccepted = normalizeAnswer(accepted);
+export function answerSimilarity(
+  answer: string,
+  accepted: string,
+  language: "de" | "pl" = "de",
+): number {
+  const normalize = language === "de" ? normalizeGermanKeyboardVariants : normalizeAnswer;
+  const normalizedAnswer = normalize(answer);
+  const normalizedAccepted = normalize(accepted);
   if (!normalizedAnswer || !normalizedAccepted) return 0;
   if (normalizedAnswer === normalizedAccepted) return 1;
   const longest = Math.max(normalizedAnswer.length, normalizedAccepted.length);
@@ -254,10 +267,11 @@ export function answerSimilarity(answer: string, accepted: string): number {
 export function evaluateTypedAnswer(
   answer: string,
   acceptedAnswers: string[],
+  language: "de" | "pl" = "de",
 ): TypedAnswerResult {
   const results = acceptedAnswers.map((accepted) => ({
     accepted,
-    score: answerSimilarity(answer, accepted),
+    score: answerSimilarity(answer, accepted, language),
   }));
   const best = results.sort((left, right) => right.score - left.score)[0] ?? {
     accepted: acceptedAnswers[0] ?? "",
@@ -270,6 +284,10 @@ export function evaluateTypedAnswer(
   };
 }
 
-export function isTypedAnswerCorrect(answer: string, acceptedAnswers: string[]): boolean {
-  return evaluateTypedAnswer(answer, acceptedAnswers).correct;
+export function isTypedAnswerCorrect(
+  answer: string,
+  acceptedAnswers: string[],
+  language: "de" | "pl" = "de",
+): boolean {
+  return evaluateTypedAnswer(answer, acceptedAnswers, language).correct;
 }

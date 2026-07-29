@@ -229,7 +229,11 @@ export function evaluateChallengeAnswer(
       correctAnswer: exercise.answerLabel,
     };
   }
-  const result = evaluateTypedAnswer(answerValue, exercise.acceptedAnswers);
+  const result = evaluateTypedAnswer(
+    answerValue,
+    exercise.acceptedAnswers,
+    exercise.answerLanguage,
+  );
   return {
     correct: result.correct,
     score: result.score,

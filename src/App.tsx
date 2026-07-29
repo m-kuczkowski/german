@@ -681,6 +681,7 @@ function FlashcardSession(props: SessionProps) {
     const result: TypedAnswerResult = evaluateTypedAnswer(
       typedAnswer,
       exercise.acceptedAnswers,
+      exercise.answerLanguage,
     );
     inputRef.current?.blur();
     submitAnswer(

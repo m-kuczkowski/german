@@ -60,6 +60,22 @@ describe("ćwiczenia językowe", () => {
     expect(normalizeAnswer("an|sehen")).toBe("ansehen");
   });
 
+  it("akceptuje standardowe zamienniki niemieckiej klawiatury", () => {
+    expect(evaluateTypedAnswer("die Strasse", ["die Straße"])).toMatchObject({
+      correct: true,
+      score: 1,
+    });
+    expect(evaluateTypedAnswer("schoen", ["schön"])).toMatchObject({
+      correct: true,
+      score: 1,
+    });
+    expect(evaluateTypedAnswer("fuer die Ueberraschung", ["für die Überraschung"])).toMatchObject({
+      correct: true,
+      score: 1,
+    });
+    expect(evaluateTypedAnswer("zona", ["żona"], "pl").correct).toBe(false);
+  });
+
   it("odrzuca błędną odpowiedź", () => {
     const exercise = createExercise(starterCards[0], starterCards, 3);
     expect(isTypedAnswerCorrect("zupełnie inne słowo", exercise.acceptedAnswers)).toBe(false);
