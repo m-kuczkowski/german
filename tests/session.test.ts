@@ -9,6 +9,88 @@ import {
 import { reviewCard } from "../src/lib/srs";
 
 describe("adaptacyjna kolejka w lekcji", () => {
+  it("przegródki 2–3 zaczynają od fiszki, a przegródka 4 od aktywnego zadania", () => {
+    const cards = [
+      { ...starterCards[0], stage: "known" as const, learned: true, leitnerBox: 2 as const },
+      { ...starterCards[1], stage: "known" as const, learned: true, leitnerBox: 3 as const },
+      { ...starterCards[2], stage: "known" as const, learned: true, leitnerBox: 4 as const },
+    ];
+    const session = createLearningSession(cards, "review", cards[0].category);
+
+    expect(session.queue.map((item) => item.kind)).toEqual([
+      "guided-review",
+      "guided-review",
+      "exercise",
+    ]);
+  });
+
+  it("w przegródce 2 samo Znam nie awansuje, ale planuje wpisywanie w tej samej sesji", () => {
+    const card = {
+      ...starterCards[0],
+      stage: "known" as const,
+      learned: true,
+      leitnerBox: 2 as const,
+    };
+    const pool = [card, ...starterCards.slice(1, 10)];
+    const session = createLearningSession(pool, "review", card.category);
+    const evidence = { mode: "introduction" as const, correct: true };
+    const afterFlashcard = reviewCard(card, "good", evidence);
+    const recorded = recordSessionAnswer(
+      session,
+      card,
+      afterFlashcard,
+      session.queue[0],
+      "good",
+      evidence,
+      "good",
+      card.polish,
+    );
+    const nextIndex = recorded.queue.findIndex(
+      (item, index) => index > 0 && item.id === card.id,
+    );
+
+    expect(session.queue[0].kind).toBe("guided-review");
+    expect(afterFlashcard.leitnerBox).toBe(2);
+    expect(afterFlashcard.correctStreak).toBe(card.correctStreak);
+    expect(recorded.introduced).toBe(0);
+    expect(recorded.queue[nextIndex]).toMatchObject({
+      kind: "exercise",
+      forcedMode: "type-pl-de",
+    });
+    expect(nextIndex - 1).toBeGreaterThanOrEqual(8);
+    expect(nextIndex - 1).toBeLessThanOrEqual(11);
+
+    const afterRecall = reviewCard(
+      afterFlashcard,
+      "good",
+      { mode: "type-pl-de", correct: true, score: 1 },
+    );
+    expect(afterRecall.leitnerBox).toBe(3);
+    expect(afterRecall.correctStreak).toBe(card.correctStreak + 1);
+  });
+
+  it("ten sam łagodny krok prowadzi z przegródki 3 do 4", () => {
+    const card = {
+      ...starterCards[0],
+      stage: "known" as const,
+      learned: true,
+      leitnerBox: 3 as const,
+    };
+    const afterFlashcard = reviewCard(
+      card,
+      "good",
+      { mode: "introduction", correct: true },
+    );
+    const afterRecall = reviewCard(
+      afterFlashcard,
+      "good",
+      { mode: "type-pl-de", correct: true, score: 1 },
+    );
+
+    expect(afterFlashcard.leitnerBox).toBe(3);
+    expect(afterRecall.leitnerBox).toBe(4);
+  });
+
   it("po zaznaczeniu Znam wraca po 8–11 innych kartach jako wpisywanie", () => {
     const card = starterCards[0];
     const session = createLearningSession(starterCards.slice(0, 10), "learn", card.category);
@@ -80,6 +162,38 @@ describe("adaptacyjna kolejka w lekcji", () => {
     expect(nextIndex - 1).toBeGreaterThanOrEqual(6);
     expect(nextIndex - 1).toBeLessThanOrEqual(8);
     expect(recorded.queue[nextIndex].forcedMode).toBe("type-listen-de");
+  });
+
+  it("Niepewnie podczas powtórki prowadzonej nie cofa przegródki", () => {
+    const card = {
+      ...starterCards[0],
+      stage: "known" as const,
+      learned: true,
+      leitnerBox: 3 as const,
+    };
+    const pool = [card, ...starterCards.slice(1, 10)];
+    const session = createLearningSession(pool, "review", card.category);
+    const evidence = { mode: "introduction" as const, correct: true };
+    const reviewed = reviewCard(card, "hard", evidence);
+    const recorded = recordSessionAnswer(
+      session,
+      card,
+      reviewed,
+      session.queue[0],
+      "hard",
+      evidence,
+      "hard",
+      card.polish,
+    );
+    const nextIndex = recorded.queue.findIndex(
+      (item, index) => index > 0 && item.id === card.id,
+    );
+
+    expect(reviewed.leitnerBox).toBe(3);
+    expect(recorded.queue[nextIndex]).toMatchObject({
+      kind: "exercise",
+      forcedMode: "type-listen-de",
+    });
   });
 
   it("poprawne dyktando planuje później wpisanie słowa z tłumaczenia", () => {

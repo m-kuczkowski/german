@@ -20,7 +20,11 @@ export function createLearningSession(
     categoryId,
     queue: cards.map((card) => ({
       id: card.id,
-      kind: card.stage === "new" ? "introduction" : "exercise",
+      kind: card.stage === "new"
+        ? "introduction"
+        : card.leitnerBox === 2 || card.leitnerBox === 3
+          ? "guided-review"
+          : "exercise",
       round: 0,
     })),
     index: 0,
@@ -62,11 +66,14 @@ export function recordSessionAnswer(
   let nextItem: SessionItem | null = null;
   let gapRating = rating;
 
-  if (item.kind === "introduction") {
+  const isFlashcardAnswer =
+    item.kind !== "exercise" && evidence.mode === "introduction";
+
+  if (isFlashcardAnswer) {
     if (rating === "again" && item.round === 0) {
       nextItem = {
         id: previousCard.id,
-        kind: "introduction",
+        kind: item.kind,
         round: item.round + 1,
       };
     } else if (rating === "hard" && item.round <= 1) {

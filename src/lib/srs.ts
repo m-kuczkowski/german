@@ -111,6 +111,9 @@ export function reviewCard(
   now = new Date(),
 ): Flashcard {
   const card = withLearningDefaults(input);
+  const isFlashcardRating = evidence.mode === "introduction";
+  const isGuidedReview =
+    isFlashcardRating && card.stage !== "new" && card.leitnerBox >= 2;
   const activeMode = ACTIVE_MODES.has(evidence.mode as ExerciseMode)
     ? evidence.mode as ExerciseMode
     : null;
@@ -127,9 +130,11 @@ export function reviewCard(
 
   if (rating === "again" || !evidence.correct) {
     const dueAt = new Date(now.getTime() + 10 * MINUTE_MS).toISOString();
-    const reason = evidence.mode === "introduction"
-      ? "Jeszcze nieznane — przegródka 1 i szybki powrót w tej lekcji."
-      : "Błąd aktywnego przypominania — przegródka 1 i szybka dogrywka.";
+    const reason = isGuidedReview
+      ? "Słowo nie jest jeszcze utrwalone — wraca do przegródki 1 i pojawi się ponownie w tej lekcji."
+      : isFlashcardRating
+        ? "Jeszcze nieznane — przegródka 1 i szybki powrót w tej lekcji."
+        : "Błąd aktywnego przypominania — przegródka 1 i szybka dogrywka.";
     const history = historyEntry(card, rating, evidence, 1, dueAt, reason, now);
     return {
       ...card,
@@ -139,7 +144,7 @@ export function reviewCard(
       dueAt,
       learned: false,
       lapses: card.lapses + 1,
-      stage: evidence.mode === "introduction" ? "learning" : "uncertain",
+      stage: isGuidedReview ? "uncertain" : isFlashcardRating ? "learning" : "uncertain",
       correctStreak: 0,
       lastReviewedAt: now.toISOString(),
       typedAttempts,
@@ -152,32 +157,37 @@ export function reviewCard(
   }
 
   const repetitions = card.repetitions + 1;
-  const correctStreak = card.correctStreak + 1;
+  const correctStreak = card.correctStreak + (activeMode ? 1 : 0);
   const firstActiveRecallAt =
     activeMode && !card.firstActiveRecallAt ? now.toISOString() : card.firstActiveRecallAt;
 
   if (rating === "hard") {
-    const toBox = (evidence.mode === "introduction"
-      ? 1
+    const toBox = (isFlashcardRating
+      ? isGuidedReview
+        ? card.leitnerBox
+        : 1
       : card.leitnerBox >= 3
         ? card.leitnerBox - 1
         : card.leitnerBox) as LeitnerBox;
     const intervalDays = Math.max(1, Math.ceil(LEITNER_INTERVALS[toBox] / 2));
     const dueAt = new Date(now.getTime() + intervalDays * DAY_MS).toISOString();
-    const reason = evidence.mode === "introduction"
-      ? "Jeszcze niepewnie. Karta zostaje w przegródce 1 i wróci wcześniej."
-      : toBox < card.leitnerBox
-        ? `Poprawnie, ale z trudem. Karta wraca do przegródki ${toBox} i pojawi się wcześniej.`
-        : `Poprawnie, ale z trudem. Karta zostaje w przegródce ${toBox} i pojawi się wcześniej.`;
+    const reason = isGuidedReview
+      ? `Jeszcze niepewnie. Karta zostaje w przegródce ${toBox}, a w tej lekcji wróci jako dyktando.`
+      : isFlashcardRating
+        ? "Jeszcze niepewnie. Karta zostaje w przegródce 1 i wróci wcześniej."
+        : toBox < card.leitnerBox
+          ? `Poprawnie, ale z trudem. Karta wraca do przegródki ${toBox} i pojawi się wcześniej.`
+          : `Poprawnie, ale z trudem. Karta zostaje w przegródce ${toBox} i pojawi się wcześniej.`;
     const history = historyEntry(card, rating, evidence, toBox, dueAt, reason, now);
+    const stage = stageFor(toBox, card.lapses, Boolean(activeMode));
     return {
       ...card,
       repetitions,
       intervalDays,
       ease: Math.max(1.3, Number((card.ease - 0.05).toFixed(2))),
       dueAt,
-      learned: false,
-      stage: stageFor(toBox, card.lapses, Boolean(activeMode)),
+      learned: stage === "known" || stage === "mastered",
+      stage,
       correctStreak,
       successfulModes,
       firstActiveRecallAt,
@@ -192,8 +202,10 @@ export function reviewCard(
     };
   }
 
-  const candidateBox = evidence.mode === "introduction"
-    ? 1
+  const candidateBox = isFlashcardRating
+    ? isGuidedReview
+      ? card.leitnerBox
+      : 1
     : Math.min(5, card.leitnerBox + 1) as LeitnerBox;
   const toBox = candidateBox === 5 &&
     !qualifiesForBoxFive(successfulModes, successfulReviewDays, correctStreak)
@@ -201,11 +213,13 @@ export function reviewCard(
       : candidateBox;
   const intervalDays = LEITNER_INTERVALS[toBox];
   const dueAt = new Date(now.getTime() + intervalDays * DAY_MS).toISOString();
-  const reason = evidence.mode === "introduction"
-    ? "Deklaracja „Znam” uruchamia aktywne sprawdzenie; karta zostaje w przegródce 1."
-    : candidateBox === 5 && toBox === 4
-      ? "Poprawnie, ale przegródka 5 wymaga wpisywania, serii i powtórek w 3 różne dni."
-      : `Poprawne aktywne przypomnienie — awans do przegródki ${toBox}.`;
+  const reason = isGuidedReview
+    ? `Deklaracja „Znam” uruchamia wpisywanie później w tej lekcji; karta na razie zostaje w przegródce ${toBox}.`
+    : isFlashcardRating
+      ? "Deklaracja „Znam” uruchamia aktywne sprawdzenie; karta zostaje w przegródce 1."
+      : candidateBox === 5 && toBox === 4
+        ? "Poprawnie, ale przegródka 5 wymaga wpisywania, serii i powtórek w 3 różne dni."
+        : `Poprawne aktywne przypomnienie — awans do przegródki ${toBox}.`;
   const stage = stageFor(toBox, card.lapses, Boolean(activeMode));
   const history = historyEntry(card, rating, evidence, toBox, dueAt, reason, now);
   return {

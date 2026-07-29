@@ -87,7 +87,7 @@ export interface Flashcard extends CardContent {
 
 export interface SessionItem {
   id: string;
-  kind: "introduction" | "exercise";
+  kind: "introduction" | "guided-review" | "exercise";
   forcedMode?: ExerciseMode;
   round: number;
 }

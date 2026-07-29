@@ -23,6 +23,43 @@ describe("algorytm powtórek", () => {
     expect(result.lastSchedulingReason).toContain("aktywne sprawdzenie");
   });
 
+  it("prowadzona fiszka w przegródce 2 czeka z awansem na aktywne wpisanie", () => {
+    const result = reviewCard(
+      { ...starterCards[0], stage: "known", learned: true, leitnerBox: 2 },
+      "good",
+      { mode: "introduction", correct: true },
+      now,
+    );
+    expect(result.leitnerBox).toBe(2);
+    expect(result.learned).toBe(true);
+    expect(result.correctStreak).toBe(0);
+    expect(result.lastSchedulingReason).toContain("wpisywanie później w tej lekcji");
+  });
+
+  it("Niepewnie pozostawia prowadzoną fiszkę w bieżącej przegródce", () => {
+    const result = reviewCard(
+      { ...starterCards[0], stage: "known", learned: true, leitnerBox: 3 },
+      "hard",
+      { mode: "introduction", correct: true },
+      now,
+    );
+    expect(result.leitnerBox).toBe(3);
+    expect(result.learned).toBe(true);
+    expect(result.lastSchedulingReason).toContain("wróci jako dyktando");
+  });
+
+  it("Nie znam cofa prowadzoną fiszkę do przegródki 1", () => {
+    const result = reviewCard(
+      { ...starterCards[0], stage: "known", learned: true, leitnerBox: 3 },
+      "again",
+      { mode: "introduction", correct: false },
+      now,
+    );
+    expect(result.leitnerBox).toBe(1);
+    expect(result.stage).toBe("uncertain");
+    expect(result.lastSchedulingReason).toContain("nie jest jeszcze utrwalone");
+  });
+
   it("aktywne poprawne odpowiedzi prowadzą przez przegródki 2–4", () => {
     const evidence = { mode: "choice-de-pl" as const, correct: true };
     const first = reviewCard(starterCards[0], "good", evidence, now);

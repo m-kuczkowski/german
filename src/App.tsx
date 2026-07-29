@@ -614,6 +614,8 @@ interface SessionProps {
 function FlashcardSession(props: SessionProps) {
   const card = props.activeCard ?? props.cards[0]!;
   const isIntroduction = props.activeItem?.kind === "introduction";
+  const isGuidedReview = props.activeItem?.kind === "guided-review";
+  const isFlashcard = isIntroduction || isGuidedReview;
   const sessionIndex = props.session?.index ?? 0;
   const sessionLength = props.session?.queue.length ?? 0;
   const [exercise] = useState(() =>
@@ -701,7 +703,7 @@ function FlashcardSession(props: SessionProps) {
     );
   }
 
-  function rateIntroduction(rating: ReviewRating) {
+  function rateFlashcard(rating: ReviewRating) {
     submitAnswer(
       rating,
       { mode: "introduction", correct: rating !== "again" },
@@ -769,6 +771,8 @@ function FlashcardSession(props: SessionProps) {
           <span>
             {isIntroduction
               ? "Nowe słowo"
+              : isGuidedReview
+                ? "Powtórka fiszki"
               : isListening
                 ? "Słuchanie"
                 : exercise.mode === "choice-article"
@@ -779,9 +783,13 @@ function FlashcardSession(props: SessionProps) {
           </span>
         </div>
 
-        {isIntroduction ? (
+        {isFlashcard ? (
           <div className="introduction-card">
-            <p className="exercise-instruction">Dotknij karty, aby ją odwrócić.</p>
+            <p className="exercise-instruction">
+              {isGuidedReview
+                ? "Najpierw przypomnij sobie znaczenie, potem odwróć kartę."
+                : "Dotknij karty, aby ją odwrócić."}
+            </p>
             <div className="flip-card-shell">
               <button
                 type="button"
@@ -824,13 +832,13 @@ function FlashcardSession(props: SessionProps) {
               {flipped ? "Schowaj znaczenie" : "Pokaż znaczenie"}
             </button>
             <div className="rating-actions persistent-ratings" role="group" aria-label="Jak dobrze znasz to słowo?">
-              <button className="rating-again" onClick={() => rateIntroduction("again")} disabled={Boolean(outcome)}>
+              <button className="rating-again" onClick={() => rateFlashcard("again")} disabled={Boolean(outcome)}>
                 <strong>Nie znam</strong><small>ponownie za 3–5 fiszek</small>
               </button>
-              <button className="rating-hard" onClick={() => rateIntroduction("hard")} disabled={Boolean(outcome)}>
+              <button className="rating-hard" onClick={() => rateFlashcard("hard")} disabled={Boolean(outcome)}>
                 <strong>Niepewnie</strong><small>dyktando za 6–8 fiszek</small>
               </button>
-              <button className="rating-good" onClick={() => rateIntroduction("good")} disabled={Boolean(outcome)}>
+              <button className="rating-good" onClick={() => rateFlashcard("good")} disabled={Boolean(outcome)}>
                 <strong>Znam</strong><small>wpisywanie za 8–11 fiszek</small>
               </button>
             </div>
