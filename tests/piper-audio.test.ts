@@ -3,10 +3,19 @@ import { starterCards } from "../src/data/starterCards";
 import {
   PIPER_AUDIO_BASE_URL,
   PIPER_AUDIO_MIME_TYPE,
+  PIPER_AUDIO_SPRITE_PREFIX,
   piperAudioClips,
 } from "../src/data/piperAudioManifest";
+import { spokenGerman } from "../scripts/piper-audio-source.mjs";
 
-describe("nagrania Thorsten", () => {
+describe("nagrania niemieckiego lektora", () => {
+  it("przygotowuje naturalny tekst do wymowy dla zapisu technicznego kart", () => {
+    expect(spokenGerman({ german: "zurück|kommen" })).toBe("zurückkommen");
+    expect(spokenGerman({ german: "Interesse (an etwas) haben" })).toBe("Interesse an etwas haben");
+    expect(spokenGerman({ german: "etwas/jemanden vergessen" })).toBe("etwas oder jemanden vergessen");
+    expect(spokenGerman({ german: "zuhören (jemandem)" })).toBe("jemandem zuhören");
+  });
+
   it("posiada nagranie dla każdej z 3038 kart i żadnych obcych identyfikatorów", () => {
     const cardIds = new Set(starterCards.map((card) => card.id));
     const audioIds = Object.keys(piperAudioClips);
@@ -18,9 +27,10 @@ describe("nagrania Thorsten", () => {
 
   it("ma poprawne, bezpieczne czasy segmentów i publiczną bazę WebM/Opus", () => {
     expect(PIPER_AUDIO_BASE_URL).toMatch(
-      /^https:\/\/[a-z0-9]+\.public\.blob\.vercel-storage\.com\/wortschatz\/thorsten-v1$/,
+      /^https:\/\/[a-z0-9]+\.public\.blob\.vercel-storage\.com\/wortschatz\/kokoro-martin-v1$/,
     );
     expect(PIPER_AUDIO_MIME_TYPE).toBe('audio/webm; codecs="opus"');
+    expect(PIPER_AUDIO_SPRITE_PREFIX).toBe("kokoro-martin");
 
     for (const [shard, start, duration] of Object.values(piperAudioClips)) {
       expect(shard).toBeGreaterThanOrEqual(0);

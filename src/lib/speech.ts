@@ -1,6 +1,7 @@
 import {
   PIPER_AUDIO_BASE_URL,
   PIPER_AUDIO_MIME_TYPE,
+  PIPER_AUDIO_SPRITE_PREFIX,
   piperAudioClips,
 } from "../data/piperAudioManifest";
 
@@ -33,7 +34,7 @@ function supportsPiperAudio(): boolean {
 }
 
 function shardUrl(shard: number): string {
-  return `${PIPER_AUDIO_BASE_URL}/thorsten-${String(shard).padStart(2, "0")}.webm`;
+  return `${PIPER_AUDIO_BASE_URL}/${PIPER_AUDIO_SPRITE_PREFIX}-${String(shard).padStart(2, "0")}.webm`;
 }
 
 function getAudio(shard: number): HTMLAudioElement {

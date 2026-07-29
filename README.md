@@ -125,36 +125,36 @@ Tłumaczenia i pary zdań kontekstowych są przygotowywane jednorazowo przez mod
 
 `scripts/curate-natural-cards.mjs` wykonuje powtarzalną, ręcznie zdefiniowaną korektę technicznych zapisów i wybranych tłumaczeń bez zmiany identyfikatorów kart.
 
-## Nagrania Thorsten
+## Nagrania Kokoro Martin
 
 Audio nie jest generowane podczas używania aplikacji. Skrypt
 `scripts/piper-audio-source.mjs` przygotowuje dokładnie 3038 tekstów z bieżącego
-katalogu, a `scripts/generate-piper-audio.py` jednorazowo syntezuje je lokalnie
-przez Piper i kompresuje kodekiem Opus w kontenerze WebM. Paczki mają stabilne
-nazwy, dzięki czemu mogą być długo buforowane przez CDN.
+katalogu, a `scripts/generate-kokoro-audio.py` jednorazowo syntezuje je lokalnie
+przez Kokoro Martin i kompresuje kodekiem Opus w kontenerze WebM. Tekst do
+wymowy upraszcza techniczne znaki kart (`|`, `/`, nawiasy), a każde nagranie ma
+krótką ciszę przed i po słowie, aby początek nie był ucinany przy odtwarzaniu
+segmentu. Paczki mają stabilne nazwy, dzięki czemu mogą być długo buforowane
+przez CDN.
 
 ```bash
-python -m pip install -r scripts/requirements-audio.txt
-npm run audio:source -- --output /tmp/german-piper-source.json
-python scripts/generate-piper-audio.py \
-  --source /tmp/german-piper-source.json \
-  --model /path/to/de_DE-thorsten-high.onnx \
-  --config /path/to/de_DE-thorsten-high.onnx.json \
-  --ffmpeg /path/to/ffmpeg \
-  --output /tmp/german-piper-audio
-npm run audio:upload -- --audio-dir /tmp/german-piper-audio
+python -m pip install -r scripts/requirements-audio-kokoro.txt
+npm run audio:source -- --output /tmp/german-kokoro-source.json
+python scripts/generate-kokoro-audio.py \
+  --source /tmp/german-kokoro-source.json \
+  --model /path/to/kokoro-martin.onnx \
+  --voices /path/to/voices-martin.npz \
+  --output /tmp/german-kokoro-audio
+npm run audio:upload -- --audio-dir /tmp/german-kokoro-audio
 ```
 
 Ostatni krok wysyła 64 paczki i manifest do publicznego Vercel Blob oraz
 generuje `src/data/piperAudioManifest.ts`. Wymaga lokalnego
 `BLOB_READ_WRITE_TOKEN`; sekret nigdy nie trafia do kodu klienta.
 
-Użyty model to
-[`de_DE-thorsten-high`](https://huggingface.co/rhasspy/piper-voices/tree/main/de/de_DE/thorsten/high)
-z repozytorium `rhasspy/piper-voices`. Repozytorium modelu jest objęte licencją MIT, a karta
-modelu wskazuje zestaw głosowy Thorsten na licencji CC0. Zweryfikowane sumy MD5:
-`256505fe58fb8b9d6ed78b83f6b8a9d2` dla modelu ONNX oraz
-`e81686e00a9d825e2488ead660bec6fd` dla jego konfiguracji.
+Użyty model to [Kokoro German Martin](https://huggingface.co/Godelaune/Kokoro-82M-ONNX-German-Martin),
+niemiecki model ONNX działający w pełni offline i objęty licencją Apache 2.0.
+Nagrania powstają w tempie `0.9` i są kodowane mono Opus 40 kb/s. Systemowy
+lektor przeglądarki pozostaje fallbackiem, gdy plik nie jest dostępny.
 
 ## Dane i prywatność
 
