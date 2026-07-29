@@ -77,6 +77,10 @@ async function ensureSchema(sql) {
       await sql`ALTER TABLE learning_profiles ADD COLUMN IF NOT EXISTS display_name TEXT`;
       await sql`ALTER TABLE learning_profiles ADD COLUMN IF NOT EXISTS name_key TEXT`;
       await sql`ALTER TABLE catalog_cards ADD COLUMN IF NOT EXISTS curriculum_tier TEXT`;
+      await sql`ALTER TABLE catalog_cards ADD COLUMN IF NOT EXISTS word_family_id TEXT`;
+      await sql`ALTER TABLE catalog_cards ADD COLUMN IF NOT EXISTS word_family_role TEXT`;
+      await sql`ALTER TABLE catalog_cards ADD COLUMN IF NOT EXISTS prerequisite_ids TEXT[]`;
+      await sql`ALTER TABLE catalog_cards ADD COLUMN IF NOT EXISTS word_parts JSONB`;
       await sql`CREATE UNIQUE INDEX IF NOT EXISTS learning_profiles_name_key_unique
         ON learning_profiles (name_key) WHERE name_key IS NOT NULL`;
       await sql`CREATE TABLE IF NOT EXISTS card_progress (
@@ -218,6 +222,7 @@ export default async function handler(req, res) {
           SELECT
             card.id, card.german, card.polish, card.article, card.plural,
             card.example_german, card.example_polish, card.category_id, card.curriculum_tier, card.level,
+            card.word_family_id, card.word_family_role, card.prerequisite_ids, card.word_parts,
             card.source_label, card.source_url, card.source_gloss, card.source_language
           FROM catalog_cards card
           ORDER BY card.position

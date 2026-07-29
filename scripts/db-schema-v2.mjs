@@ -1,4 +1,4 @@
-export const MIGRATION_ID = "20260727_001_normalize_learning_data";
+export const MIGRATION_ID = "20260729_002_word_families";
 
 export const legacySchemaStatements = [
   `CREATE TABLE catalog_cards (
@@ -48,6 +48,10 @@ export const expandStatements = [
     ADD COLUMN IF NOT EXISTS example_polish TEXT,
     ADD COLUMN IF NOT EXISTS category_id TEXT,
     ADD COLUMN IF NOT EXISTS curriculum_tier TEXT,
+    ADD COLUMN IF NOT EXISTS word_family_id TEXT,
+    ADD COLUMN IF NOT EXISTS word_family_role TEXT,
+    ADD COLUMN IF NOT EXISTS prerequisite_ids TEXT[],
+    ADD COLUMN IF NOT EXISTS word_parts JSONB,
     ADD COLUMN IF NOT EXISTS level TEXT,
     ADD COLUMN IF NOT EXISTS source_label TEXT,
     ADD COLUMN IF NOT EXISTS source_url TEXT,
@@ -128,6 +132,14 @@ export const backfillStatements = [
      example_polish = content->>'examplePolish',
      category_id = 'category_' || substr(md5(content->>'category'), 1, 12),
      curriculum_tier = COALESCE(content->>'curriculumTier', 'core'),
+     word_family_id = content->>'wordFamilyId',
+     word_family_role = content->>'wordFamilyRole',
+     prerequisite_ids = CASE
+       WHEN content ? 'prerequisiteIds'
+       THEN ARRAY(SELECT jsonb_array_elements_text(content->'prerequisiteIds'))
+       ELSE NULL
+     END,
+     word_parts = content->'wordParts',
      level = content->>'level',
      source_label = content->>'sourceLabel',
      source_url = content->>'sourceUrl',
@@ -207,6 +219,8 @@ export const constraintStatements = [
     ON catalog_cards (category_id, level, position)`,
   `CREATE INDEX IF NOT EXISTS catalog_cards_curriculum_tier_idx
     ON catalog_cards (curriculum_tier, position)`,
+  `CREATE INDEX IF NOT EXISTS catalog_cards_word_family_idx
+    ON catalog_cards (word_family_id, word_family_role, position)`,
   `CREATE INDEX IF NOT EXISTS card_progress_due_idx
     ON card_progress (profile_id, due_at)`,
   `CREATE INDEX IF NOT EXISTS card_progress_box_stage_idx
@@ -236,6 +250,11 @@ export const constraintStatements = [
        ALTER TABLE catalog_cards
          ADD CONSTRAINT catalog_cards_curriculum_tier_check
          CHECK (curriculum_tier IN ('core', 'extension', 'specialist')) NOT VALID;
+     END IF;
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'catalog_cards_word_family_role_check' AND conrelid = 'catalog_cards'::regclass) THEN
+       ALTER TABLE catalog_cards
+         ADD CONSTRAINT catalog_cards_word_family_role_check
+         CHECK (word_family_role IS NULL OR word_family_role IN ('base', 'derived', 'compound')) NOT VALID;
      END IF;
      IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_progress_stage_check' AND conrelid = 'card_progress'::regclass) THEN
        ALTER TABLE card_progress
@@ -275,6 +294,7 @@ export const constraintStatements = [
   `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_article_check`,
   `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_level_check`,
   `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_curriculum_tier_check`,
+  `ALTER TABLE catalog_cards VALIDATE CONSTRAINT catalog_cards_word_family_role_check`,
   `ALTER TABLE card_progress VALIDATE CONSTRAINT card_progress_stage_check`,
   `ALTER TABLE card_progress VALIDATE CONSTRAINT card_progress_leitner_box_check`,
   `ALTER TABLE learning_profiles VALIDATE CONSTRAINT learning_profiles_theme_check`,
@@ -337,6 +357,18 @@ export const validationQuery = `
          'sourceLanguage', c.source_language
        ) || CASE
          WHEN c.content ? 'curriculumTier' THEN jsonb_build_object('curriculumTier', c.curriculum_tier)
+         ELSE '{}'::jsonb
+       END || CASE
+         WHEN c.content ? 'wordFamilyId' THEN jsonb_build_object('wordFamilyId', c.word_family_id)
+         ELSE '{}'::jsonb
+       END || CASE
+         WHEN c.content ? 'wordFamilyRole' THEN jsonb_build_object('wordFamilyRole', c.word_family_role)
+         ELSE '{}'::jsonb
+       END || CASE
+         WHEN c.content ? 'prerequisiteIds' THEN jsonb_build_object('prerequisiteIds', to_jsonb(c.prerequisite_ids))
+         ELSE '{}'::jsonb
+       END || CASE
+         WHEN c.content ? 'wordParts' THEN jsonb_build_object('wordParts', c.word_parts)
          ELSE '{}'::jsonb
        END) AS catalog_mismatches,
       (SELECT COUNT(*) FROM card_progress p

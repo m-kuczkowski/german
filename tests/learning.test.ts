@@ -85,6 +85,75 @@ describe("nauka kategoriami", () => {
     expect(buildCategoryProgress(cards)[0]).toMatchObject({ total: 2, specialist: 1 });
   });
 
+  it("odblokowuje rozwinięcie dopiero po aktywnym przypomnieniu słowa bazowego", () => {
+    const category = "Zdrowie i bezpieczeństwo";
+    const [template] = starterCards;
+    const base = {
+      ...template,
+      id: "pflege-base",
+      category,
+      stage: "new" as const,
+      leitnerBox: 1 as const,
+      wordFamilyId: "pflege",
+      wordFamilyRole: "base" as const,
+      prerequisiteIds: [],
+    };
+    const compound = {
+      ...template,
+      id: "pflegeheim",
+      category,
+      stage: "new" as const,
+      leitnerBox: 1 as const,
+      wordFamilyId: "pflege",
+      wordFamilyRole: "compound" as const,
+      prerequisiteIds: [base.id],
+    };
+
+    expect(learningSessionPlan([compound, base], category).newCards.map((card) => card.id))
+      .toEqual([base.id]);
+
+    const recalledBase = {
+      ...base,
+      stage: "learning" as const,
+      leitnerBox: 2 as const,
+      dueAt: "2026-08-10T10:00:00.000Z",
+    };
+    expect(
+      learningSessionPlan(
+        [compound, recalledBase],
+        category,
+        new Date("2026-07-29T10:00:00.000Z"),
+      ).newCards.map((card) => card.id),
+    ).toEqual([compound.id]);
+  });
+
+  it("nie ukrywa rozpoczętej wcześniej karty, nawet jeśli jej podstawa jest jeszcze nowa", () => {
+    const category = "Zdrowie i bezpieczeństwo";
+    const [template] = starterCards;
+    const base = {
+      ...template,
+      id: "pflege-base",
+      category,
+      stage: "new" as const,
+      leitnerBox: 1 as const,
+    };
+    const introducedCompound = {
+      ...template,
+      id: "pflegeheim",
+      category,
+      stage: "learning" as const,
+      leitnerBox: 1 as const,
+      dueAt: "2026-07-28T10:00:00.000Z",
+      prerequisiteIds: [base.id],
+    };
+    const plan = learningSessionPlan(
+      [base, introducedCompound],
+      category,
+      new Date("2026-07-29T10:00:00.000Z"),
+    );
+    expect(plan.due.map((card) => card.id)).toContain(introducedCompound.id);
+  });
+
   it("nie dodaje słowa do trudnych wyłącznie przez błąd w wyzwaniu", () => {
     const card = {
       ...starterCards[0],

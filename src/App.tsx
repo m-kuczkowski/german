@@ -817,8 +817,22 @@ function FlashcardSession(props: SessionProps) {
                   <span className="flip-face flip-back">
                     <small>POLSKI I KONTEKST</small>
                     <strong>{card.polish}</strong>
-                    <span lang="de">{card.exampleGerman}</span>
-                    <span>{card.examplePolish}</span>
+                    {card.wordParts && card.wordParts.length > 0 && (
+                      <span className="word-breakdown">
+                        <small>BUDOWA SŁOWA</small>
+                        <span>
+                          {card.wordParts.map((part, partIndex) => (
+                            <span className="word-part" key={`${part.german}-${partIndex}`}>
+                              {partIndex > 0 && <i aria-hidden="true"> + </i>}
+                              <b lang="de">{part.german}</b>
+                              <em>{part.polish}</em>
+                            </span>
+                          ))}
+                        </span>
+                      </span>
+                    )}
+                    <span className="example-german" lang="de">{card.exampleGerman}</span>
+                    <span className="example-polish">{card.examplePolish}</span>
                   </span>
                 </span>
               </button>

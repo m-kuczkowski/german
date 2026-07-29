@@ -7,7 +7,7 @@ const DB_VERSION = 1;
 const CARD_STORE = "cards";
 const META_STORE = "meta";
 const META_KEY = "learning";
-const CURRENT_CONTENT_VERSION = 8;
+const CURRENT_CONTENT_VERSION = 9;
 
 function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {

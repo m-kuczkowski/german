@@ -1,4 +1,4 @@
-import type { CurriculumTier, Flashcard } from "../types";
+import type { CurriculumTier, Flashcard, WordFamilyRole } from "../types";
 import { isDue, sortForLearning } from "./srs";
 
 export interface CategoryProgress {
@@ -26,8 +26,20 @@ export function isDefaultCurriculumCard(card: Pick<Flashcard, "curriculumTier">)
 }
 
 function newCardOrder(card: Flashcard): number {
-  const order: Record<CurriculumTier, number> = { core: 0, extension: 1, specialist: 2 };
-  return order[curriculumTier(card)];
+  const tierOrder: Record<CurriculumTier, number> = { core: 0, extension: 1, specialist: 2 };
+  const familyOrder: Record<WordFamilyRole, number> = { base: 0, derived: 2, compound: 3 };
+  const roleOrder = card.wordFamilyRole ? familyOrder[card.wordFamilyRole] : 1;
+  return tierOrder[curriculumTier(card)] * 10 + roleOrder;
+}
+
+export function prerequisitesReady(
+  card: Pick<Flashcard, "prerequisiteIds">,
+  cardsById: ReadonlyMap<string, Flashcard>,
+): boolean {
+  return (card.prerequisiteIds ?? []).every((prerequisiteId) => {
+    const prerequisite = cardsById.get(prerequisiteId);
+    return !prerequisite || prerequisite.leitnerBox >= 2;
+  });
 }
 
 export function categoryTitle(category: string): string {
@@ -93,6 +105,7 @@ export function learningSessionPlan(
   limit = 10,
 ): LearningSessionPlan {
   const inCategory = cards.filter((card) => card.category === categoryId);
+  const cardsById = new Map(cards.map((card) => [card.id, card]));
   const due = sortForLearning(
     inCategory.filter((card) => card.stage !== "new" && isDue(card, now)),
     now,
@@ -102,7 +115,11 @@ export function learningSessionPlan(
     Math.max(0, limit - due.length),
   );
   const newCards = inCategory
-    .filter((card) => card.stage === "new" && isDefaultCurriculumCard(card))
+    .filter((card) =>
+      card.stage === "new" &&
+      isDefaultCurriculumCard(card) &&
+      prerequisitesReady(card, cardsById),
+    )
     .sort((left, right) => newCardOrder(left) - newCardOrder(right))
     .slice(0, newLimit);
   return { due, newCards, cards: [...due, ...newCards] };

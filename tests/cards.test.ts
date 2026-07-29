@@ -14,6 +14,33 @@ describe("kolekcja fiszek", () => {
       .toMatchObject({ curriculumTier: "extension" });
   });
 
+  it("prowadzi od podstaw słowotwórczych do trudniejszych rozwinięć", () => {
+    expect(new Set(
+      starterCards
+        .map((card) => card.wordFamilyId)
+        .filter((family): family is string => Boolean(family)),
+    ).size).toBe(8);
+    expect(starterCards.find((card) => card.id === "nicos-a2-8132eb42ae5b"))
+      .toMatchObject({
+        german: "jemanden pflegen",
+        curriculumTier: "core",
+        wordFamilyId: "pflege",
+        wordFamilyRole: "base",
+        prerequisiteIds: [],
+      });
+    expect(starterCards.find((card) => card.id === "nicos-a2-4ec3d0495161"))
+      .toMatchObject({
+        german: "Pflegeheim",
+        wordFamilyId: "pflege",
+        wordFamilyRole: "compound",
+        prerequisiteIds: ["nicos-b1-7c8fba159d9f"],
+        wordParts: [
+          { german: "Pflege", polish: "opieka" },
+          { german: "Heim", polish: "dom lub ośrodek" },
+        ],
+      });
+  });
+
   it("nie pokazuje technicznych separatorów z talii źródłowej", () => {
     expect(starterCards.filter((card) => /[|/]/.test(card.german))).toHaveLength(0);
     expect(starterCards.filter((card) => /[|/]/.test(card.polish))).toHaveLength(0);

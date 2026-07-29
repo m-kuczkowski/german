@@ -2,6 +2,7 @@
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { applyCurriculumHierarchy, hierarchyFamilyCount } from "./curriculum-hierarchy.mjs";
 
 const cardsPath = resolve(process.argv[2] ?? "src/data/nicosWegCards.ts");
 const generated = readFileSync(cardsPath, "utf8");
@@ -187,7 +188,8 @@ const curated = cards.map((card) => {
   return next;
 });
 
-const invalid = curated.filter((card) => /[|/]/.test(card.german) || /[|/]/.test(card.polish));
+const hierarchical = applyCurriculumHierarchy(curated);
+const invalid = hierarchical.filter((card) => /[|/]/.test(card.german) || /[|/]/.test(card.polish));
 if (invalid.length) {
   throw new Error(
     `Po korekcie pozostały techniczne separatory: ${invalid
@@ -202,7 +204,7 @@ const output = `import type { CardContent } from "../types";
 // Generated from all 3038 notes in the two public AnkiWeb decks.
 // Polish translations were created in a separate AI translation pass.
 export const nicosWegContents: CardContent[] = JSON.parse(${JSON.stringify(
-  JSON.stringify(curated),
+  JSON.stringify(hierarchical),
 )}) as CardContent[];
 
 export const nicosWegCategories = [
@@ -218,6 +220,8 @@ console.log(
     slashCards,
     genderCards,
     translationCards,
+    hierarchyFamilyCount,
+    hierarchyCards: hierarchical.filter((card) => card.wordFamilyId).length,
     remainingTechnicalSeparators: invalid.length,
   }),
 );
