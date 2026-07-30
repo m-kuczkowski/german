@@ -680,8 +680,7 @@ function FlashcardSession(props: SessionProps) {
     });
   }
 
-  function checkTypedAnswer(event: FormEvent) {
-    event.preventDefault();
+  function checkTypedAnswer() {
     if (!typedAnswer.trim() || outcome) return;
     const result: TypedAnswerResult = evaluateTypedAnswer(
       typedAnswer,
@@ -695,6 +694,17 @@ function FlashcardSession(props: SessionProps) {
       typedAnswer,
       exercise.answerLabel,
     );
+  }
+
+  function giveUpOnTypedAnswer() {
+    if (outcome) return;
+    submitAnswer(
+      "again",
+      { mode: exercise.mode, correct: false },
+      null,
+      exercise.answerLabel,
+    );
+    window.setTimeout(() => inputRef.current?.blur(), 0);
   }
 
   function chooseAnswer(cardId: string) {
@@ -923,7 +933,7 @@ function FlashcardSession(props: SessionProps) {
             })}
           </div>
         ) : (
-          <form className="typing-exercise" onSubmit={checkTypedAnswer}>
+          <form className="typing-exercise" onSubmit={(event) => event.preventDefault()}>
             <div className="typing-row">
               <label>
                 <span className="sr-only">{exercise.instruction}</span>
@@ -937,6 +947,9 @@ function FlashcardSession(props: SessionProps) {
                   autoComplete="off"
                   spellCheck={false}
                   enterKeyHint="done"
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") event.preventDefault();
+                  }}
                   readOnly={Boolean(outcome)}
                   autoFocus={!isListening}
                 />
@@ -944,8 +957,12 @@ function FlashcardSession(props: SessionProps) {
               {!outcome && (
                 <button
                   className="typing-submit"
-                  type="submit"
-                  onPointerDown={(event) => event.preventDefault()}
+                  type="button"
+                  onPointerDown={(event) => {
+                    event.preventDefault();
+                    checkTypedAnswer();
+                  }}
+                  onClick={checkTypedAnswer}
                   disabled={!typedAnswer.trim()}
                   aria-label="Sprawdź odpowiedź"
                 >
@@ -953,7 +970,19 @@ function FlashcardSession(props: SessionProps) {
                 </button>
               )}
             </div>
-            {!outcome && <small className="typing-hint">„Gotowe” na klawiaturze lub strzałka sprawdza odpowiedź.</small>}
+            {!outcome && (
+              <button
+                className="typing-give-up"
+                type="button"
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  giveUpOnTypedAnswer();
+                }}
+                onClick={giveUpOnTypedAnswer}
+              >
+                Nie pamiętam — pokaż odpowiedź
+              </button>
+            )}
           </form>
         )}
           </>
