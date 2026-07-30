@@ -119,7 +119,7 @@ describe("adaptacyjna kolejka w lekcji", () => {
     expect(advanceSession(recorded).index).toBe(1);
   });
 
-  it("nie udaje odstępu, gdy w sesji brakuje kart", () => {
+  it("skraca odstęp, aby wpisywanie zawsze odbyło się w tej samej lekcji", () => {
     const card = starterCards[0];
     const session = createLearningSession([card], "learn", card.category);
     const evidence = { mode: "introduction" as const, correct: true };
@@ -134,10 +134,41 @@ describe("adaptacyjna kolejka w lekcji", () => {
       "good",
       card.polish,
     );
-    expect(recorded.queue).toHaveLength(1);
+    expect(recorded.queue).toHaveLength(2);
+    expect(recorded.queue[1]).toMatchObject({
+      id: card.id,
+      kind: "exercise",
+      forcedMode: "type-pl-de",
+    });
     expect(sessionFollowUpLabel(session, card.id, "good"))
-      .toBe("wpisywanie w krótkiej powtórce");
+      .toBe("wpisywanie jako następne zadanie");
     expect(new Date(reviewed.dueAt).getTime()).toBeGreaterThan(Date.now());
+  });
+
+  it("używa największego dostępnego odstępu przed końcem lekcji", () => {
+    const card = starterCards[0];
+    const session = createLearningSession(starterCards.slice(0, 4), "learn", card.category);
+    const evidence = { mode: "introduction" as const, correct: true };
+    const reviewed = reviewCard(card, "good", evidence);
+    const recorded = recordSessionAnswer(
+      session,
+      card,
+      reviewed,
+      session.queue[0],
+      "good",
+      evidence,
+      "good",
+      card.polish,
+    );
+
+    expect(recorded.queue).toHaveLength(5);
+    expect(recorded.queue[4]).toMatchObject({
+      id: card.id,
+      kind: "exercise",
+      forcedMode: "type-pl-de",
+    });
+    expect(sessionFollowUpLabel(session, card.id, "good"))
+      .toBe("wpisywanie za 3 fiszki");
   });
 
   it("Nie znam wraca szybciej jako zwykła fiszka", () => {

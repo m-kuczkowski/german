@@ -86,16 +86,22 @@ export function sessionFollowUpLabel(
   cardId: string,
   rating: ReviewRating,
 ): string {
-  const gap = deterministicGap(cardId, session.index, rating);
+  const plannedGap = deterministicGap(cardId, session.index, rating);
   const remaining = session.queue.length - session.index - 1;
-  if (remaining < gap) {
+  if (remaining < plannedGap && rating !== "good") {
     if (rating === "hard") return "dyktando w krótkiej powtórce";
-    if (rating === "good") return "wpisywanie w krótkiej powtórce";
     return "fiszka w krótkiej powtórce";
   }
-  if (rating === "hard") return `dyktando za ${gap} fiszek`;
-  if (rating === "good") return `wpisywanie za ${gap} fiszek`;
-  return `ponownie za ${gap} ${gap === 5 ? "fiszek" : "fiszki"}`;
+  const gap = Math.min(plannedGap, remaining);
+  if (gap === 0) {
+    return "wpisywanie jako następne zadanie";
+  }
+  const cardCount = `${gap} ${
+    gap === 1 ? "fiszkę" : gap >= 2 && gap <= 4 ? "fiszki" : "fiszek"
+  }`;
+  if (rating === "hard") return `dyktando za ${cardCount}`;
+  if (rating === "good") return `wpisywanie za ${cardCount}`;
+  return `ponownie za ${cardCount}`;
 }
 
 export function recordSessionAnswer(
@@ -159,10 +165,17 @@ export function recordSessionAnswer(
   }
 
   if (nextItem) {
-    const gap = deterministicGap(previousCard.id, session.index, gapRating);
+    const plannedGap = deterministicGap(previousCard.id, session.index, gapRating);
     const remaining = queue.length - session.index - 1;
-    if (remaining >= gap) {
-      queue.splice(session.index + gap + 1, 0, nextItem);
+    const confirmsKnownInThisLesson =
+      nextItem.forcedMode === "type-pl-de" &&
+      (
+        (isFlashcardAnswer && rating === "good") ||
+        (evidence.mode === "type-listen-de" && evidence.correct)
+      );
+    if (remaining >= plannedGap || confirmsKnownInThisLesson) {
+      const actualGap = Math.min(plannedGap, remaining);
+      queue.splice(session.index + actualGap + 1, 0, nextItem);
     }
   }
 

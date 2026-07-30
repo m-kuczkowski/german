@@ -15,7 +15,7 @@ export const ratingGuide = [
   },
   {
     label: "Znam",
-    timing: "za 8–11 fiszek",
+    timing: "za 8–11 fiszek lub przed końcem lekcji",
     description: "Wpiszesz słowo z polskiego tłumaczenia.",
     tone: "good",
   },
