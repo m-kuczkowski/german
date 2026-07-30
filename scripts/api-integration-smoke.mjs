@@ -130,7 +130,7 @@ try {
     theme: "system",
     contentVersion: 7,
     activeSession: {
-      version: 2,
+      version: 3,
       mode: "learn",
       categoryId: null,
       queue: [],

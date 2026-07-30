@@ -21,6 +21,7 @@ const progressKeys = [
   "reviewHistory",
   "lastSchedulingReason",
   "successfulReviewDays",
+  "learningStats",
   "challengeStats",
 ];
 let schemaReady;
@@ -93,6 +94,7 @@ async function ensureSchema(sql) {
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         PRIMARY KEY (profile_id, card_id)
       )`;
+      await sql`ALTER TABLE card_progress ADD COLUMN IF NOT EXISTS learning_stats JSONB`;
     })();
   }
   return schemaReady;
@@ -237,7 +239,7 @@ export default async function handler(req, res) {
             card_id, data, repetitions, interval_days, ease, due_at, learned,
             lapses, stage, correct_streak, successful_modes, first_active_recall_at,
             last_active_recall_at, last_reviewed_at, typed_attempts, typed_successes,
-            leitner_box, last_scheduling_reason, successful_review_days
+            leitner_box, last_scheduling_reason, successful_review_days, learning_stats
           FROM card_progress
           WHERE profile_id = $1::uuid
         `, [profile.id]),
@@ -292,7 +294,7 @@ export default async function handler(req, res) {
            learned, lapses, stage, correct_streak, successful_modes,
            first_active_recall_at, last_active_recall_at, last_reviewed_at,
            typed_attempts, typed_successes, leitner_box, last_scheduling_reason,
-           successful_review_days
+           successful_review_days, learning_stats
          )
          SELECT
            $1::uuid,
@@ -317,7 +319,8 @@ export default async function handler(req, res) {
            ARRAY(
              SELECT value::date
              FROM jsonb_array_elements_text(entry->'successfulReviewDays') value
-           )
+           ),
+           COALESCE(entry->'learningStats', '{}'::jsonb)
          FROM entries
          ON CONFLICT (profile_id, card_id)
          DO UPDATE SET
@@ -339,6 +342,7 @@ export default async function handler(req, res) {
            leitner_box = EXCLUDED.leitner_box,
            last_scheduling_reason = EXCLUDED.last_scheduling_reason,
            successful_review_days = EXCLUDED.successful_review_days,
+           learning_stats = EXCLUDED.learning_stats,
            updated_at = NOW()`,
         [profile.id, JSON.stringify(progress)],
         ),

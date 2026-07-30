@@ -1,4 +1,4 @@
-export const MIGRATION_ID = "20260729_003_goethe_curriculum";
+export const MIGRATION_ID = "20260730_004_adaptive_learning";
 
 export const legacySchemaStatements = [
   `CREATE TABLE catalog_cards (
@@ -85,7 +85,8 @@ export const expandStatements = [
     ADD COLUMN IF NOT EXISTS typed_successes INTEGER,
     ADD COLUMN IF NOT EXISTS leitner_box SMALLINT,
     ADD COLUMN IF NOT EXISTS last_scheduling_reason TEXT,
-    ADD COLUMN IF NOT EXISTS successful_review_days DATE[]`,
+    ADD COLUMN IF NOT EXISTS successful_review_days DATE[],
+    ADD COLUMN IF NOT EXISTS learning_stats JSONB`,
   `CREATE TABLE IF NOT EXISTS card_review_history (
     profile_id UUID NOT NULL,
     card_id TEXT NOT NULL,
@@ -189,7 +190,8 @@ export const backfillStatements = [
      successful_review_days = ARRAY(
        SELECT value::date
        FROM jsonb_array_elements_text(data->'successfulReviewDays') value
-     )`,
+     ),
+     learning_stats = COALESCE(data->'learningStats', '{}'::jsonb)`,
   `INSERT INTO card_review_history (
      profile_id, card_id, event_id, sequence_no, reviewed_at, mode, rating,
      correct, score, from_box, to_box, scheduled_for, reason
@@ -237,6 +239,8 @@ export const constraintStatements = [
     ON card_progress (profile_id, due_at)`,
   `CREATE INDEX IF NOT EXISTS card_progress_box_stage_idx
     ON card_progress (profile_id, leitner_box, stage)`,
+  `CREATE INDEX IF NOT EXISTS card_progress_learning_stats_idx
+    ON card_progress USING GIN (learning_stats)`,
   `CREATE INDEX IF NOT EXISTS card_review_history_profile_reviewed_idx
     ON card_review_history (profile_id, reviewed_at DESC)`,
   `CREATE INDEX IF NOT EXISTS card_review_history_mode_idx
@@ -288,14 +292,13 @@ export const constraintStatements = [
          ADD CONSTRAINT learning_profiles_theme_check
          CHECK (theme IS NULL OR theme IN ('system', 'light', 'dark')) NOT VALID;
      END IF;
-     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_review_history_mode_check' AND conrelid = 'card_review_history'::regclass) THEN
-       ALTER TABLE card_review_history
-         ADD CONSTRAINT card_review_history_mode_check
-         CHECK (mode IN (
-           'introduction', 'choice-de-pl', 'choice-pl-de', 'choice-article',
-           'type-de-pl', 'type-pl-de', 'type-listen-de'
-         )) NOT VALID;
-     END IF;
+     ALTER TABLE card_review_history DROP CONSTRAINT IF EXISTS card_review_history_mode_check;
+     ALTER TABLE card_review_history
+       ADD CONSTRAINT card_review_history_mode_check
+       CHECK (mode IN (
+         'introduction', 'choice-de-pl', 'choice-pl-de', 'choice-article',
+         'type-de-pl', 'type-pl-de', 'type-listen-de', 'type-context-de'
+       )) NOT VALID;
      IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'card_review_history_rating_check' AND conrelid = 'card_review_history'::regclass) THEN
        ALTER TABLE card_review_history
          ADD CONSTRAINT card_review_history_rating_check
@@ -423,6 +426,9 @@ export const validationQuery = `
          'lastSchedulingReason', p.last_scheduling_reason,
          'successfulReviewDays', to_jsonb(p.successful_review_days)
        ) || CASE
+         WHEN p.data ? 'learningStats' THEN jsonb_build_object('learningStats', p.learning_stats)
+         ELSE '{}'::jsonb
+       END || CASE
          WHEN p.data ? 'challengeStats' THEN jsonb_build_object('challengeStats', p.data->'challengeStats')
          ELSE '{}'::jsonb
        END) AS progress_mismatches,

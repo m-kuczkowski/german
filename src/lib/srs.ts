@@ -1,7 +1,10 @@
 import { withLearningDefaults } from "./cards";
+import { exerciseSkill } from "./exercises";
 import type {
   ExerciseMode,
   Flashcard,
+  KnowledgeSkill,
+  LearningSkillProgress,
   LeitnerBox,
   LearningStage,
   ReviewEvidence,
@@ -18,7 +21,10 @@ const ACTIVE_MODES = new Set<ExerciseMode>([
   "type-de-pl",
   "type-pl-de",
   "type-listen-de",
+  "type-context-de",
 ]);
+const CORE_SKILLS = new Set<KnowledgeSkill>(["meaning", "form", "context"]);
+const PROMOTION_SKILLS = new Set<KnowledgeSkill>(["meaning", "form", "context"]);
 
 export type { ReviewEvidence } from "../types";
 
@@ -30,6 +36,14 @@ export const LEITNER_INTERVALS: Record<LeitnerBox, number> = {
   5: 30,
 };
 
+const INTERVAL_LIMITS: Record<LeitnerBox, [number, number]> = {
+  1: [1, 1],
+  2: [2, 4],
+  3: [5, 10],
+  4: [10, 21],
+  5: [21, 60],
+};
+
 export function isDue(card: Flashcard, now = new Date()): boolean {
   return new Date(card.dueAt).getTime() <= now.getTime();
 }
@@ -38,10 +52,7 @@ export function nextReviewLabel(dueAt: string, now = new Date()): string {
   const due = new Date(dueAt);
   const difference = due.getTime() - now.getTime();
   if (difference <= 0) return "teraz";
-  if (
-    localDateKey(due) !== localDateKey(now) &&
-    difference <= 36 * 60 * MINUTE_MS
-  ) {
+  if (localDateKey(due) !== localDateKey(now) && difference <= 36 * 60 * MINUTE_MS) {
     return "jutro";
   }
   if (difference < DAY_MS) {
@@ -57,11 +68,11 @@ export function nextReviewLabel(dueAt: string, now = new Date()): string {
 
 export function boxDescription(box: LeitnerBox): string {
   return {
-    1: "Codziennie",
-    2: "Co 3 dni",
-    3: "Co tydzień",
-    4: "Co 2 tygodnie",
-    5: "Co miesiąc",
+    1: "Około 1 dnia",
+    2: "Co 2–4 dni",
+    3: "Co 5–10 dni",
+    4: "Co 10–21 dni",
+    5: "Co 3–8 tygodni",
   }[box];
 }
 
@@ -104,6 +115,51 @@ function historyEntry(
   };
 }
 
+function updatedSkill(
+  current: LearningSkillProgress | undefined,
+  correct: boolean,
+  now: Date,
+): LearningSkillProgress {
+  return {
+    attempts: (current?.attempts ?? 0) + 1,
+    successes: (current?.successes ?? 0) + (correct ? 1 : 0),
+    correctStreak: correct ? (current?.correctStreak ?? 0) + 1 : 0,
+    lapses: (current?.lapses ?? 0) + (correct ? 0 : 1),
+    lastPracticedAt: now.toISOString(),
+    needsWork: !correct,
+  };
+}
+
+function promotedToday(card: Flashcard, now: Date): boolean {
+  const today = localDateKey(now);
+  return card.reviewHistory.some((event) =>
+    event.correct &&
+    event.mode !== "introduction" &&
+    event.toBox > event.fromBox &&
+    localDateKey(new Date(event.reviewedAt)) === today
+  );
+}
+
+export function adaptiveIntervalDays(
+  card: Pick<Flashcard, "ease" | "lapses">,
+  box: LeitnerBox,
+  rating: ReviewRating = "good",
+): number {
+  const [minimum, maximum] = INTERVAL_LIMITS[box];
+  if (box === 1) return 1;
+  const easeFactor = Math.min(1.3, Math.max(0.72, card.ease / 2.3));
+  const lapseFactor = Math.max(0.68, 1 - Math.min(5, card.lapses) * 0.065);
+  const ratingFactor = rating === "hard" ? 0.72 : 1;
+  return Math.min(
+    maximum,
+    Math.max(minimum, Math.round(LEITNER_INTERVALS[box] * easeFactor * lapseFactor * ratingFactor)),
+  );
+}
+
+function scheduledAt(now: Date, days: number): string {
+  return new Date(now.getTime() + days * DAY_MS).toISOString();
+}
+
 export function reviewCard(
   input: Flashcard,
   rating: ReviewRating,
@@ -111,15 +167,18 @@ export function reviewCard(
   now = new Date(),
 ): Flashcard {
   const card = withLearningDefaults(input);
-  const isFlashcardRating = evidence.mode === "introduction";
-  const isGuidedReview =
-    isFlashcardRating && card.stage !== "new" && card.leitnerBox >= 2;
+  const isFlashcard = evidence.mode === "introduction";
+  const isGuided = isFlashcard && card.stage !== "new" && card.leitnerBox >= 2;
   const activeMode = ACTIVE_MODES.has(evidence.mode as ExerciseMode)
     ? evidence.mode as ExerciseMode
     : null;
+  const skill = activeMode ? exerciseSkill(activeMode) : null;
   const typed = activeMode?.startsWith("type") ?? false;
   const typedAttempts = card.typedAttempts + (typed ? 1 : 0);
   const typedSuccesses = card.typedSuccesses + (typed && evidence.correct ? 1 : 0);
+  const learningStats = skill
+    ? { ...card.learningStats, [skill]: updatedSkill(card.learningStats[skill], evidence.correct, now) }
+    : card.learningStats;
   const activeDay = activeMode && evidence.correct ? localDateKey(now) : null;
   const successfulReviewDays = activeDay
     ? [...new Set([...card.successfulReviewDays, activeDay])].sort()
@@ -127,71 +186,77 @@ export function reviewCard(
   const successfulModes = activeMode && evidence.correct
     ? [...new Set([...card.successfulModes, activeMode])]
     : card.successfulModes;
-
-  if (rating === "again" || !evidence.correct) {
-    const dueAt = new Date(now.getTime() + 10 * MINUTE_MS).toISOString();
-    const reason = isGuidedReview
-      ? "Słowo nie jest jeszcze utrwalone — wraca do przegródki 1 i pojawi się ponownie w tej lekcji."
-      : isFlashcardRating
-        ? "Jeszcze nieznane — przegródka 1 i szybki powrót w tej lekcji."
-        : "Błąd aktywnego przypominania — przegródka 1 i szybka dogrywka.";
-    const history = historyEntry(card, rating, evidence, 1, dueAt, reason, now);
-    return {
-      ...card,
-      repetitions: Math.max(1, card.repetitions),
-      intervalDays: 0,
-      ease: Math.max(1.3, Number((card.ease - 0.18).toFixed(2))),
-      dueAt,
-      learned: false,
-      lapses: card.lapses + 1,
-      stage: isGuidedReview ? "uncertain" : isFlashcardRating ? "learning" : "uncertain",
-      correctStreak: 0,
-      lastReviewedAt: now.toISOString(),
-      typedAttempts,
-      typedSuccesses,
-      leitnerBox: 1,
-      reviewHistory: [...card.reviewHistory, history].slice(-50),
-      lastSchedulingReason: reason,
-      successfulReviewDays,
-    };
-  }
-
   const repetitions = card.repetitions + 1;
-  const correctStreak = card.correctStreak + (activeMode ? 1 : 0);
   const firstActiveRecallAt =
     activeMode && !card.firstActiveRecallAt ? now.toISOString() : card.firstActiveRecallAt;
 
-  if (rating === "hard") {
-    const toBox = (isFlashcardRating
-      ? isGuidedReview
-        ? card.leitnerBox
-        : 1
-      : card.leitnerBox >= 3
-        ? card.leitnerBox - 1
-        : card.leitnerBox) as LeitnerBox;
-    const intervalDays = Math.max(1, Math.ceil(LEITNER_INTERVALS[toBox] / 2));
-    const dueAt = new Date(now.getTime() + intervalDays * DAY_MS).toISOString();
-    const reason = isGuidedReview
-      ? `Jeszcze niepewnie. Karta zostaje w przegródce ${toBox}, a w tej lekcji wróci jako dyktando.`
-      : isFlashcardRating
-        ? "Jeszcze niepewnie. Karta zostaje w przegródce 1 i wróci wcześniej."
-        : toBox < card.leitnerBox
-          ? `Poprawnie, ale z trudem. Karta wraca do przegródki ${toBox} i pojawi się wcześniej.`
-          : `Poprawnie, ale z trudem. Karta zostaje w przegródce ${toBox} i pojawi się wcześniej.`;
-    const history = historyEntry(card, rating, evidence, toBox, dueAt, reason, now);
-    const stage = stageFor(toBox, card.lapses, Boolean(activeMode));
+  // Samo obejrzenie fiszki nigdy nie awansuje karty. Aktywne sprawdzenie następuje
+  // później w tej samej lekcji albo w krótkiej sesji uzupełniającej.
+  if (isFlashcard) {
+    const dueAt = new Date(now.getTime() + 10 * MINUTE_MS).toISOString();
+    const reason = rating === "again"
+      ? isGuided
+        ? `Znaczenie wymaga odświeżenia. Karta zostaje w przegródce ${card.leitnerBox} i wróci jako fiszka.`
+        : "To nowe słowo wróci jako fiszka po kilku innych kartach."
+      : rating === "hard"
+        ? `Jeszcze niepewnie. Karta zostaje w przegródce ${card.leitnerBox} i wróci jako dyktando.`
+        : `Deklaracja „Znam” uruchamia aktywne sprawdzenie. Karta zostaje w przegródce ${card.leitnerBox}.`;
+    const newLapses = card.lapses + (rating === "again" && card.stage !== "new" ? 1 : 0);
+    const history = historyEntry(card, rating, evidence, card.leitnerBox, dueAt, reason, now);
     return {
       ...card,
       repetitions,
-      intervalDays,
-      ease: Math.max(1.3, Number((card.ease - 0.05).toFixed(2))),
+      intervalDays: 0,
+      ease: rating === "again"
+        ? Math.max(1.3, Number((card.ease - 0.1).toFixed(2)))
+        : card.ease,
       dueAt,
-      learned: stage === "known" || stage === "mastered",
-      stage,
-      correctStreak,
-      successfulModes,
+      learned: card.leitnerBox >= 2 && rating !== "again",
+      lapses: newLapses,
+      stage: card.leitnerBox >= 2
+        ? rating === "again" ? "uncertain" : stageFor(card.leitnerBox, newLapses, false)
+        : rating === "again" ? "learning" : "learning",
+      lastReviewedAt: now.toISOString(),
+      typedAttempts,
+      typedSuccesses,
+      reviewHistory: [...card.reviewHistory, history].slice(-50),
+      lastSchedulingReason: reason,
+      successfulReviewDays,
+      learningStats,
+    };
+  }
+
+  const correct = evidence.correct && rating !== "again";
+  if (!correct) {
+    const coreFailure = skill ? CORE_SKILLS.has(skill) : true;
+    const toBox = (coreFailure && card.leitnerBox > 1
+      ? card.leitnerBox - 1
+      : card.leitnerBox) as LeitnerBox;
+    const dueAt = new Date(now.getTime() + 10 * MINUTE_MS).toISOString();
+    const skillLabel: Record<KnowledgeSkill, string> = {
+      meaning: "znaczenie",
+      form: "pisownia",
+      article: "rodzajnik",
+      listening: "rozumienie ze słuchu",
+      context: "użycie w kontekście",
+    };
+    const reason = coreFailure
+      ? `Do poprawy: ${skill ? skillLabel[skill] : "aktywne przypominanie"}. Karta cofa się najwyżej o jedną przegródkę i wróci wkrótce.`
+      : `Do poprawy: ${skill ? skillLabel[skill] : "ta umiejętność"}. Ogólna znajomość słowa zostaje bez zmian; wróci ten typ zadania.`;
+    const history = historyEntry(card, "again", evidence, toBox, dueAt, reason, now);
+    const lapses = card.lapses + 1;
+    return {
+      ...card,
+      repetitions,
+      intervalDays: 0,
+      ease: Math.max(1.3, Number((card.ease - (coreFailure ? 0.16 : 0.06)).toFixed(2))),
+      dueAt,
+      learned: coreFailure ? false : toBox >= 2,
+      lapses,
+      stage: coreFailure ? "uncertain" : stageFor(toBox, lapses, true),
+      correctStreak: 0,
       firstActiveRecallAt,
-      lastActiveRecallAt: activeMode ? now.toISOString() : card.lastActiveRecallAt,
+      lastActiveRecallAt: now.toISOString(),
       lastReviewedAt: now.toISOString(),
       typedAttempts,
       typedSuccesses,
@@ -199,41 +264,54 @@ export function reviewCard(
       reviewHistory: [...card.reviewHistory, history].slice(-50),
       lastSchedulingReason: reason,
       successfulReviewDays,
+      learningStats,
     };
   }
 
-  const candidateBox = isFlashcardRating
-    ? isGuidedReview
-      ? card.leitnerBox
-      : 1
-    : Math.min(5, card.leitnerBox + 1) as LeitnerBox;
+  const correctStreak = card.correctStreak + 1;
+  const canPromote = rating === "good" && Boolean(skill && PROMOTION_SKILLS.has(skill)) &&
+    !promotedToday(card, now);
+  const candidateBox = (canPromote
+    ? Math.min(5, card.leitnerBox + 1)
+    : card.leitnerBox) as LeitnerBox;
   const toBox = candidateBox === 5 &&
     !qualifiesForBoxFive(successfulModes, successfulReviewDays, correctStreak)
       ? 4
       : candidateBox;
-  const intervalDays = LEITNER_INTERVALS[toBox];
-  const dueAt = new Date(now.getTime() + intervalDays * DAY_MS).toISOString();
-  const reason = isGuidedReview
-    ? `Deklaracja „Znam” uruchamia wpisywanie później w tej lekcji; karta na razie zostaje w przegródce ${toBox}.`
-    : isFlashcardRating
-      ? "Deklaracja „Znam” uruchamia aktywne sprawdzenie; karta zostaje w przegródce 1."
+  const firstPromotion = card.leitnerBox === 1 && toBox === 2;
+  const needsCoreFollowup = skill === "listening" && card.leitnerBox === 1;
+  const alreadyPromotedToday = promotedToday(card, now);
+  const intervalDays = needsCoreFollowup
+    ? 0
+    : alreadyPromotedToday || firstPromotion ? 1 : adaptiveIntervalDays(card, toBox, rating);
+  const dueAt = needsCoreFollowup
+    ? new Date(now.getTime() + 10 * MINUTE_MS).toISOString()
+    : scheduledAt(now, intervalDays);
+  const reason = rating === "hard"
+    ? `Poprawnie, ale z wysiłkiem. Karta zostaje w przegródce ${toBox} i wróci po krótszym odstępie.`
+    : needsCoreFollowup
+      ? "Dyktando poprawne. Karta zostaje w przegródce 1 do sprawdzenia pisowni z polskiego."
+    : alreadyPromotedToday
+      ? `Poprawnie. Dzisiejszy awans został już wykorzystany, więc karta zostaje w przegródce ${toBox} do kolejnej sesji.`
       : candidateBox === 5 && toBox === 4
         ? "Poprawnie, ale przegródka 5 wymaga wpisywania, serii i powtórek w 3 różne dni."
         : `Poprawne aktywne przypomnienie — awans do przegródki ${toBox}.`;
-  const stage = stageFor(toBox, card.lapses, Boolean(activeMode));
+  const stage = stageFor(toBox, card.lapses, true);
   const history = historyEntry(card, rating, evidence, toBox, dueAt, reason, now);
   return {
     ...card,
     repetitions,
     intervalDays,
-    ease: Math.min(3, Number((card.ease + 0.04).toFixed(2))),
+    ease: rating === "hard"
+      ? Math.max(1.3, Number((card.ease - 0.03).toFixed(2)))
+      : Math.min(3, Number((card.ease + 0.04).toFixed(2))),
     dueAt,
     learned: stage === "known" || stage === "mastered",
     stage,
     correctStreak,
     successfulModes,
     firstActiveRecallAt,
-    lastActiveRecallAt: activeMode ? now.toISOString() : card.lastActiveRecallAt,
+    lastActiveRecallAt: now.toISOString(),
     lastReviewedAt: now.toISOString(),
     typedAttempts,
     typedSuccesses,
@@ -241,6 +319,7 @@ export function reviewCard(
     reviewHistory: [...card.reviewHistory, history].slice(-50),
     lastSchedulingReason: reason,
     successfulReviewDays,
+    learningStats,
   };
 }
 
@@ -271,7 +350,6 @@ export function updateStreak(
 ): { streak: number; lastStudyDate: string } {
   const today = localDateKey(now);
   if (lastStudyDate === today) return { streak, lastStudyDate: today };
-
   const yesterday = new Date(now);
   yesterday.setDate(yesterday.getDate() - 1);
   return {

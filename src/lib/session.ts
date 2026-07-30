@@ -14,19 +14,50 @@ export function createLearningSession(
   categoryId: string | null,
   now = new Date(),
 ): LearningSession {
+  const itemFor = (card: Flashcard): SessionItem => {
+    const latest = card.reviewHistory.at(-1);
+    if (
+      latest &&
+      latest.mode !== "introduction" &&
+      !latest.correct
+    ) {
+      return {
+        id: card.id,
+        kind: "exercise",
+        forcedMode: latest.mode,
+        round: 0,
+      };
+    }
+    if (
+      card.leitnerBox === 1 &&
+      latest?.mode === "type-listen-de" &&
+      latest.correct
+    ) {
+      return { id: card.id, kind: "exercise", forcedMode: "type-pl-de", round: 0 };
+    }
+    if (card.stage === "new") return { id: card.id, kind: "introduction", round: 0 };
+    if (card.leitnerBox === 2 || card.leitnerBox === 3) {
+      return { id: card.id, kind: "guided-review", round: 0 };
+    }
+    const latestIntroduction = [...card.reviewHistory]
+      .reverse()
+      .find((event) => event.mode === "introduction");
+    if (card.leitnerBox === 1 && latestIntroduction) {
+      if (latestIntroduction.rating === "good") {
+        return { id: card.id, kind: "exercise", forcedMode: "type-pl-de", round: 0 };
+      }
+      if (latestIntroduction.rating === "hard") {
+        return { id: card.id, kind: "exercise", forcedMode: "type-listen-de", round: 0 };
+      }
+      return { id: card.id, kind: "guided-review", round: 0 };
+    }
+    return { id: card.id, kind: "exercise", round: 0 };
+  };
   return {
-    version: 2,
+    version: 3,
     mode,
     categoryId,
-    queue: cards.map((card) => ({
-      id: card.id,
-      kind: card.stage === "new"
-        ? "introduction"
-        : card.leitnerBox === 2 || card.leitnerBox === 3
-          ? "guided-review"
-          : "exercise",
-      round: 0,
-    })),
+    queue: cards.map(itemFor),
     index: 0,
     startedAt: now.toISOString(),
     correct: 0,
@@ -36,7 +67,7 @@ export function createLearningSession(
   };
 }
 
-function deterministicGap(cardId: string, index: number, rating: ReviewRating): number {
+export function deterministicGap(cardId: string, index: number, rating: ReviewRating): number {
   let hash = 0;
   for (const character of `${cardId}:${index}:${rating}`) {
     hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
@@ -48,6 +79,23 @@ function deterministicGap(cardId: string, index: number, rating: ReviewRating): 
   };
   const [minimum, maximum] = ranges[rating];
   return minimum + (hash % (maximum - minimum + 1));
+}
+
+export function sessionFollowUpLabel(
+  session: LearningSession,
+  cardId: string,
+  rating: ReviewRating,
+): string {
+  const gap = deterministicGap(cardId, session.index, rating);
+  const remaining = session.queue.length - session.index - 1;
+  if (remaining < gap) {
+    if (rating === "hard") return "dyktando w krótkiej powtórce";
+    if (rating === "good") return "wpisywanie w krótkiej powtórce";
+    return "fiszka w krótkiej powtórce";
+  }
+  if (rating === "hard") return `dyktando za ${gap} fiszek`;
+  if (rating === "good") return `wpisywanie za ${gap} fiszek`;
+  return `ponownie za ${gap} ${gap === 5 ? "fiszek" : "fiszki"}`;
 }
 
 export function recordSessionAnswer(
@@ -112,7 +160,10 @@ export function recordSessionAnswer(
 
   if (nextItem) {
     const gap = deterministicGap(previousCard.id, session.index, gapRating);
-    queue.splice(Math.min(queue.length, session.index + gap + 1), 0, nextItem);
+    const remaining = queue.length - session.index - 1;
+    if (remaining >= gap) {
+      queue.splice(session.index + gap + 1, 0, nextItem);
+    }
   }
 
   const pendingAnswer: SessionAnswer = {

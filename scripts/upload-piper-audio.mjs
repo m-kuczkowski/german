@@ -20,6 +20,7 @@ function parseArgs() {
     audioDir: resolve(value("--audio-dir", "/private/tmp/german-piper-audio")),
     destination: value("--destination", "wortschatz/kokoro-martin-v1"),
     output: resolve(value("--output", "src/data/piperAudioManifest.ts")),
+    expectedCards: Number.parseInt(value("--expected-cards", "0"), 10),
   };
 }
 
@@ -59,8 +60,17 @@ if (!token) throw new Error("Brakuje BLOB_READ_WRITE_TOKEN.");
 
 const manifestPath = resolve(options.audioDir, "manifest.json");
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-if (manifest.cardCount !== 3038) {
-  throw new Error(`Oczekiwano 3038 kart, otrzymano ${manifest.cardCount}.`);
+if (options.expectedCards > 0 && manifest.cardCount !== options.expectedCards) {
+  throw new Error(
+    `Oczekiwano ${options.expectedCards} kart, otrzymano ${manifest.cardCount}.`,
+  );
+}
+if (
+  !Number.isInteger(manifest.cardCount) ||
+  manifest.cardCount < 1 ||
+  Object.keys(manifest.clips ?? {}).length !== manifest.cardCount
+) {
+  throw new Error("Manifest audio jest niepełny albo niespójny.");
 }
 
 let completed = 0;

@@ -28,7 +28,7 @@ export function withMetaDefaults(meta: Partial<LearningMeta> | null | undefined)
     activeSession: merged.activeSession
       ? {
           ...merged.activeSession,
-          version: 2,
+          version: 3,
           pendingAnswer: merged.activeSession.pendingAnswer ?? null,
         }
       : null,

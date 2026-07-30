@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { starterCards } from "../src/data/starterCards";
 import {
+  adaptiveIntervalDays,
   isDue,
   nextReviewLabel,
   reviewCard,
@@ -19,7 +20,8 @@ describe("algorytm powtórek", () => {
       now,
     );
     expect(result.leitnerBox).toBe(1);
-    expect(result.intervalDays).toBe(1);
+    expect(result.intervalDays).toBe(0);
+    expect(new Date(result.dueAt).getTime() - now.getTime()).toBe(10 * 60 * 1000);
     expect(result.lastSchedulingReason).toContain("aktywne sprawdzenie");
   });
 
@@ -33,7 +35,7 @@ describe("algorytm powtórek", () => {
     expect(result.leitnerBox).toBe(2);
     expect(result.learned).toBe(true);
     expect(result.correctStreak).toBe(0);
-    expect(result.lastSchedulingReason).toContain("wpisywanie później w tej lekcji");
+    expect(result.lastSchedulingReason).toContain("aktywne sprawdzenie");
   });
 
   it("Niepewnie pozostawia prowadzoną fiszkę w bieżącej przegródce", () => {
@@ -48,16 +50,16 @@ describe("algorytm powtórek", () => {
     expect(result.lastSchedulingReason).toContain("wróci jako dyktando");
   });
 
-  it("Nie znam cofa prowadzoną fiszkę do przegródki 1", () => {
+  it("Nie znam oznacza niepewność, ale nie kasuje całej historii słowa", () => {
     const result = reviewCard(
       { ...starterCards[0], stage: "known", learned: true, leitnerBox: 3 },
       "again",
       { mode: "introduction", correct: false },
       now,
     );
-    expect(result.leitnerBox).toBe(1);
+    expect(result.leitnerBox).toBe(3);
     expect(result.stage).toBe("uncertain");
-    expect(result.lastSchedulingReason).toContain("nie jest jeszcze utrwalone");
+    expect(result.lastSchedulingReason).toContain("odświeżenia");
   });
 
   it("aktywne poprawne odpowiedzi prowadzą przez przegródki 2–4", () => {
@@ -67,7 +69,7 @@ describe("algorytm powtórek", () => {
     const third = reviewCard(second, "good", evidence, new Date("2026-08-05T10:00:00.000Z"));
 
     expect([first.leitnerBox, second.leitnerBox, third.leitnerBox]).toEqual([2, 3, 4]);
-    expect([first.intervalDays, second.intervalDays, third.intervalDays]).toEqual([3, 7, 14]);
+    expect([first.intervalDays, second.intervalDays, third.intervalDays]).toEqual([1, 7, 14]);
   });
 
   it("trudną kartę przywraca za 10 minut i zwiększa liczbę pomyłek", () => {
@@ -77,7 +79,7 @@ describe("algorytm powtórek", () => {
       { mode: "introduction", correct: false },
       now,
     );
-    expect(result.lapses).toBe(1);
+    expect(result.lapses).toBe(0);
     expect(result.stage).toBe("learning");
     expect(new Date(result.dueAt).getTime() - now.getTime()).toBe(10 * 60 * 1000);
   });
@@ -89,6 +91,7 @@ describe("algorytm powtórek", () => {
       learned: true,
       repetitions: 4,
       intervalDays: 14,
+      leitnerBox: 4 as const,
       correctStreak: 4,
     };
     const result = reviewCard(
@@ -100,7 +103,7 @@ describe("algorytm powtórek", () => {
     expect(result.stage).toBe("uncertain");
     expect(result.learned).toBe(false);
     expect(result.correctStreak).toBe(0);
-    expect(result.leitnerBox).toBe(1);
+    expect(result.leitnerBox).toBe(3);
     expect(result.reviewHistory.at(-1)?.correct).toBe(false);
   });
 
@@ -112,7 +115,7 @@ describe("algorytm powtórek", () => {
       now,
     );
     expect(result.lastSchedulingReason).toBe(
-      "Poprawnie, ale z trudem. Karta zostaje w przegródce 2 i pojawi się wcześniej.",
+      "Poprawnie, ale z wysiłkiem. Karta zostaje w przegródce 2 i wróci po krótszym odstępie.",
     );
   });
 
@@ -148,22 +151,38 @@ describe("algorytm powtórek", () => {
       { mode: "type-listen-de", correct: true, score: 1 },
       now,
     );
-    expect(result.leitnerBox).toBe(3);
+    expect(result.leitnerBox).toBe(2);
     expect(result.typedAttempts).toBe(1);
     expect(result.typedSuccesses).toBe(1);
     expect(result.successfulModes).toContain("type-listen-de");
   });
 
-  it("błędny rodzajnik cofa kartę jak inny błąd aktywny", () => {
+  it("błędny rodzajnik osłabia tylko tę umiejętność", () => {
     const result = reviewCard(
       { ...starterCards[0], stage: "known", leitnerBox: 3 },
       "again",
       { mode: "choice-article", correct: false, score: 0 },
       now,
     );
-    expect(result.leitnerBox).toBe(1);
-    expect(result.stage).toBe("uncertain");
+    expect(result.leitnerBox).toBe(3);
+    expect(result.stage).toBe("known");
     expect(result.lapses).toBe(1);
+    expect(result.learningStats.article?.needsWork).toBe(true);
+  });
+
+  it("pozwala na najwyżej jeden awans przegródki dziennie", () => {
+    const evidence = { mode: "type-pl-de" as const, correct: true, score: 1 };
+    const first = reviewCard(starterCards[0], "good", evidence, now);
+    const second = reviewCard(first, "good", evidence, new Date("2026-07-26T14:00:00.000Z"));
+    expect(first.leitnerBox).toBe(2);
+    expect(second.leitnerBox).toBe(2);
+    expect(second.intervalDays).toBe(1);
+    expect(second.lastSchedulingReason).toContain("awans został już wykorzystany");
+  });
+
+  it("dopasowuje odstęp do łatwości i liczby wcześniejszych potknięć", () => {
+    expect(adaptiveIntervalDays({ ease: 2.8, lapses: 0 }, 4))
+      .toBeGreaterThan(adaptiveIntervalDays({ ease: 1.5, lapses: 4 }, 4));
   });
 
   it("ustawia trudne i zaległe karty na początku", () => {

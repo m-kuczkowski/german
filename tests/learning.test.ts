@@ -73,6 +73,28 @@ describe("nauka kategoriami", () => {
     ]).toEqual([6, 4, 2, 1, 0]);
   });
 
+  it("wstrzymuje nowe karty, gdy zaległości są w innych kategoriach", () => {
+    const now = new Date("2026-07-26T10:00:00.000Z");
+    const target = "Dom";
+    const fresh = {
+      ...starterCards[0],
+      id: "fresh-target",
+      category: target,
+      stage: "new" as const,
+      curriculumTier: "core" as const,
+    };
+    const backlog = starterCards.slice(1, 11).map((card, index) => ({
+      ...card,
+      id: `backlog-${index}`,
+      category: "Inna kategoria",
+      stage: "known" as const,
+      dueAt: "2026-07-25T10:00:00.000Z",
+    }));
+    const plan = learningSessionPlan([fresh, ...backlog], target, now);
+    expect(plan.globalDueCount).toBe(10);
+    expect(plan.newCards).toEqual([]);
+  });
+
   it("układa adaptacyjny plan bez wypychania zaległych kart", () => {
     const now = new Date("2026-07-26T10:00:00.000Z");
     const category = "Nicos Weg A2 · Start";

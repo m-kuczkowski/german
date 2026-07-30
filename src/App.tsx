@@ -36,6 +36,7 @@ import {
   advanceSession,
   createLearningSession,
   recordSessionAnswer,
+  sessionFollowUpLabel,
   sessionComplete,
 } from "./lib/session";
 import { preloadGermanAudio, speakGerman } from "./lib/speech";
@@ -295,7 +296,9 @@ function App() {
           ? "Nie masz jeszcze słów wymagających dodatkowej pracy."
           : mode === "review"
             ? "W tej kategorii nie masz dziś kart do powtórki."
-            : "Ta kategoria jest już opanowana.",
+            : learningSessionPlan(cards, categoryId!).globalDueCount >= 10
+              ? "Najpierw zrób zaległe powtórki. Nowe słowa wrócą po zmniejszeniu kolejki."
+              : "W tej kategorii nie ma teraz kart gotowych do lekcji.",
       );
     }
   }
@@ -642,6 +645,8 @@ function FlashcardSession(props: SessionProps) {
   const selectedOption = exercise.options.find((option) => option.cardId === selectedCardId);
   const correct = outcome?.evidence.correct ?? false;
   const germanLabel = card.article ? `${card.article} ${card.german}` : card.german;
+  const followUpLabel = (rating: ReviewRating) =>
+    props.session ? sessionFollowUpLabel(props.session, card.id, rating) : "w krótkiej powtórce";
 
   useEffect(() => {
     preloadGermanAudio(card.id);
@@ -779,6 +784,8 @@ function FlashcardSession(props: SessionProps) {
                 ? "Słuchanie"
                 : exercise.mode === "choice-article"
                   ? "Rodzajnik"
+                  : exercise.mode === "type-context-de"
+                    ? "Kontekst"
                   : isChoice
                     ? "1 z 3"
                     : "Wpisywanie"}
@@ -849,15 +856,18 @@ function FlashcardSession(props: SessionProps) {
             </button>
             <div className="rating-actions persistent-ratings" role="group" aria-label="Jak dobrze znasz to słowo?">
               <button className="rating-again" onClick={() => rateFlashcard("again")} disabled={Boolean(outcome)}>
-                <strong>Nie znam</strong><small>ponownie za 3–5 fiszek</small>
+                <strong>Nie znam</strong><small>{followUpLabel("again")}</small>
               </button>
               <button className="rating-hard" onClick={() => rateFlashcard("hard")} disabled={Boolean(outcome)}>
-                <strong>Niepewnie</strong><small>dyktando za 6–8 fiszek</small>
+                <strong>Niepewnie</strong><small>{followUpLabel("hard")}</small>
               </button>
               <button className="rating-good" onClick={() => rateFlashcard("good")} disabled={Boolean(outcome)}>
-                <strong>Znam</strong><small>wpisywanie za 8–11 fiszek</small>
+                <strong>Znam</strong><small>{followUpLabel("good")}</small>
               </button>
             </div>
+            {exercise.supportingText && (
+              <p className="exercise-supporting-text">{exercise.supportingText}</p>
+            )}
           </div>
         ) : (
           <>
@@ -1085,18 +1095,29 @@ function LearnView(props: SessionProps & {
           <span><strong>{newCount}</strong> do poznania</span>
         </div>
         {sessionPlan && (
-          <p className="session-plan-copy">
-            Ta lekcja: {lessonCount(sessionPlan.due.length, "powtórka", "powtórek")}
-            {" + "}
-            {lessonCount(sessionPlan.newCards.length, "nowe", "nowych")}
-          </p>
+          <>
+            <p className="session-plan-copy">
+              Ta lekcja: {lessonCount(sessionPlan.due.length, "powtórka", "powtórek")}
+              {" + "}
+              {lessonCount(sessionPlan.newCards.length, "nowe", "nowych")}
+            </p>
+            {sessionPlan.newCards.length === 0 && sessionPlan.globalDueCount >= 10 && (
+              <p className="curriculum-note">
+                Masz {sessionPlan.globalDueCount} zaległych powtórek w całym kursie. Najpierw je utrwal — wtedy wrócą nowe słowa.
+              </p>
+            )}
+          </>
         )}
         {specialistCount > 0 && (
           <p className="curriculum-note">
             {lessonCount(specialistCount, "termin specjalistyczny jest", "terminów specjalistycznych jest")} dostępnych w Kolekcji — nie trafiają automatycznie do lekcji.
           </p>
         )}
-        <button className="primary-button wide" onClick={props.onStart} disabled={!category || category.mastered === category.total}>
+        <button
+          className="primary-button wide"
+          onClick={props.onStart}
+          disabled={!category || category.mastered === category.total || sessionPlan?.cards.length === 0}
+        >
           {category?.mastered === category?.total ? "Kategoria opanowana ✓" : "Zacznij krótką lekcję"} <span aria-hidden="true">→</span>
         </button>
       </section>
@@ -1181,7 +1202,7 @@ function ReviewView(props: SessionProps & {
       </button>
       <div className="info-card">
         <span aria-hidden="true">◷</span>
-        <div><strong>Jak działa plan?</strong><p>Po poprawnej odpowiedzi karta wróci za 1, 3, 7 dni, a później coraz rzadziej. Błędna wróci szybciej.</p></div>
+        <div><strong>Jak działa plan?</strong><p>Po aktywnym przypomnieniu karta przechodzi wyżej i wraca coraz rzadziej. Dokładny odstęp dopasowuje się do Twoich odpowiedzi; błąd skraca tylko tę umiejętność, która sprawiła trudność.</p></div>
       </div>
     </section>
   );
@@ -1475,7 +1496,7 @@ function LeitnerView({
         <span aria-hidden="true">◷</span>
         <div>
           <strong>Jak karta awansuje?</strong>
-          <p>Poprawne aktywne przypomnienie przesuwa ją o jedną przegródkę. „Niepewnie” skraca odstęp, a błąd wraca do przegródki 1. Samo „Znam” na odsłoniętej fiszce nie wystarcza do opanowania.</p>
+          <p>Poprawne aktywne przypomnienie może przesunąć ją o jedną przegródkę dziennie. „Niepewnie” skraca odstęp, a błąd cofa najwyżej o jeden krok lub osłabia tylko ćwiczoną umiejętność. Samo „Znam” na odsłoniętej fiszce nie wystarcza do opanowania.</p>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import type { ExerciseMode, Flashcard, LearningStage } from "../types";
+import type { ExerciseMode, Flashcard, KnowledgeSkill, LearningStage } from "../types";
 
 export type { ExerciseMode } from "../types";
 
@@ -19,6 +19,7 @@ export interface Exercise {
   promptLanguage: "de" | "pl";
   speechPrompt: string | null;
   inputPlaceholder: string;
+  supportingText: string | null;
 }
 
 export interface TypedAnswerResult {
@@ -71,7 +72,7 @@ function germanAnswers(card: Flashcard): string[] {
 }
 
 export interface KnowledgeFacet {
-  id: "meaning" | "form" | "article" | "listening";
+  id: KnowledgeSkill;
   label: string;
   achieved: boolean;
   applicable: boolean;
@@ -79,31 +80,44 @@ export interface KnowledgeFacet {
 
 export function knowledgeFacets(card: Flashcard): KnowledgeFacet[] {
   const modes = new Set(card.successfulModes);
+  const achieved = (skill: KnowledgeSkill, legacy: boolean) => {
+    const progress = card.learningStats?.[skill];
+    return progress ? progress.successes > 0 && !progress.needsWork : legacy;
+  };
   return [
     {
       id: "meaning",
       label: "Znaczenie",
-      achieved: modes.has("choice-de-pl") || modes.has("type-de-pl"),
+      achieved: achieved("meaning", modes.has("choice-de-pl") || modes.has("type-de-pl")),
       applicable: true,
     },
     {
       id: "form",
       label: "Forma",
-      achieved: modes.has("type-pl-de") || modes.has("type-listen-de"),
+      achieved: achieved("form", modes.has("type-pl-de") || modes.has("type-listen-de")),
       applicable: true,
     },
     {
       id: "article",
       label: "Rodzajnik",
-      achieved: modes.has("choice-article") || modes.has("type-pl-de") ||
-        modes.has("type-listen-de"),
+      achieved: achieved(
+        "article",
+        modes.has("choice-article") || modes.has("type-pl-de") ||
+          modes.has("type-listen-de"),
+      ),
       applicable: Boolean(card.article),
     },
     {
       id: "listening",
       label: "Słuch",
-      achieved: modes.has("type-listen-de"),
+      achieved: achieved("listening", modes.has("type-listen-de")),
       applicable: true,
+    },
+    {
+      id: "context",
+      label: "Kontekst",
+      achieved: achieved("context", modes.has("type-context-de")),
+      applicable: Boolean(contextCloze(card)),
     },
   ];
 }
@@ -163,6 +177,29 @@ const stageModes: Record<Exclude<LearningStage, "new">, ExerciseMode[]> = {
   mastered: ["type-pl-de", "type-de-pl", "choice-de-pl", "choice-pl-de"],
 };
 
+interface ContextCloze {
+  prompt: string;
+  answer: string;
+}
+
+export function contextCloze(card: Flashcard): ContextCloze | null {
+  const target = withoutParentheticalParts(card.german)
+    .replace(/^(der|die|das)\s+/i, "")
+    .trim();
+  if (!target || target.length < 2 || !card.exampleGerman) return null;
+  const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = card.exampleGerman.match(
+    new RegExp(`(?<![\\p{L}\\p{N}])${escaped}(?![\\p{L}\\p{N}])`, "iu"),
+  );
+  if (!match || match.index === undefined) return null;
+  return {
+    prompt: `${card.exampleGerman.slice(0, match.index)}_____${
+      card.exampleGerman.slice(match.index + match[0].length)
+    }`,
+    answer: match[0],
+  };
+}
+
 export function preferredExerciseMode(card: Flashcard, sessionIndex: number): ExerciseMode {
   const stage = card.stage === "new" ? "learning" : card.stage;
   const candidates = [...stageModes[stage]];
@@ -172,8 +209,23 @@ export function preferredExerciseMode(card: Flashcard, sessionIndex: number): Ex
   if (stage === "known" || stage === "mastered") {
     candidates.splice(Math.min(card.article ? 2 : 1, candidates.length), 0, "type-listen-de");
   }
-  const unseen = candidates.find((mode) => !card.successfulModes.includes(mode));
+  if ((stage === "known" && card.leitnerBox >= 4) || stage === "mastered") {
+    if (contextCloze(card)) candidates.unshift("type-context-de");
+  }
+  const unseen = candidates.find((mode) => {
+    const skill = exerciseSkill(mode);
+    const progress = card.learningStats?.[skill];
+    return progress ? progress.successes === 0 || progress.needsWork : !card.successfulModes.includes(mode);
+  });
   return unseen ?? candidates[sessionIndex % candidates.length];
+}
+
+export function exerciseSkill(mode: ExerciseMode): KnowledgeSkill {
+  if (mode === "choice-article") return "article";
+  if (mode === "type-listen-de") return "listening";
+  if (mode === "type-context-de") return "context";
+  if (mode === "type-pl-de" || mode === "choice-pl-de") return "form";
+  return "meaning";
 }
 
 export function createExercise(
@@ -182,7 +234,10 @@ export function createExercise(
   sessionIndex: number,
   forcedMode?: ExerciseMode,
 ): Exercise {
-  const mode = forcedMode ?? preferredExerciseMode(card, sessionIndex);
+  const requestedMode = forcedMode ?? preferredExerciseMode(card, sessionIndex);
+  const mode = requestedMode === "type-context-de" && !contextCloze(card)
+    ? "type-pl-de"
+    : requestedMode;
   if (mode === "choice-article" && card.article) {
     return {
       mode,
@@ -199,7 +254,27 @@ export function createExercise(
       promptLanguage: "de",
       speechPrompt: null,
       inputPlaceholder: "",
+      supportingText: null,
     };
+  }
+
+  if (mode === "type-context-de") {
+    const cloze = contextCloze(card);
+    if (cloze) {
+      return {
+        mode,
+        prompt: cloze.prompt,
+        instruction: "Uzupełnij zdanie po niemiecku",
+        answerLabel: cloze.answer,
+        acceptedAnswers: [cloze.answer],
+        options: [],
+        answerLanguage: "de",
+        promptLanguage: "de",
+        speechPrompt: null,
+        inputPlaceholder: "Wpisz brakujące słowo…",
+        supportingText: card.examplePolish,
+      };
+    }
   }
 
   const listening = mode === "type-listen-de";
@@ -231,6 +306,7 @@ export function createExercise(
       : asksForGerman
         ? "Wpisz po niemiecku…"
         : "Wpisz po polsku…",
+    supportingText: null,
   };
 }
 

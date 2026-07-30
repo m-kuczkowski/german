@@ -22,15 +22,15 @@ describe("nagrania niemieckiego lektora", () => {
     const nicosCards = starterCards.filter((card) => card.id.startsWith("nicos-"));
     const goetheCards = starterCards.filter((card) => card.id.startsWith("goethe-"));
     expect(starterCards).toHaveLength(4937);
-    expect(audioIds).toHaveLength(3038);
+    expect(audioIds).toHaveLength(4937);
     expect(audioIds.every((id) => cardIds.has(id))).toBe(true);
     expect(nicosCards.every((card) => piperAudioClips[card.id])).toBe(true);
-    expect(goetheCards.every((card) => !piperAudioClips[card.id])).toBe(true);
+    expect(goetheCards.every((card) => piperAudioClips[card.id])).toBe(true);
   });
 
   it("ma poprawne, bezpieczne czasy segmentów i publiczną bazę WebM/Opus", () => {
     expect(PIPER_AUDIO_BASE_URL).toMatch(
-      /^https:\/\/[a-z0-9]+\.public\.blob\.vercel-storage\.com\/wortschatz\/kokoro-martin-v1$/,
+      /^https:\/\/[a-z0-9]+\.public\.blob\.vercel-storage\.com\/wortschatz\/kokoro-martin-v2$/,
     );
     expect(PIPER_AUDIO_MIME_TYPE).toBe('audio/webm; codecs="opus"');
     expect(PIPER_AUDIO_SPRITE_PREFIX).toBe("kokoro-martin");

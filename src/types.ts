@@ -15,7 +15,20 @@ export type ExerciseMode =
   | "choice-article"
   | "type-de-pl"
   | "type-pl-de"
-  | "type-listen-de";
+  | "type-listen-de"
+  | "type-context-de";
+export type KnowledgeSkill = "meaning" | "form" | "article" | "listening" | "context";
+
+export interface LearningSkillProgress {
+  attempts: number;
+  successes: number;
+  correctStreak: number;
+  lapses: number;
+  lastPracticedAt: string;
+  needsWork: boolean;
+}
+
+export type LearningStats = Partial<Record<KnowledgeSkill, LearningSkillProgress>>;
 export type ChallengeType = "article" | "listening" | "writing" | "meaning" | "mixed";
 export type ChallengeSkill = "article" | "listening" | "writing" | "meaning";
 export type ChallengeExerciseMode =
@@ -97,6 +110,7 @@ export interface Flashcard extends CardContent {
   reviewHistory: ReviewHistoryEntry[];
   lastSchedulingReason: string;
   successfulReviewDays: string[];
+  learningStats: LearningStats;
   challengeStats: ChallengeStats;
 }
 
@@ -108,7 +122,7 @@ export interface SessionItem {
 }
 
 export interface LearningSession {
-  version: 2;
+  version: 3;
   mode: "learn" | "review" | "hard";
   categoryId: string | null;
   queue: SessionItem[];

@@ -7,7 +7,7 @@ const DB_VERSION = 1;
 const CARD_STORE = "cards";
 const META_STORE = "meta";
 const META_KEY = "learning";
-const CURRENT_CONTENT_VERSION = 11;
+const CURRENT_CONTENT_VERSION = 12;
 
 function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -172,6 +172,7 @@ export async function loadOrSeed(seed: Flashcard[]): Promise<{
         reviewHistory: card.reviewHistory,
         lastSchedulingReason: card.lastSchedulingReason,
         successfulReviewDays: card.successfulReviewDays,
+        learningStats: card.learningStats,
         challengeStats: card.challengeStats,
       };
     });

@@ -152,6 +152,7 @@ export async function saveRemoteState(
       reviewHistory,
       lastSchedulingReason,
       successfulReviewDays,
+      learningStats,
       challengeStats,
     }) => ({
       id,
@@ -173,6 +174,7 @@ export async function saveRemoteState(
       reviewHistory,
       lastSchedulingReason,
       successfulReviewDays,
+      learningStats,
       challengeStats,
     }));
   const response = await fetch("/api/learning", {

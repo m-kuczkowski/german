@@ -4,6 +4,7 @@ import {
   advanceSession,
   createLearningSession,
   recordSessionAnswer,
+  sessionFollowUpLabel,
   sessionComplete,
 } from "../src/lib/session";
 import { reviewCard } from "../src/lib/srs";
@@ -31,7 +32,7 @@ describe("adaptacyjna kolejka w lekcji", () => {
       learned: true,
       leitnerBox: 2 as const,
     };
-    const pool = [card, ...starterCards.slice(1, 10)];
+    const pool = [card, ...starterCards.slice(1, 14)];
     const session = createLearningSession(pool, "review", card.category);
     const evidence = { mode: "introduction" as const, correct: true };
     const afterFlashcard = reviewCard(card, "good", evidence);
@@ -93,7 +94,7 @@ describe("adaptacyjna kolejka w lekcji", () => {
 
   it("po zaznaczeniu Znam wraca po 8–11 innych kartach jako wpisywanie", () => {
     const card = starterCards[0];
-    const session = createLearningSession(starterCards.slice(0, 10), "learn", card.category);
+    const session = createLearningSession(starterCards.slice(0, 14), "learn", card.category);
     const evidence = { mode: "introduction" as const, correct: true };
     const reviewed = reviewCard(card, "good", evidence);
     const recorded = recordSessionAnswer(
@@ -116,6 +117,27 @@ describe("adaptacyjna kolejka w lekcji", () => {
     expect(recorded.index).toBe(0);
     expect(recorded.pendingAnswer?.cardId).toBe(card.id);
     expect(advanceSession(recorded).index).toBe(1);
+  });
+
+  it("nie udaje odstępu, gdy w sesji brakuje kart", () => {
+    const card = starterCards[0];
+    const session = createLearningSession([card], "learn", card.category);
+    const evidence = { mode: "introduction" as const, correct: true };
+    const reviewed = reviewCard(card, "good", evidence);
+    const recorded = recordSessionAnswer(
+      session,
+      card,
+      reviewed,
+      session.queue[0],
+      "good",
+      evidence,
+      "good",
+      card.polish,
+    );
+    expect(recorded.queue).toHaveLength(1);
+    expect(sessionFollowUpLabel(session, card.id, "good"))
+      .toBe("wpisywanie w krótkiej powtórce");
+    expect(new Date(reviewed.dueAt).getTime()).toBeGreaterThan(Date.now());
   });
 
   it("Nie znam wraca szybciej jako zwykła fiszka", () => {
@@ -320,7 +342,8 @@ describe("adaptacyjna kolejka w lekcji", () => {
       "article-der",
       `${card.article} ${card.german}`,
     );
-    expect(recorded.queue).toHaveLength(2);
-    expect(recorded.queue[1].forcedMode).toBe("choice-article");
+    expect(recorded.queue).toHaveLength(1);
+    const retry = createLearningSession([reviewed], "review", card.category);
+    expect(retry.queue[0].forcedMode).toBe("choice-article");
   });
 });

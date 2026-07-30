@@ -71,6 +71,16 @@ describe("relational learning API mappers", () => {
       leitner_box: 3,
       last_scheduling_reason: "Poprawna odpowiedź.",
       successful_review_days: ["2026-07-20", "2026-07-27"],
+      learning_stats: {
+        form: {
+          attempts: 2,
+          successes: 1,
+          correctStreak: 0,
+          lapses: 1,
+          lastPracticedAt: "2026-07-27T12:00:00.000Z",
+          needsWork: true,
+        },
+      },
       data: {
         challengeStats: {
           article: {
@@ -101,6 +111,16 @@ describe("relational learning API mappers", () => {
       leitnerBox: 3,
       successfulModes: ["choice-article", "type-pl-de"],
       successfulReviewDays: ["2026-07-20", "2026-07-27"],
+      learningStats: {
+        form: {
+          attempts: 2,
+          successes: 1,
+          correctStreak: 0,
+          lapses: 1,
+          lastPracticedAt: "2026-07-27T12:00:00.000Z",
+          needsWork: true,
+        },
+      },
       challengeStats: {
         article: {
           attempts: 2,

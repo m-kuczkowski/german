@@ -122,6 +122,7 @@ export interface LearningSessionPlan {
   due: Flashcard[];
   newCards: Flashcard[];
   cards: Flashcard[];
+  globalDueCount: number;
 }
 
 export function recommendedNewCardLimit(dueCount: number): number {
@@ -140,12 +141,15 @@ export function learningSessionPlan(
 ): LearningSessionPlan {
   const inCategory = cards.filter((card) => card.category === categoryId);
   const cardsById = new Map(cards.map((card) => [card.id, card]));
+  const globalDueCount = cards.filter((card) =>
+    card.stage !== "new" && isDue(card, now)
+  ).length;
   const due = sortForLearning(
     inCategory.filter((card) => card.stage !== "new" && isDue(card, now)),
     now,
   ).slice(0, limit);
   const newLimit = Math.min(
-    recommendedNewCardLimit(due.length),
+    recommendedNewCardLimit(globalDueCount),
     Math.max(0, limit - due.length),
   );
   const newCards = inCategory
@@ -156,7 +160,7 @@ export function learningSessionPlan(
     )
     .sort((left, right) => newCardOrder(left) - newCardOrder(right))
     .slice(0, newLimit);
-  return { due, newCards, cards: [...due, ...newCards] };
+  return { due, newCards, cards: [...due, ...newCards], globalDueCount };
 }
 
 export function sessionCardsForCategory(

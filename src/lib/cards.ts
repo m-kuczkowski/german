@@ -5,6 +5,8 @@ import type {
   ChallengeStats,
   ExerciseMode,
   Flashcard,
+  KnowledgeSkill,
+  LearningStats,
   LeitnerBox,
   LearningStage,
 } from "../types";
@@ -54,6 +56,7 @@ export function toFlashcard(
     reviewHistory: [],
     lastSchedulingReason: "Nowa karta — zaczyna w przegródce 1.",
     successfulReviewDays: [],
+    learningStats: {},
     challengeStats: {},
   };
 }
@@ -65,6 +68,7 @@ const exerciseModes = new Set<ExerciseMode>([
   "type-de-pl",
   "type-pl-de",
   "type-listen-de",
+  "type-context-de",
 ]);
 
 function legacyStage(card: Flashcard): LearningStage {
@@ -91,6 +95,30 @@ function reviewDays(card: Flashcard): string[] {
 }
 
 const challengeSkills: ChallengeSkill[] = ["article", "listening", "writing", "meaning"];
+const learningSkills: KnowledgeSkill[] = ["meaning", "form", "article", "listening", "context"];
+
+function learningProgress(card: Flashcard): LearningStats {
+  if (!card.learningStats || typeof card.learningStats !== "object") return {};
+  const result: LearningStats = {};
+  for (const skill of learningSkills) {
+    const progress = card.learningStats[skill];
+    if (
+      !progress ||
+      typeof progress.lastPracticedAt !== "string" ||
+      !Number.isFinite(progress.attempts) ||
+      !Number.isFinite(progress.successes)
+    ) continue;
+    result[skill] = {
+      attempts: Math.max(0, progress.attempts),
+      successes: Math.max(0, progress.successes),
+      correctStreak: Math.max(0, Number(progress.correctStreak) || 0),
+      lapses: Math.max(0, Number(progress.lapses) || 0),
+      lastPracticedAt: progress.lastPracticedAt,
+      needsWork: Boolean(progress.needsWork),
+    };
+  }
+  return result;
+}
 
 function challengeProgress(card: Flashcard): ChallengeStats {
   if (!card.challengeStats || typeof card.challengeStats !== "object") return {};
@@ -143,6 +171,7 @@ export function withLearningDefaults(card: Flashcard): Flashcard {
     lastSchedulingReason: card.lastSchedulingReason ||
       `Przeniesiono z wcześniejszego etapu „${stage}” do przegródki ${leitnerBox}.`,
     successfulReviewDays: reviewDays(card),
+    learningStats: learningProgress(card),
     challengeStats: challengeProgress(card),
   };
 }

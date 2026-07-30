@@ -1223,6 +1223,15 @@ h1 em {
   line-height: 1.06;
 }
 
+.exercise-supporting-text {
+  margin: -0.35rem auto 0.8rem;
+  max-width: 32rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
 .listening-exercise-prompt {
   min-height: 118px;
 }

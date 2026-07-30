@@ -41,12 +41,13 @@ describe("instrukcja pierwszego uruchomienia", () => {
     }
   });
 
-  it("obejmuje odsłuch, pisanie, wybór i rodzajniki", () => {
+  it("obejmuje odsłuch, pisanie, wybór, rodzajniki i kontekst", () => {
     expect(exerciseGuide.map((item) => item.title)).toEqual([
       "Odsłuch",
       "Pisanie",
       "Wybór",
       "Rodzajniki",
+      "Kontekst",
     ]);
   });
 

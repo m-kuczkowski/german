@@ -26,6 +26,7 @@ export const exerciseGuide = [
   { icon: "Aa", title: "Pisanie", description: "Tłumaczysz na niemiecki lub polski." },
   { icon: "1/3", title: "Wybór", description: "Wskazujesz jedno z trzech znaczeń." },
   { icon: "der", title: "Rodzajniki", description: "Ćwiczysz der, die i das przy rzeczownikach." },
+  { icon: "___", title: "Kontekst", description: "Uzupełniasz poznane słowo w prawdziwym zdaniu." },
 ] as const;
 
 export const methodologyGuide = [
@@ -37,7 +38,7 @@ export const methodologyGuide = [
   {
     number: "02",
     title: "Wracasz w odstępach",
-    description: "Powtórki są rozłożone w czasie, zamiast skupione w jednej sesji.",
+    description: "Powtórki są rozłożone w czasie, a odstęp dopasowuje się do Twoich wyników.",
   },
   {
     number: "03",
@@ -149,7 +150,7 @@ export function GettingStarted({
               Ćwiczysz na kilka sposobów.
             </h1>
             <p className="onboarding-lead">
-              Aplikacja sprawdza znaczenie, pisownię, słuch i rodzajniki —
+              Aplikacja sprawdza znaczenie, pisownię, słuch, rodzajniki i kontekst —
               zależnie od tego, jak dobrze znasz słowo.
             </p>
             <div className="exercise-guide">
@@ -161,8 +162,8 @@ export function GettingStarted({
               ))}
             </div>
             <p className="method-note">
-              Błąd nie kończy nauki. Słowo po prostu wróci wcześniej w formie,
-              która pomoże Ci je przypomnieć.
+              Błąd nie kończy nauki. Wcześniej wróci przede wszystkim ten typ
+              zadania, który sprawił Ci trudność.
             </p>
           </div>
         ) : (
@@ -183,9 +184,9 @@ export function GettingStarted({
               <small>Rzadziej</small>
             </div>
             <p className="leitner-explanation">
-              Poprawna aktywna odpowiedź przesuwa słowo dalej. Błąd przybliża
-              je do przegródki 1. Samo kliknięcie „Znam” nie oznacza jeszcze
-              opanowania.
+              Poprawna aktywna odpowiedź może przesunąć słowo o jedną przegródkę
+              dziennie. Błąd cofa je najwyżej o jeden krok albo dotyczy tylko
+              ćwiczonej umiejętności. Samo kliknięcie „Znam” nie oznacza jeszcze opanowania.
             </p>
             <div className="methodology-guide">
               {methodologyGuide.map((item) => (

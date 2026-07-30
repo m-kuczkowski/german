@@ -169,6 +169,23 @@ describe("ćwiczenia językowe", () => {
     expect(exercise.inputPlaceholder).toContain("słyszysz");
   });
 
+  it("w dojrzałej przegródce ćwiczy słowo w prawdziwym zdaniu", () => {
+    const card = {
+      ...starterCards.find((item) =>
+        item.exampleGerman.toLocaleLowerCase("de-DE").includes(
+          item.german.toLocaleLowerCase("de-DE"),
+        )
+      )!,
+      stage: "known" as const,
+      leitnerBox: 4 as const,
+    };
+    const exercise = createExercise(card, starterCards, 0, "type-context-de");
+    expect(exercise.mode).toBe("type-context-de");
+    expect(exercise.prompt).toContain("_____");
+    expect(exercise.prompt).not.toContain(exercise.answerLabel);
+    expect(exercise.supportingText).toBe(card.examplePolish);
+  });
+
   it("śledzi osobno znaczenie, formę, rodzajnik i słuch", () => {
     const noun = starterCards.find((card) => card.article)!;
     const facets = knowledgeFacets({
@@ -180,6 +197,7 @@ describe("ćwiczenia językowe", () => {
       form: true,
       article: true,
       listening: true,
+      context: false,
     });
   });
 

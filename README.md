@@ -20,7 +20,7 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 - pedagogiczna kolejność nowych słów zamiast alfabetycznej kolejności PDF:
   najpierw codzienne A2, częstsze i prostsze formy oraz podstawy rodzin słów;
 - ocena podobieństwa wpisanej odpowiedzi z progiem 90%, bez ignorowania rodzajników i umlautów;
-- pięć przegródek Leitnera z odstępami 1, 3, 7, 14 i 30 dni;
+- pięć czytelnych przegródek Leitnera z adaptacyjnymi odstępami około 1, 2–4, 5–10, 10–21 i 21–60 dni;
 - widok zawartości przegródek, terminów i historii decyzji dla każdej karty;
 - opanowanie wymagające poprawnych aktywnych odpowiedzi w różnych formach oraz odstępu czasu;
 - tryb trudnych słów, dzienna krótka lekcja i spokojne podsumowanie;
@@ -35,7 +35,7 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 - kolekcja z wyszukiwaniem, filtrami, edycją i usuwaniem;
 - ręczne dodawanie własnych kart;
 - postępy, dzienna seria i statystyki poziomów;
-- naturalna wymowa 3038 zachowanych haseł Nicos Weg głosem Kokoro Martin, z systemowym
+- naturalna wymowa wszystkich 4937 haseł głosem Kokoro Martin, z systemowym
   lektorem `de-DE` jako fallbackiem dla nowych kart Goethe i niedostępnych nagrań;
 - profil wybierany po imieniu bez rejestracji, zapamiętywany na urządzeniu;
 - zapis w IndexedDB, synchronizacja postępu imiennego w Neon oraz eksport i import kopii JSON;
@@ -96,7 +96,7 @@ aktualizacja nie resetuje ani nie przesuwa dotychczasowych powtórek użytkownik
 - Neon Postgres dla katalogu 4937 kart i postępu oddzielonego według imienia;
 - IndexedDB jako pamięć lokalna i źródło działania offline;
 - service worker z dynamicznym zakresem dla Vercel i GitHub Pages;
-- 3038 jednorazowo wygenerowanych offline nagrań Piper, spakowanych do 64
+- 4937 jednorazowo wygenerowanych offline nagrań, spakowanych do 64
   niewielkich paczek WebM/Opus w publicznym Vercel Blob;
 - zwykły element HTML Audio do odtwarzania oraz Web Speech API jako fallback.
 
@@ -164,8 +164,8 @@ Tłumaczenia i pary zdań kontekstowych są przygotowywane jednorazowo przez mod
 ## Nagrania Kokoro Martin
 
 Audio nie jest generowane podczas używania aplikacji. Skrypt
-`scripts/piper-audio-source.mjs` przygotowuje dokładnie 3038 tekstów zachowanej
-biblioteki Nicos Weg, a `scripts/generate-kokoro-audio.py` jednorazowo syntezuje je lokalnie
+`scripts/piper-audio-source.mjs` przygotowuje wszystkie 4937 tekstów katalogu
+(lub sam rdzeń/opcjonalnie bibliotekę Nicos przez `--scope`), a `scripts/generate-kokoro-audio.py` jednorazowo syntezuje je lokalnie
 przez Kokoro Martin i kompresuje kodekiem Opus w kontenerze WebM. Tekst do
 wymowy upraszcza techniczne znaki kart (`|`, `/`, nawiasy), a każde nagranie ma
 krótką ciszę przed i po słowie, aby początek nie był ucinany przy odtwarzaniu
@@ -174,7 +174,7 @@ przez CDN.
 
 ```bash
 python -m pip install -r scripts/requirements-audio-kokoro.txt
-npm run audio:source -- --output /tmp/german-kokoro-source.json
+npm run audio:source -- --scope all --output /tmp/german-kokoro-source.json
 python scripts/generate-kokoro-audio.py \
   --source /tmp/german-kokoro-source.json \
   --model /path/to/kokoro-martin.onnx \
