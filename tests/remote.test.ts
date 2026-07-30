@@ -114,4 +114,17 @@ describe("synchronizacja z bazą", () => {
     expect(result.cards[0].successfulModes).toEqual(first.successfulModes);
     expect(result.meta.activeChallenge?.index).toBe(1);
   });
+
+  it("normalizuje datę serii podczas łączenia pamięci urządzenia i bazy", () => {
+    const result = hydrateRemoteState([], {
+      ...defaultMeta,
+      lastStudyDate: "2026-07-30T00:00:00.000Z",
+    }, {
+      cards: [],
+      progress: [],
+      meta: { lastStudyDate: "2026-07-29T22:00:00.000Z" },
+    });
+
+    expect(result.meta.lastStudyDate).toBe("2026-07-30");
+  });
 });

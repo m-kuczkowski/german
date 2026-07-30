@@ -5,6 +5,10 @@ import type { CardContent, Flashcard, LearningMeta } from "../types";
 
 const DEVICE_KEY = "wortschatz-device";
 
+function studyDateKey(value: string | null): string | null {
+  return value && /^\d{4}-\d{2}-\d{2}/.test(value) ? value.slice(0, 10) : null;
+}
+
 interface DeviceIdentity {
   id: string;
   token: string;
@@ -99,7 +103,7 @@ export function hydrateRemoteState(
     streak: Math.max(localMeta.streak, remoteMeta.streak),
     completedToday: Math.max(localMeta.completedToday, remoteMeta.completedToday),
     totalReviews: Math.max(localMeta.totalReviews, remoteMeta.totalReviews),
-    lastStudyDate: [localMeta.lastStudyDate, remoteMeta.lastStudyDate]
+    lastStudyDate: [studyDateKey(localMeta.lastStudyDate), studyDateKey(remoteMeta.lastStudyDate)]
       .filter((value): value is string => Boolean(value))
       .sort()
       .at(-1) ?? null,

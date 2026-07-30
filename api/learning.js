@@ -118,7 +118,7 @@ async function deviceProfileForRequest(req, sql) {
   const token = req.headers["x-learning-device-token"];
   if (typeof id === "string" && typeof token === "string") {
     const rows = await sql.query(
-      `SELECT token_hash, meta, streak, last_study_date, completed_today,
+      `SELECT token_hash, meta, streak, last_study_date::text AS last_study_date, completed_today,
               total_reviews, theme, content_version, active_session
        FROM learning_profiles WHERE id = $1`,
       [id],
@@ -140,7 +140,7 @@ async function profileForRequest(req, sql) {
   if (!requestedName) return deviceProfileForRequest(req, sql);
 
   const namedRows = await sql.query(
-    `SELECT id, meta, display_name, streak, last_study_date, completed_today,
+    `SELECT id, meta, display_name, streak, last_study_date::text AS last_study_date, completed_today,
             total_reviews, theme, content_version, active_session
      FROM learning_profiles WHERE name_key = $1`,
     [requestedName.nameKey],
@@ -158,7 +158,7 @@ async function profileForRequest(req, sql) {
   const deviceToken = req.headers["x-learning-device-token"];
   if (typeof deviceId === "string" && typeof deviceToken === "string") {
     const deviceRows = await sql.query(
-      `SELECT token_hash, meta, name_key, streak, last_study_date, completed_today,
+      `SELECT token_hash, meta, name_key, streak, last_study_date::text AS last_study_date, completed_today,
               total_reviews, theme, content_version, active_session
        FROM learning_profiles WHERE id = $1::uuid`,
       [deviceId],
@@ -172,7 +172,7 @@ async function profileForRequest(req, sql) {
         `UPDATE learning_profiles
          SET display_name = $2, name_key = $3, updated_at = NOW()
          WHERE id = $1::uuid AND name_key IS NULL
-         RETURNING id, meta, display_name, streak, last_study_date, completed_today,
+         RETURNING id, meta, display_name, streak, last_study_date::text AS last_study_date, completed_today,
                    total_reviews, theme, content_version, active_session`,
         [deviceId, requestedName.displayName, requestedName.nameKey],
       );
@@ -197,7 +197,7 @@ async function profileForRequest(req, sql) {
     [newId, hashToken(newToken), requestedName.displayName, requestedName.nameKey],
   );
   const createdRows = await sql.query(
-    `SELECT id, meta, display_name, streak, last_study_date, completed_today,
+    `SELECT id, meta, display_name, streak, last_study_date::text AS last_study_date, completed_today,
             total_reviews, theme, content_version, active_session
      FROM learning_profiles WHERE name_key = $1`,
     [requestedName.nameKey],

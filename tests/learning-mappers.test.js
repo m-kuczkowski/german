@@ -176,4 +176,14 @@ describe("relational learning API mappers", () => {
       activeChallenge: { version: 1, index: 4 },
     });
   });
+
+  it("keeps the study day free of timezone conversions", () => {
+    expect(mapProfileMeta({
+      meta: {},
+      last_study_date: "2026-07-29T22:00:00.000Z",
+    }).lastStudyDate).toBe("2026-07-29");
+    expect(mapProfileMeta({
+      meta: { lastStudyDate: "2026-07-30T00:00:00.000Z" },
+    }).lastStudyDate).toBe("2026-07-30");
+  });
 });

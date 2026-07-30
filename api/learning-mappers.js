@@ -2,6 +2,12 @@ function present(value, fallback) {
   return value === null || value === undefined ? fallback : value;
 }
 
+function dateKey(value) {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)
+    ? value.slice(0, 10)
+    : value;
+}
+
 export function mapCatalogRow(row) {
   return {
     id: row.id,
@@ -87,7 +93,7 @@ export function mapProfileMeta(row) {
   return {
     ...legacy,
     streak: present(row.streak, legacy.streak),
-    lastStudyDate: present(row.last_study_date, legacy.lastStudyDate),
+    lastStudyDate: dateKey(present(row.last_study_date, legacy.lastStudyDate)),
     completedToday: present(row.completed_today, legacy.completedToday),
     totalReviews: present(row.total_reviews, legacy.totalReviews),
     theme: present(row.theme, legacy.theme),
