@@ -174,6 +174,7 @@ function App() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(storedProfileName);
   const [showGettingStarted, setShowGettingStarted] = useState(false);
+  const remoteSaveQueue = useRef<Promise<void>>(Promise.resolve());
 
   useEffect(() => {
     if (!profileName) return;
@@ -216,24 +217,37 @@ function App() {
 
   useEffect(() => {
     if (!ready) return;
-    void saveCards(cards).catch(() => setToast("Nie udało się zapisać zmian na urządzeniu."));
+    void saveCards(cards).catch((error) => {
+      console.warn("Nie udało się odświeżyć lokalnej kopii kart.", error);
+    });
   }, [cards, ready]);
 
   useEffect(() => {
     if (!ready) return;
-    void saveMeta(meta).catch(() => setToast("Nie udało się zapisać postępu."));
+    void saveMeta(meta).catch((error) => {
+      console.warn("Nie udało się odświeżyć lokalnej kopii postępu.", error);
+    });
   }, [meta, ready]);
 
   useEffect(() => {
     if (!ready) return;
-    void saveGrammarProgress(grammarProgress).catch(() => setToast("Nie udało się zapisać postępu gramatyki."));
+    void saveGrammarProgress(grammarProgress).catch((error) => {
+      console.warn("Nie udało się odświeżyć lokalnej kopii postępu gramatyki.", error);
+    });
   }, [grammarProgress, ready]);
 
   useEffect(() => {
-    if (!ready || !profileName) return;
-    void saveRemoteState(cards, meta, profileName, grammarProgress).catch(() => {
-      // Local persistence is the offline fallback; a later change retries syncing.
-    });
+    if (!ready || !profileName || !online) return;
+    remoteSaveQueue.current = remoteSaveQueue.current
+      .catch(() => undefined)
+      .then(async () => {
+        if (!navigator.onLine) return;
+        await saveRemoteState(cards, meta, profileName, grammarProgress);
+      })
+      .catch((error) => {
+        console.error("Nie udało się zsynchronizować postępu z bazą.", error);
+        setToast("Postęp nie został jeszcze zsynchronizowany. Spróbujemy ponownie przy kolejnej zmianie.");
+      });
   }, [cards, grammarProgress, meta, online, profileName, ready]);
 
   useEffect(() => {
