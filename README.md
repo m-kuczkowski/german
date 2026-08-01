@@ -33,6 +33,8 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
   przykłady z tłumaczeniem oraz wybór, uzupełnianie, układanie szyku i wpisywanie;
 - osobny ekran „Teoria” przy każdej dostępnej lekcji: wzór, trzy zasady,
   przykłady z odsłuchem, sposób zapamiętania i typowy błąd;
+- teoria pozostaje dostępna także podczas ćwiczenia i można z niej wrócić do
+  tego samego pytania bez przerywania sesji;
 - 12 gotowych lekcji pilotażowych (po 5 ćwiczeń) oraz widoczny katalog 60 tematów;
 - osobne powtórki gramatyczne po 1, 3, 7, 14, 30 i 60 dniach, bez wpływu na
   koszyki Leitnera, terminy fiszek ani wyzwania;

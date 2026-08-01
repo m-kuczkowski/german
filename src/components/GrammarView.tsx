@@ -41,12 +41,14 @@ function GrammarExerciseCard({
   onAnswer,
   onNext,
   onAbort,
+  onTheory,
   onSpeak,
 }: {
   session: GrammarSession;
   onAnswer: (answer: GrammarAnswerInput) => void;
   onNext: () => void;
   onAbort: () => void;
+  onTheory: (topic: GrammarTopic) => void;
   onSpeak: (id: string, text: string) => void;
 }) {
   const exercise = grammarSessionExercise(session);
@@ -100,6 +102,7 @@ function GrammarExerciseCard({
       <div className="lesson-progress-row">
         <span>{session.kind === "review" ? "Powtórka gramatyki" : "Lekcja gramatyki"}</span>
         <strong>{Math.min(session.index + 1, session.queue.length)} / {session.queue.length}</strong>
+        {topic?.theory && <button className="session-theory-button" type="button" onClick={() => onTheory(topic)}>Teoria</button>}
         <button className="abort-lesson" type="button" onClick={onAbort}>× Przerwij</button>
       </div>
       <div className="progress-track" aria-label={`Ćwiczenie ${session.index + 1} z ${session.queue.length}`}>
@@ -235,17 +238,20 @@ export function GrammarTheoryView({
   onBack,
   onStart,
   onSpeak,
+  mode = "before-lesson",
 }: {
   topic: GrammarTopic;
   onBack: () => void;
   onStart: () => void;
   onSpeak: (id: string, text: string) => void;
+  mode?: "before-lesson" | "during-lesson";
 }) {
   const theory = topic.theory;
   if (!theory) return null;
+  const duringLesson = mode === "during-lesson";
   return (
     <section className="grammar-theory-page">
-      <button className="back-link" type="button" onClick={onBack}>← Gramatyka</button>
+      <button className="back-link" type="button" onClick={onBack}>← {duringLesson ? "Wróć do ćwiczenia" : "Gramatyka"}</button>
       <header className="grammar-theory-header">
         <div className="grammar-card-meta"><span>{topic.level} · Teoria</span><span>{topic.titleDe}</span></div>
         <h1>{topic.titlePl}</h1>
@@ -304,9 +310,9 @@ export function GrammarTheoryView({
         <p>{theory.commonMistake.explanation}</p>
       </section>
 
-      <div className="theory-footer-actions">
-        <button className="secondary-button" type="button" onClick={onBack}>Wróć</button>
-        <button className="primary-button" type="button" onClick={onStart}>Przejdź do ćwiczeń →</button>
+      <div className={`theory-footer-actions ${duringLesson ? "single-action" : ""}`}>
+        {!duringLesson && <button className="secondary-button" type="button" onClick={onBack}>Wróć</button>}
+        <button className="primary-button" type="button" onClick={onStart}>{duringLesson ? "Wróć do ćwiczenia" : "Przejdź do ćwiczeń →"}</button>
       </div>
     </section>
   );
@@ -430,7 +436,26 @@ export function GrammarView({
 }) {
   const [theoryTopic, setTheoryTopic] = useState<GrammarTopic | null>(null);
   if (session && grammarSessionComplete(session)) return <GrammarSummary session={session} onFinish={onFinish} />;
-  if (session) return <GrammarExerciseCard session={session} onAnswer={onAnswer} onNext={onNext} onAbort={onAbort} onSpeak={onSpeak} />;
+  if (session) {
+    return (
+      <>
+        <div className={theoryTopic ? "grammar-session-suspended" : "grammar-session-container"} aria-hidden={theoryTopic ? true : undefined}>
+          <GrammarExerciseCard session={session} onAnswer={onAnswer} onNext={onNext} onAbort={onAbort} onTheory={setTheoryTopic} onSpeak={onSpeak} />
+        </div>
+        {theoryTopic && (
+          <div className="grammar-theory-during-session">
+            <GrammarTheoryView
+              topic={theoryTopic}
+              mode="during-lesson"
+              onBack={() => setTheoryTopic(null)}
+              onStart={() => setTheoryTopic(null)}
+              onSpeak={onSpeak}
+            />
+          </div>
+        )}
+      </>
+    );
+  }
   if (theoryTopic) {
     return (
       <GrammarTheoryView

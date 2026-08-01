@@ -958,6 +958,27 @@ h1 em {
   padding: 11px;
 }
 
+.theory-footer-actions.single-action {
+  grid-template-columns: 1fr;
+}
+
+.grammar-session-container {
+  height: 100%;
+  min-height: 0;
+}
+
+.grammar-session-suspended {
+  display: none;
+}
+
+.grammar-theory-during-session {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
 .grammar-session {
   display: flex;
   height: 100%;
@@ -967,12 +988,18 @@ h1 em {
 
 .lesson-progress-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 10px;
   margin: 1px 0 9px;
   color: var(--muted);
   font-size: 12px;
+}
+
+.lesson-progress-row > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lesson-progress-row strong {
@@ -990,6 +1017,18 @@ h1 em {
   border-radius: 999px;
   font-size: 11px;
   font-weight: 800;
+}
+
+.session-theory-button {
+  min-width: 0;
+  min-height: 33px;
+  padding: 6px 10px;
+  color: var(--green);
+  background: color-mix(in srgb, var(--mint) 58%, transparent);
+  border: 1px solid color-mix(in srgb, var(--green) 45%, var(--line));
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 850;
 }
 
 .grammar-exercise-card {
@@ -4049,6 +4088,18 @@ h1 em {
 
   .bottom-nav button {
     font-size: 8px;
+  }
+
+  .lesson-progress-row {
+    gap: 5px;
+    font-size: 10px;
+  }
+
+  .session-theory-button,
+  .abort-lesson {
+    padding-right: 7px;
+    padding-left: 7px;
+    font-size: 10px;
   }
 
   .rating-actions {
