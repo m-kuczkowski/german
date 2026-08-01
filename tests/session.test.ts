@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { starterCards } from "../src/data/starterCards";
+import { withMetaDefaults } from "../src/lib/meta";
 import {
   advanceSession,
   createLearningSession,
@@ -10,6 +11,17 @@ import {
 import { reviewCard } from "../src/lib/srs";
 
 describe("adaptacyjna kolejka w lekcji", () => {
+  it("otwiera starszą zapisaną sesję bez liczby zadań bazowych", () => {
+    const session = createLearningSession(starterCards.slice(0, 3), "learn", starterCards[0].category);
+    const { plannedCount: _plannedCount, ...legacySession } = session;
+    const restored = withMetaDefaults({
+      activeSession: legacySession as never,
+    });
+
+    expect(restored.activeSession?.plannedCount).toBe(3);
+    expect(restored.activeSession?.queue).toHaveLength(3);
+  });
+
   it("przegródki 2–3 zaczynają od fiszki, a przegródka 4 od aktywnego zadania", () => {
     const cards = [
       { ...starterCards[0], stage: "known" as const, learned: true, leitnerBox: 2 as const },
@@ -17,6 +29,8 @@ describe("adaptacyjna kolejka w lekcji", () => {
       { ...starterCards[2], stage: "known" as const, learned: true, leitnerBox: 4 as const },
     ];
     const session = createLearningSession(cards, "review", cards[0].category);
+
+    expect(session.plannedCount).toBe(3);
 
     expect(session.queue.map((item) => item.kind)).toEqual([
       "guided-review",
@@ -114,6 +128,7 @@ describe("adaptacyjna kolejka w lekcji", () => {
     expect(nextIndex - 1).toBeLessThanOrEqual(11);
     expect(recorded.queue[nextIndex].kind).toBe("exercise");
     expect(recorded.queue[nextIndex].forcedMode).toBe("type-pl-de");
+    expect(recorded.plannedCount).toBe(session.plannedCount);
     expect(recorded.index).toBe(0);
     expect(recorded.pendingAnswer?.cardId).toBe(card.id);
     expect(advanceSession(recorded).index).toBe(1);

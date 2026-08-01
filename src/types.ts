@@ -125,6 +125,7 @@ export interface LearningSession {
   version: 3;
   mode: "learn" | "review" | "hard";
   categoryId: string | null;
+  plannedCount: number;
   queue: SessionItem[];
   index: number;
   startedAt: string;
@@ -197,7 +198,6 @@ export interface BackupFile {
 
 export type TabId =
   | "learn"
-  | "review"
   | "challenges"
   | "leitner"
   | "collection"

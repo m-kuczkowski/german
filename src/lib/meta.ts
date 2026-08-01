@@ -29,6 +29,7 @@ export function withMetaDefaults(meta: Partial<LearningMeta> | null | undefined)
       ? {
           ...merged.activeSession,
           version: 3,
+          plannedCount: merged.activeSession.plannedCount ?? merged.activeSession.queue.length,
           pendingAnswer: merged.activeSession.pendingAnswer ?? null,
         }
       : null,

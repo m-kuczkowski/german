@@ -57,6 +57,7 @@ export function createLearningSession(
     version: 3,
     mode,
     categoryId,
+    plannedCount: cards.length,
     queue: cards.map(itemFor),
     index: 0,
     startedAt: now.toISOString(),

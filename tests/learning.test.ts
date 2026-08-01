@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { starterCards } from "../src/data/starterCards";
 import {
   buildCategoryProgress,
+  canStartLearningSession,
   categoryLearningOrder,
   difficultCards,
   learningSessionPlan,
@@ -70,10 +71,11 @@ describe("nauka kategoriami", () => {
       recommendedNewCardLimit(5),
       recommendedNewCardLimit(8),
       recommendedNewCardLimit(10),
-    ]).toEqual([6, 4, 2, 1, 0]);
+      recommendedNewCardLimit(25),
+    ]).toEqual([6, 6, 3, 3, 2, 1]);
   });
 
-  it("wstrzymuje nowe karty, gdy zaległości są w innych kategoriach", () => {
+  it("nie blokuje nowych kart, gdy zaległości są w innych kategoriach", () => {
     const now = new Date("2026-07-26T10:00:00.000Z");
     const target = "Dom";
     const fresh = {
@@ -92,10 +94,17 @@ describe("nauka kategoriami", () => {
     }));
     const plan = learningSessionPlan([fresh, ...backlog], target, now);
     expect(plan.globalDueCount).toBe(10);
-    expect(plan.newCards).toEqual([]);
+    expect(plan.newCards.map((card) => card.id)).toEqual([fresh.id]);
+    expect(plan.cards).toHaveLength(10);
+    expect(plan.cards.slice(0, 3).map((card) => card.id)).toEqual([
+      backlog[0]!.id,
+      backlog[1]!.id,
+      fresh.id,
+    ]);
+    expect(canStartLearningSession(plan)).toBe(true);
   });
 
-  it("układa adaptacyjny plan bez wypychania zaległych kart", () => {
+  it("miesza powtórki z nowymi kartami w jednej krótkiej lekcji", () => {
     const now = new Date("2026-07-26T10:00:00.000Z");
     const category = "Nicos Weg A2 · Start";
     const due = starterCards.slice(0, 5).map((card, index) => ({
@@ -116,11 +125,43 @@ describe("nauka kategoriami", () => {
     }));
     const plan = learningSessionPlan([...due, ...fresh], category, now);
     expect(plan.due).toHaveLength(5);
-    expect(plan.newCards).toHaveLength(2);
+    expect(plan.newCards).toHaveLength(3);
     expect(plan.cards.map((card) => card.id)).toEqual([
-      ...plan.due.map((card) => card.id),
-      ...plan.newCards.map((card) => card.id),
+      due[0]!.id,
+      due[1]!.id,
+      plan.newCards[0]!.id,
+      due[2]!.id,
+      due[3]!.id,
+      plan.newCards[1]!.id,
+      due[4]!.id,
+      plan.newCards[2]!.id,
     ]);
+  });
+
+  it("przy dużych zaległościach nadal dodaje jedno nowe słowo i ogranicza lekcję", () => {
+    const now = new Date("2026-07-26T10:00:00.000Z");
+    const category = "Dom";
+    const fresh = { ...starterCards[0], id: "fresh", category, stage: "new" as const };
+    const backlog = Array.from({ length: 30 }, (_, index) => ({
+      ...starterCards[(index + 1) % starterCards.length]!,
+      id: `overdue-${index}`,
+      category: `Kategoria ${index}`,
+      stage: "known" as const,
+      repetitions: 2,
+      dueAt: "2026-07-25T10:00:00.000Z",
+    }));
+
+    const plan = learningSessionPlan([fresh, ...backlog], category, now, 12);
+    expect(plan.globalDueCount).toBe(30);
+    expect(plan.newCards.map((card) => card.id)).toEqual([fresh.id]);
+    expect(plan.due).toHaveLength(11);
+    expect(plan.cards).toHaveLength(12);
+    expect(plan.cards.slice(0, 3).map((card) => card.id)).toEqual([
+      backlog[0]!.id,
+      backlog[1]!.id,
+      fresh.id,
+    ]);
+    expect(canStartLearningSession(plan)).toBe(true);
   });
 
   it("wprowadza tylko oficjalny rdzeń, a rozszerzenia pozostawia w bibliotece", () => {

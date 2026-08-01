@@ -125,12 +125,30 @@ export interface LearningSessionPlan {
   globalDueCount: number;
 }
 
+export function canStartLearningSession(plan: Pick<LearningSessionPlan, "cards">): boolean {
+  return plan.cards.length > 0;
+}
+
 export function recommendedNewCardLimit(dueCount: number): number {
-  if (dueCount >= 10) return 0;
-  if (dueCount >= 7) return 1;
-  if (dueCount >= 4) return 2;
-  if (dueCount >= 1) return 4;
+  if (dueCount >= 25) return 1;
+  if (dueCount >= 10) return 2;
+  if (dueCount >= 4) return 3;
   return 6;
+}
+
+function mixDueAndNewCards(due: Flashcard[], newCards: Flashcard[]): Flashcard[] {
+  if (!due.length || !newCards.length) return [...due, ...newCards];
+
+  const mixed: Flashcard[] = [];
+  let dueIndex = 0;
+  let newIndex = 0;
+  while (dueIndex < due.length || newIndex < newCards.length) {
+    for (let count = 0; count < 2 && dueIndex < due.length; count += 1) {
+      mixed.push(due[dueIndex++]!);
+    }
+    if (newIndex < newCards.length) mixed.push(newCards[newIndex++]!);
+  }
+  return mixed;
 }
 
 export function learningSessionPlan(
@@ -141,26 +159,27 @@ export function learningSessionPlan(
 ): LearningSessionPlan {
   const inCategory = cards.filter((card) => card.category === categoryId);
   const cardsById = new Map(cards.map((card) => [card.id, card]));
-  const globalDueCount = cards.filter((card) =>
-    card.stage !== "new" && isDue(card, now)
-  ).length;
-  const due = sortForLearning(
-    inCategory.filter((card) => card.stage !== "new" && isDue(card, now)),
+  const allDue = sortForLearning(
+    cards.filter((card) => card.stage !== "new" && isDue(card, now)),
     now,
-  ).slice(0, limit);
-  const newLimit = Math.min(
-    recommendedNewCardLimit(globalDueCount),
-    Math.max(0, limit - due.length),
   );
-  const newCards = inCategory
+  const globalDueCount = allDue.length;
+  const availableNew = inCategory
     .filter((card) =>
       card.stage === "new" &&
       isDefaultCurriculumCard(card) &&
       prerequisitesReady(card, cardsById),
     )
-    .sort((left, right) => newCardOrder(left) - newCardOrder(right))
-    .slice(0, newLimit);
-  return { due, newCards, cards: [...due, ...newCards], globalDueCount };
+    .sort((left, right) => newCardOrder(left) - newCardOrder(right));
+  const newLimit = Math.min(recommendedNewCardLimit(globalDueCount), availableNew.length);
+  const due = allDue.slice(0, Math.max(0, limit - newLimit));
+  const newCards = availableNew.slice(0, newLimit);
+  return {
+    due,
+    newCards,
+    cards: mixDueAndNewCards(due, newCards),
+    globalDueCount,
+  };
 }
 
 export function sessionCardsForCategory(
