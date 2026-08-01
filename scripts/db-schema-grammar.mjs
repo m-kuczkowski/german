@@ -90,8 +90,8 @@ export const validationQuery = `
 `;
 
 export function validationPassed(row) {
-  return Number(row.grammar_topics) >= 12 &&
-    Number(row.published_topics) >= 12 &&
+  return Number(row.grammar_topics) >= 26 &&
+    Number(row.published_topics) >= 26 &&
     Number(row.orphan_grammar_progress) === 0 &&
     Number(row.invalid_grammar_progress) === 0;
 }

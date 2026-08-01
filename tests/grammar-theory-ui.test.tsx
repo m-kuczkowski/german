@@ -8,7 +8,7 @@ describe("teoria gramatyki", () => {
   const published = grammarTopics.filter((topic) => topic.published);
 
   it("każda opublikowana lekcja ma 20 ćwiczeń oraz praktyczną teorię", () => {
-    expect(published).toHaveLength(12);
+    expect(published).toHaveLength(26);
     for (const topic of published) {
       expect(topic.exercises).toHaveLength(20);
       expect(new Set(topic.exercises.map((exercise) => exercise.id))).toHaveLength(20);
@@ -21,6 +21,15 @@ describe("teoria gramatyki", () => {
       expect(topic.theory?.commonMistake.incorrect).not.toBe(topic.theory?.commonMistake.correct);
       expect(topic.examples.length).toBeGreaterThanOrEqual(3);
     }
+  });
+
+  it("udostępnia pełną ścieżkę A1 bez tematów w przygotowaniu", () => {
+    const a1Topics = grammarTopics.filter((topic) => topic.level === "A1");
+    expect(a1Topics).toHaveLength(20);
+    expect(a1Topics.every((topic) => topic.published)).toBe(true);
+    expect(a1Topics.map((topic) => topic.sortOrder)).toEqual(
+      Array.from({ length: 20 }, (_, index) => index + 1),
+    );
   });
 
   it("pokazuje pełną teorię i pozwala przejść do ćwiczeń", () => {

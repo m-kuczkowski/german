@@ -42,8 +42,8 @@ describe("grammar migration", () => {
 
   it("odrzuca osierocony lub nieprawidłowy postęp gramatyki", () => {
     const valid = {
-      grammar_topics: 12,
-      published_topics: 12,
+      grammar_topics: 26,
+      published_topics: 26,
       orphan_grammar_progress: 0,
       invalid_grammar_progress: 0,
     };
