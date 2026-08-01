@@ -6,9 +6,11 @@ import {
   clearDatabase,
   createBackup,
   loadCards,
+  loadGrammarProgress,
   loadOrSeed,
   parseBackup,
   saveCards,
+  saveGrammarProgress,
   saveMeta,
 } from "../src/lib/storage";
 
@@ -84,5 +86,21 @@ describe("lokalny zapis i kopie", () => {
     const backup = createBackup(starterCards.slice(0, 2), defaultMeta);
     expect(parseBackup(JSON.parse(JSON.stringify(backup))).cards).toHaveLength(2);
     expect(() => parseBackup({ version: 1, cards: [{ german: "Haus" }] })).toThrow();
+  });
+
+  it("trzyma postęp gramatyki w osobnym magazynie IndexedDB", async () => {
+    await saveGrammarProgress([{
+      topicId: "A1-03",
+      status: "review",
+      masteryScore: 80,
+      lessonCompletions: 1,
+      reviewStep: 1,
+      nextReviewAt: "2026-08-02T09:00:00.000Z",
+      firstStartedAt: "2026-08-01T09:00:00.000Z",
+      lastPracticedAt: "2026-08-01T09:05:00.000Z",
+      masteredAt: null,
+      successfulReviewDates: ["2026-08-01"],
+    }]);
+    expect(await loadGrammarProgress()).toMatchObject([{ topicId: "A1-03", reviewStep: 1 }]);
   });
 });

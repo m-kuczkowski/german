@@ -11,6 +11,7 @@ export const defaultMeta: LearningMeta = {
   activeSession: null,
   activeChallenge: null,
   challengeUpdatedAt: null,
+  activeGrammarSession: null,
 };
 
 export function withMetaDefaults(meta: Partial<LearningMeta> | null | undefined): LearningMeta {
@@ -44,6 +45,22 @@ export function withMetaDefaults(meta: Partial<LearningMeta> | null | undefined)
           pendingAnswer: challenge.pendingAnswer ?? null,
           retryOf: challenge.retryOf ?? null,
           updatedAt: challenge.updatedAt ?? challenge.startedAt,
+        }
+      : null,
+    activeGrammarSession: merged.activeGrammarSession &&
+      Array.isArray(merged.activeGrammarSession.queue) &&
+      Number.isFinite(merged.activeGrammarSession.index)
+      ? {
+          ...merged.activeGrammarSession,
+          version: 1,
+          index: Math.max(0, Math.min(
+            merged.activeGrammarSession.queue.length,
+            merged.activeGrammarSession.index,
+          )),
+          answers: Array.isArray(merged.activeGrammarSession.answers)
+            ? merged.activeGrammarSession.answers
+            : [],
+          pendingAnswer: merged.activeGrammarSession.pendingAnswer ?? null,
         }
       : null,
     challengeUpdatedAt: merged.challengeUpdatedAt ??

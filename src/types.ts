@@ -46,6 +46,99 @@ export interface ChallengeSkillProgress {
 
 export type ChallengeStats = Partial<Record<ChallengeSkill, ChallengeSkillProgress>>;
 
+export type GrammarLevel = "A1" | "A2" | "B1";
+export type GrammarTopicStatus = "new" | "learning" | "review" | "mastered";
+export type GrammarExerciseType =
+  | "multiple-choice"
+  | "gap-fill"
+  | "word-order"
+  | "typed-form"
+  | "case-choice"
+  | "error-correction"
+  | "translation-pl-de";
+
+export interface GrammarExample {
+  german: string;
+  polish: string;
+  highlight?: string;
+}
+
+export interface GrammarExerciseOption {
+  id: string;
+  text: string;
+}
+
+export interface GrammarExercise {
+  id: string;
+  type: GrammarExerciseType;
+  instruction: string;
+  prompt: string;
+  promptTranslation?: string;
+  answer: string;
+  acceptedAnswers?: string[];
+  options?: GrammarExerciseOption[];
+  tokens?: string[];
+  explanation: string;
+  targetSkill: string;
+  contextGerman: string;
+  contextPolish: string;
+}
+
+export interface GrammarTopic {
+  id: string;
+  level: GrammarLevel;
+  sortOrder: number;
+  titlePl: string;
+  titleDe: string;
+  goalPl: string;
+  explanation: string;
+  pattern?: string;
+  examples: GrammarExample[];
+  prerequisites: string[];
+  published: boolean;
+  exercises: GrammarExercise[];
+}
+
+export interface GrammarTopicProgress {
+  topicId: string;
+  status: GrammarTopicStatus;
+  masteryScore: number;
+  lessonCompletions: number;
+  reviewStep: number;
+  nextReviewAt: string | null;
+  firstStartedAt: string | null;
+  lastPracticedAt: string | null;
+  masteredAt: string | null;
+  successfulReviewDates: string[];
+}
+
+export interface GrammarSessionItem {
+  topicId: string;
+  exerciseId: string;
+  retry: boolean;
+}
+
+export interface GrammarSessionAnswer {
+  topicId: string;
+  exerciseId: string;
+  answerValue: string;
+  correct: boolean;
+  score: number;
+  answeredAt: string;
+}
+
+export interface GrammarSession {
+  version: 1;
+  kind: "lesson" | "review";
+  queue: GrammarSessionItem[];
+  index: number;
+  startedAt: string;
+  correct: number;
+  mistakes: number;
+  answers: GrammarSessionAnswer[];
+  pendingAnswer: GrammarSessionAnswer | null;
+}
+
 export interface ReviewEvidence {
   mode: "introduction" | ExerciseMode;
   correct: boolean;
@@ -187,6 +280,7 @@ export interface LearningMeta {
   activeSession: LearningSession | null;
   activeChallenge: ChallengeSession | null;
   challengeUpdatedAt: string | null;
+  activeGrammarSession: GrammarSession | null;
 }
 
 export interface BackupFile {
@@ -194,10 +288,12 @@ export interface BackupFile {
   exportedAt: string;
   cards: Flashcard[];
   meta: LearningMeta;
+  grammarProgress?: GrammarTopicProgress[];
 }
 
 export type TabId =
   | "learn"
+  | "grammar"
   | "challenges"
   | "leitner"
   | "collection"

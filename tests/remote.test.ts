@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { starterCards } from "../src/data/starterCards";
 import { defaultMeta } from "../src/lib/meta";
-import { hydrateRemoteState } from "../src/lib/remote";
+import { hydrateGrammarProgress, hydrateRemoteState } from "../src/lib/remote";
 
 describe("synchronizacja z bazą", () => {
   it("nakłada postęp z bazy na katalog kart bez gubienia kolejności", () => {
@@ -126,5 +126,52 @@ describe("synchronizacja z bazą", () => {
     });
 
     expect(result.meta.lastStudyDate).toBe("2026-07-30");
+  });
+
+  it("scala postęp gramatyki osobno, wybierając nowszy zapis tematu", () => {
+    const result = hydrateGrammarProgress([{
+      topicId: "A1-03",
+      status: "learning",
+      masteryScore: 40,
+      lessonCompletions: 1,
+      reviewStep: 0,
+      nextReviewAt: null,
+      firstStartedAt: "2026-08-01T08:00:00.000Z",
+      lastPracticedAt: "2026-08-01T08:00:00.000Z",
+      masteredAt: null,
+      successfulReviewDates: [],
+    }], [{
+      topicId: "A1-03",
+      status: "review",
+      masteryScore: 90,
+      lessonCompletions: 1,
+      reviewStep: 1,
+      nextReviewAt: "2026-08-02T09:00:00.000Z",
+      firstStartedAt: "2026-08-01T08:00:00.000Z",
+      lastPracticedAt: "2026-08-01T09:00:00.000Z",
+      masteredAt: null,
+      successfulReviewDates: ["2026-08-01"],
+    }]);
+    expect(result[0]).toMatchObject({ status: "review", masteryScore: 90, reviewStep: 1 });
+  });
+
+  it("wznawia nowszą rozpoczętą lekcję gramatyki z drugiego urządzenia", () => {
+    const grammarSession = {
+      version: 1 as const,
+      kind: "lesson" as const,
+      queue: [{ topicId: "A1-03", exerciseId: "a1-03-1", retry: false }],
+      index: 0,
+      startedAt: "2026-08-01T11:00:00.000Z",
+      correct: 0,
+      mistakes: 0,
+      answers: [],
+      pendingAnswer: null,
+    };
+    const result = hydrateRemoteState([], defaultMeta, {
+      cards: [],
+      progress: [],
+      meta: { activeGrammarSession: grammarSession },
+    });
+    expect(result.meta.activeGrammarSession?.queue[0]?.topicId).toBe("A1-03");
   });
 });

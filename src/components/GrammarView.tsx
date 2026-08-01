@@ -1,0 +1,334 @@
+import { useEffect, useState } from "react";
+import { grammarLevels, grammarSourceNote, grammarTopicsById } from "../data/grammarCatalog";
+import {
+  dueGrammarTopics,
+  evaluateGrammarAnswer,
+  grammarProgressFor,
+  grammarSessionComplete,
+  grammarSessionExercise,
+  recommendedGrammarTopic,
+} from "../lib/grammar";
+import type {
+  GrammarExercise,
+  GrammarSession,
+  GrammarSessionAnswer,
+  GrammarTopic,
+  GrammarTopicProgress,
+} from "../types";
+
+type GrammarAnswerInput = Omit<GrammarSessionAnswer, "answeredAt">;
+
+function statusLabel(progress: GrammarTopicProgress): string {
+  if (progress.status === "mastered") return "Utrwalone";
+  if (progress.status === "review") return "W powtórkach";
+  if (progress.status === "learning") return "W nauce";
+  return "Nowy temat";
+}
+
+function reviewLabel(value: string | null): string {
+  if (!value) return "Po pierwszej lekcji";
+  const date = new Date(value);
+  if (date.getTime() <= Date.now()) return "Gotowe do powtórki";
+  return `Powtórka: ${date.toLocaleDateString("pl-PL", { day: "numeric", month: "short" })}`;
+}
+
+function exerciseAnswerValue(exercise: GrammarExercise, typed: string, ordered: string[]): string {
+  return exercise.type === "word-order" ? ordered.join(" ") : typed;
+}
+
+function GrammarExerciseCard({
+  session,
+  onAnswer,
+  onNext,
+  onAbort,
+  onSpeak,
+}: {
+  session: GrammarSession;
+  onAnswer: (answer: GrammarAnswerInput) => void;
+  onNext: () => void;
+  onAbort: () => void;
+  onSpeak: (id: string, text: string) => void;
+}) {
+  const exercise = grammarSessionExercise(session);
+  const item = session.queue[session.index];
+  const [typed, setTyped] = useState("");
+  const [ordered, setOrdered] = useState<string[]>([]);
+  const [availableTokens, setAvailableTokens] = useState<string[]>([]);
+  const pending = session.pendingAnswer;
+
+  useEffect(() => {
+    setTyped("");
+    setOrdered([]);
+    setAvailableTokens(exercise?.tokens ?? []);
+  }, [exercise?.id]);
+
+  if (!exercise || !item) {
+    return <p>Nie udało się odnaleźć tego ćwiczenia. Wróć do listy tematów i spróbuj ponownie.</p>;
+  }
+
+  const value = exerciseAnswerValue(exercise, typed, ordered);
+  const choice = exercise.type === "multiple-choice" || exercise.type === "case-choice";
+  const canCheck = choice || (exercise.type === "word-order" ? ordered.length > 0 : typed.trim().length > 0);
+  const topic = grammarTopicsById.get(item.topicId);
+
+  function answer(answerValue: string) {
+    if (pending || !exercise) return;
+    const evaluation = evaluateGrammarAnswer(exercise, answerValue);
+    onAnswer({
+      topicId: item.topicId,
+      exerciseId: item.exerciseId,
+      answerValue,
+      correct: evaluation.correct,
+      score: evaluation.score,
+    });
+  }
+
+  function addToken(token: string, index: number) {
+    if (pending) return;
+    setOrdered((current) => [...current, token]);
+    setAvailableTokens((current) => current.filter((_, tokenIndex) => tokenIndex !== index));
+  }
+
+  function removeToken(token: string, index: number) {
+    if (pending) return;
+    setOrdered((current) => current.filter((_, tokenIndex) => tokenIndex !== index));
+    setAvailableTokens((current) => [...current, token]);
+  }
+
+  return (
+    <section className="grammar-session" aria-live="polite">
+      <div className="lesson-progress-row">
+        <span>{session.kind === "review" ? "Powtórka gramatyki" : "Lekcja gramatyki"}</span>
+        <strong>{Math.min(session.index + 1, session.queue.length)} / {session.queue.length}</strong>
+        <button className="abort-lesson" type="button" onClick={onAbort}>× Przerwij</button>
+      </div>
+      <div className="progress-track" aria-label={`Ćwiczenie ${session.index + 1} z ${session.queue.length}`}>
+        <span style={{ width: `${((session.index + 1) / session.queue.length) * 100}%` }} />
+      </div>
+
+      <article className="grammar-exercise-card">
+        <div className="grammar-card-meta">
+          <span>{topic?.level} · {topic?.titlePl}</span>
+          <span>{exercise.type === "word-order" ? "Szyk" : "Ćwiczenie"}</span>
+        </div>
+        <p className="grammar-instruction">{exercise.instruction}</p>
+        <h1 className="grammar-prompt">{exercise.prompt}</h1>
+        {exercise.promptTranslation && <p className="grammar-prompt-translation">{exercise.promptTranslation}</p>}
+
+        {choice && (
+          <div className="grammar-options">
+            {exercise.options?.map((option) => (
+              <button
+                key={option.id}
+                className={`grammar-option ${pending && option.text === exercise.answer ? "correct-answer" : ""}`}
+                type="button"
+                disabled={Boolean(pending)}
+                onClick={() => answer(option.text)}
+              >
+                {option.text}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {exercise.type === "word-order" && (
+          <div className="word-order-area">
+            <div className="word-order-answer" aria-label="Ułożone zdanie">
+              {ordered.length ? ordered.map((token, index) => (
+                <button type="button" key={`${token}-${index}`} disabled={Boolean(pending)} onClick={() => removeToken(token, index)}>{token}</button>
+              )) : <span>Dotykaj wyrazów poniżej, aby ułożyć zdanie.</span>}
+            </div>
+            <div className="word-order-tokens" aria-label="Dostępne wyrazy">
+              {availableTokens.map((token, index) => (
+                <button type="button" key={`${token}-${index}`} disabled={Boolean(pending)} onClick={() => addToken(token, index)}>{token}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!choice && exercise.type !== "word-order" && (
+          <div className="grammar-input-row">
+            <input
+              value={typed}
+              disabled={Boolean(pending)}
+              onChange={(event) => setTyped(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") event.preventDefault();
+              }}
+              autoCapitalize="sentences"
+              autoCorrect="off"
+              spellCheck={false}
+              enterKeyHint="done"
+              aria-label="Twoja odpowiedź po niemiecku"
+              placeholder="Wpisz odpowiedź"
+            />
+            <button
+              className="grammar-submit"
+              type="button"
+              disabled={!canCheck || Boolean(pending)}
+              aria-label="Sprawdź odpowiedź"
+              onClick={() => answer(value)}
+            >
+              →
+            </button>
+          </div>
+        )}
+
+        {!pending && !choice && (
+          <div className="grammar-actions">
+            {exercise.type === "word-order" && (
+              <button className="primary-button" type="button" disabled={!canCheck} onClick={() => answer(value)}>Sprawdź</button>
+            )}
+            <button className="quiet-action" type="button" onClick={() => answer("")}>Nie wiem — pokaż rozwiązanie</button>
+          </div>
+        )}
+
+        {pending && (
+          <section className={`grammar-feedback ${pending.correct ? "is-correct" : "is-incorrect"}`}>
+            <p className="eyebrow">{pending.correct ? "Dobra odpowiedź" : "Sprawdź to jeszcze"}</p>
+            <h2>{pending.correct ? "Tak jest." : `Poprawnie: ${exercise.answer}`}</h2>
+            <p>{exercise.explanation}</p>
+            <div className="grammar-context">
+              <span>W kontekście</span>
+              <strong>{exercise.contextGerman}</strong>
+              <small>{exercise.contextPolish}</small>
+              <button className="listen-button" type="button" onClick={() => onSpeak(`grammar-${exercise.id}`, exercise.contextGerman)}>◖ Odsłuchaj</button>
+            </div>
+            <button className="primary-button wide" type="button" onClick={onNext}>
+              {session.index + 1 >= session.queue.length ? "Zobacz wynik" : "Dalej →"}
+            </button>
+          </section>
+        )}
+      </article>
+    </section>
+  );
+}
+
+function GrammarSummary({
+  session,
+  onFinish,
+}: {
+  session: GrammarSession;
+  onFinish: () => void;
+}) {
+  const percentage = session.answers.length
+    ? Math.round((session.correct / session.answers.length) * 100)
+    : 0;
+  return (
+    <section className="grammar-summary">
+      <div className="completion-icon" aria-hidden="true">✓</div>
+      <p className="eyebrow">{session.kind === "review" ? "Powtórka skończona" : "Lekcja skończona"}</p>
+      <h1>{percentage >= 80 ? "Dobra robota." : "Jeszcze jedna runda pomoże."}</h1>
+      <div className="grammar-summary-stats">
+        <span><strong>{session.answers.length}</strong> ćwiczeń</span>
+        <span><strong>{percentage}%</strong> poprawnych</span>
+        <span><strong>{session.mistakes}</strong> do utrwalenia</span>
+      </div>
+      <p>Błędy wrócą w tej sesji lub w następnej powtórce. Postęp gramatyki jest niezależny od Twoich fiszek.</p>
+      <button className="primary-button wide" type="button" onClick={onFinish}>Wróć do gramatyki</button>
+    </section>
+  );
+}
+
+function TopicCard({ topic, progress, onStart }: { topic: GrammarTopic; progress: GrammarTopicProgress; onStart: () => void }) {
+  return (
+    <article className={`grammar-topic-card ${topic.published ? "" : "is-planned"}`}>
+      <div className="grammar-card-meta"><span>{topic.level} · {statusLabel(progress)}</span><span>{topic.published ? `${topic.exercises.length} ćwiczeń` : "W przygotowaniu"}</span></div>
+      <h2>{topic.titlePl}</h2>
+      <p className="topic-german-name">{topic.titleDe}</p>
+      <p>{topic.goalPl}</p>
+      {topic.published ? (
+        <>
+          <small>{reviewLabel(progress.nextReviewAt)}</small>
+          <button className="secondary-button" type="button" onClick={onStart}>
+            {progress.status === "new" ? "Rozpocznij" : "Otwórz lekcję"}
+          </button>
+        </>
+      ) : <small>Publikujemy dopiero kompletne lekcje z wyjaśnieniem, przykładami i sprawdzonymi odpowiedziami.</small>}
+    </article>
+  );
+}
+
+function GrammarDashboard({
+  topics,
+  progress,
+  onStartLesson,
+  onStartReview,
+}: {
+  topics: GrammarTopic[];
+  progress: GrammarTopicProgress[];
+  onStartLesson: (topic: GrammarTopic) => void;
+  onStartReview: () => void;
+}) {
+  const due = dueGrammarTopics(topics, progress);
+  const recommended = recommendedGrammarTopic(topics, progress);
+  const mastered = progress.filter((item) => item.status === "mastered").length;
+  const publishedCount = topics.filter((topic) => topic.published).length;
+
+  return (
+    <section className="grammar-dashboard">
+      <div className="page-heading">
+        <p className="eyebrow">Gramatyka A1–B1</p>
+        <h1>Rozumiej regułę, a potem jej użyj.</h1>
+        <p>Krótkie wyjaśnienie po polsku, przykłady i aktywne ćwiczenia po niemiecku.</p>
+      </div>
+      <section className="grammar-overview-card">
+        <div><span>{due.length ? "Czekają powtórki" : "Dziś bez zaległości"}</span><strong>{due.length}</strong><small>{due.length === 1 ? "temat do powtórki" : "tematów do powtórki"}</small></div>
+        <div><span>Utrwalone</span><strong>{mastered}</strong><small>z {publishedCount} dostępnych</small></div>
+        {due.length > 0 && <button className="primary-button" type="button" onClick={onStartReview}>Zrób powtórkę</button>}
+      </section>
+      {recommended && (
+        <section className="grammar-recommendation">
+          <p className="eyebrow">Polecany następny krok</p>
+          <h2>{recommended.titlePl}</h2>
+          <p>{recommended.goalPl}</p>
+          <button className="primary-button" type="button" onClick={() => onStartLesson(recommended)}>Rozpocznij krótką lekcję</button>
+        </section>
+      )}
+      <section className="grammar-method-note">
+        <strong>Jak działają powtórki?</strong>
+        <p>Po lekcji temat wraca po 1, 3, 7, 14, 30 i 60 dniach. Nieudana odpowiedź wraca szybciej w tej samej sesji.</p>
+      </section>
+      {grammarLevels().map((level) => {
+        const levelTopics = topics.filter((topic) => topic.level === level);
+        return (
+          <section key={level} className="grammar-level-section">
+            <div className="section-heading"><h2>{level}</h2><span>{level === "A2" ? "Pomost do B1" : level === "A1" ? "Fundamenty" : "Komunikacja B1"}</span></div>
+            <div className="grammar-topic-grid">
+              {levelTopics.map((topic) => <TopicCard key={topic.id} topic={topic} progress={grammarProgressFor(progress, topic.id)} onStart={() => onStartLesson(topic)} />)}
+            </div>
+          </section>
+        );
+      })}
+      <p className="grammar-source-note">{grammarSourceNote}</p>
+    </section>
+  );
+}
+
+export function GrammarView({
+  topics,
+  progress,
+  session,
+  onStartLesson,
+  onStartReview,
+  onAnswer,
+  onNext,
+  onFinish,
+  onAbort,
+  onSpeak,
+}: {
+  topics: GrammarTopic[];
+  progress: GrammarTopicProgress[];
+  session: GrammarSession | null;
+  onStartLesson: (topic: GrammarTopic) => void;
+  onStartReview: () => void;
+  onAnswer: (answer: GrammarAnswerInput) => void;
+  onNext: () => void;
+  onFinish: () => void;
+  onAbort: () => void;
+  onSpeak: (id: string, text: string) => void;
+}) {
+  if (session && grammarSessionComplete(session)) return <GrammarSummary session={session} onFinish={onFinish} />;
+  if (session) return <GrammarExerciseCard session={session} onAnswer={onAnswer} onNext={onNext} onAbort={onAbort} onSpeak={onSpeak} />;
+  return <GrammarDashboard topics={topics} progress={progress} onStartLesson={onStartLesson} onStartReview={onStartReview} />;
+}

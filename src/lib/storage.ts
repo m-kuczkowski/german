@@ -1,11 +1,17 @@
-import type { BackupFile, Flashcard, LearningMeta } from "../types";
+import type {
+  BackupFile,
+  Flashcard,
+  GrammarTopicProgress,
+  LearningMeta,
+} from "../types";
 import { validateCardContent, withLearningDefaults } from "./cards";
 import { withMetaDefaults } from "./meta";
 
 const DB_NAME = "wortschatz-a2";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const CARD_STORE = "cards";
 const META_STORE = "meta";
+const GRAMMAR_STORE = "grammar-progress";
 const META_KEY = "learning";
 const CURRENT_CONTENT_VERSION = 12;
 
@@ -36,6 +42,9 @@ export function openDatabase(): Promise<IDBDatabase> {
       }
       if (!db.objectStoreNames.contains(META_STORE)) {
         db.createObjectStore(META_STORE);
+      }
+      if (!db.objectStoreNames.contains(GRAMMAR_STORE)) {
+        db.createObjectStore(GRAMMAR_STORE, { keyPath: "topicId" });
       }
     };
     request.onsuccess = () => resolve(request.result);
@@ -79,21 +88,46 @@ export async function saveMeta(meta: LearningMeta): Promise<void> {
   db.close();
 }
 
-export async function clearDatabase(): Promise<void> {
+export async function loadGrammarProgress(): Promise<GrammarTopicProgress[]> {
   const db = await openDatabase();
-  const transaction = db.transaction([CARD_STORE, META_STORE], "readwrite");
-  transaction.objectStore(CARD_STORE).clear();
-  transaction.objectStore(META_STORE).clear();
+  const transaction = db.transaction(GRAMMAR_STORE, "readonly");
+  const result = await requestToPromise(transaction.objectStore(GRAMMAR_STORE).getAll());
+  await transactionDone(transaction);
+  db.close();
+  return result as GrammarTopicProgress[];
+}
+
+export async function saveGrammarProgress(progress: GrammarTopicProgress[]): Promise<void> {
+  const db = await openDatabase();
+  const transaction = db.transaction(GRAMMAR_STORE, "readwrite");
+  const store = transaction.objectStore(GRAMMAR_STORE);
+  store.clear();
+  progress.forEach((item) => store.put(item));
   await transactionDone(transaction);
   db.close();
 }
 
-export function createBackup(cards: Flashcard[], meta: LearningMeta): BackupFile {
+export async function clearDatabase(): Promise<void> {
+  const db = await openDatabase();
+  const transaction = db.transaction([CARD_STORE, META_STORE, GRAMMAR_STORE], "readwrite");
+  transaction.objectStore(CARD_STORE).clear();
+  transaction.objectStore(META_STORE).clear();
+  transaction.objectStore(GRAMMAR_STORE).clear();
+  await transactionDone(transaction);
+  db.close();
+}
+
+export function createBackup(
+  cards: Flashcard[],
+  meta: LearningMeta,
+  grammarProgress: GrammarTopicProgress[] = [],
+): BackupFile {
   return {
     version: 1,
     exportedAt: new Date().toISOString(),
     cards,
     meta,
+    grammarProgress,
   };
 }
 
@@ -130,6 +164,9 @@ export function parseBackup(value: unknown): BackupFile {
     ...backup,
     cards: backup.cards.map((card) => withLearningDefaults(card)),
     meta: { ...withMetaDefaults(backup.meta), activeSession: null },
+    grammarProgress: Array.isArray(backup.grammarProgress)
+      ? backup.grammarProgress
+      : [],
   } as BackupFile;
 }
 

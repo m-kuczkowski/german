@@ -1,6 +1,7 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 import { mapCatalogRow, mapProfileMeta, mapProgressRows } from "./learning-mappers.js";
+import { grammarTopicSeed } from "./grammar-seed.js";
 
 const progressKeys = [
   "repetitions",
@@ -95,6 +96,92 @@ async function ensureSchema(sql) {
         PRIMARY KEY (profile_id, card_id)
       )`;
       await sql`ALTER TABLE card_progress ADD COLUMN IF NOT EXISTS learning_stats JSONB`;
+      await sql`CREATE TABLE IF NOT EXISTS grammar_topics (
+        id TEXT PRIMARY KEY,
+        level TEXT NOT NULL CHECK (level IN ('A1', 'A2', 'B1')),
+        sort_order INTEGER NOT NULL UNIQUE,
+        title_pl TEXT NOT NULL,
+        title_de TEXT NOT NULL,
+        published BOOLEAN NOT NULL DEFAULT FALSE,
+        content_version INTEGER NOT NULL DEFAULT 1,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )`;
+      await sql`CREATE TABLE IF NOT EXISTS grammar_topic_prerequisites (
+        topic_id TEXT NOT NULL REFERENCES grammar_topics(id) ON DELETE CASCADE,
+        prerequisite_topic_id TEXT NOT NULL REFERENCES grammar_topics(id) ON DELETE CASCADE,
+        PRIMARY KEY (topic_id, prerequisite_topic_id),
+        CHECK (topic_id <> prerequisite_topic_id)
+      )`;
+      await sql`CREATE TABLE IF NOT EXISTS grammar_examples (
+        id BIGSERIAL PRIMARY KEY,
+        topic_id TEXT NOT NULL REFERENCES grammar_topics(id) ON DELETE CASCADE,
+        position SMALLINT NOT NULL,
+        german TEXT NOT NULL,
+        polish TEXT NOT NULL,
+        highlight TEXT,
+        UNIQUE (topic_id, position)
+      )`;
+      await sql`CREATE TABLE IF NOT EXISTS grammar_exercises (
+        id TEXT PRIMARY KEY,
+        topic_id TEXT NOT NULL REFERENCES grammar_topics(id) ON DELETE CASCADE,
+        position SMALLINT NOT NULL,
+        exercise_type TEXT NOT NULL,
+        target_skill TEXT NOT NULL,
+        content JSONB NOT NULL,
+        UNIQUE (topic_id, position)
+      )`;
+      await sql`CREATE TABLE IF NOT EXISTS grammar_exercise_options (
+        exercise_id TEXT NOT NULL REFERENCES grammar_exercises(id) ON DELETE CASCADE,
+        option_id TEXT NOT NULL,
+        position SMALLINT NOT NULL,
+        text TEXT NOT NULL,
+        PRIMARY KEY (exercise_id, option_id)
+      )`;
+      await sql`CREATE TABLE IF NOT EXISTS grammar_topic_progress (
+        profile_id UUID NOT NULL REFERENCES learning_profiles(id) ON DELETE CASCADE,
+        topic_id TEXT NOT NULL REFERENCES grammar_topics(id) ON DELETE CASCADE,
+        status TEXT NOT NULL CHECK (status IN ('new', 'learning', 'review', 'mastered')),
+        mastery_score NUMERIC(5,2) NOT NULL DEFAULT 0,
+        lesson_completions INTEGER NOT NULL DEFAULT 0,
+        review_step SMALLINT NOT NULL DEFAULT 0,
+        next_review_at TIMESTAMPTZ,
+        first_started_at TIMESTAMPTZ,
+        last_practiced_at TIMESTAMPTZ,
+        mastered_at TIMESTAMPTZ,
+        successful_review_dates DATE[] NOT NULL DEFAULT '{}',
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (profile_id, topic_id)
+      )`;
+      await sql`CREATE TABLE IF NOT EXISTS grammar_attempts (
+        id UUID PRIMARY KEY,
+        profile_id UUID NOT NULL REFERENCES learning_profiles(id) ON DELETE CASCADE,
+        topic_id TEXT NOT NULL REFERENCES grammar_topics(id) ON DELETE CASCADE,
+        exercise_id TEXT NOT NULL REFERENCES grammar_exercises(id) ON DELETE CASCADE,
+        correct BOOLEAN NOT NULL,
+        score NUMERIC(4,3) NOT NULL,
+        answered_at TIMESTAMPTZ NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )`;
+      await sql`CREATE INDEX IF NOT EXISTS grammar_topic_progress_due_idx
+        ON grammar_topic_progress (profile_id, next_review_at)`;
+      await sql`CREATE INDEX IF NOT EXISTS grammar_attempts_profile_topic_idx
+        ON grammar_attempts (profile_id, topic_id, answered_at DESC)`;
+      await sql.query(
+        `WITH topics AS (
+           SELECT * FROM jsonb_to_recordset($1::jsonb)
+           AS topic(id text, level text, "sortOrder" integer, "titlePl" text, "titleDe" text, published boolean)
+         )
+         INSERT INTO grammar_topics (id, level, sort_order, title_pl, title_de, published)
+         SELECT id, level, "sortOrder", "titlePl", "titleDe", published FROM topics
+         ON CONFLICT (id) DO UPDATE SET
+           level = EXCLUDED.level,
+           sort_order = EXCLUDED.sort_order,
+           title_pl = EXCLUDED.title_pl,
+           title_de = EXCLUDED.title_de,
+           published = EXCLUDED.published,
+           updated_at = NOW()`,
+        [JSON.stringify(grammarTopicSeed)],
+      );
     })();
   }
   return schemaReady;
@@ -111,6 +198,28 @@ function progressPayload(cards) {
     .filter((card) => card && typeof card.id === "string")
     .slice(0, 10_000)
     .map((card) => Object.fromEntries(["id", ...progressKeys].map((key) => [key, card[key]])));
+}
+
+function grammarProgressPayload(progress) {
+  if (!Array.isArray(progress)) return [];
+  return progress
+    .filter((item) => item && typeof item.topicId === "string")
+    .filter((item) => grammarTopicSeed.some((topic) => topic.id === item.topicId))
+    .slice(0, 100)
+    .map((item) => ({
+      topicId: item.topicId,
+      status: ["new", "learning", "review", "mastered"].includes(item.status) ? item.status : "new",
+      masteryScore: Number.isFinite(item.masteryScore) ? Math.max(0, Math.min(100, item.masteryScore)) : 0,
+      lessonCompletions: Number.isInteger(item.lessonCompletions) ? Math.max(0, item.lessonCompletions) : 0,
+      reviewStep: Number.isInteger(item.reviewStep) ? Math.max(0, Math.min(6, item.reviewStep)) : 0,
+      nextReviewAt: typeof item.nextReviewAt === "string" ? item.nextReviewAt : null,
+      firstStartedAt: typeof item.firstStartedAt === "string" ? item.firstStartedAt : null,
+      lastPracticedAt: typeof item.lastPracticedAt === "string" ? item.lastPracticedAt : null,
+      masteredAt: typeof item.masteredAt === "string" ? item.masteredAt : null,
+      successfulReviewDates: Array.isArray(item.successfulReviewDates)
+        ? item.successfulReviewDates.filter((date) => typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date)).slice(-20)
+        : [],
+    }));
 }
 
 async function deviceProfileForRequest(req, sql) {
@@ -222,7 +331,7 @@ export default async function handler(req, res) {
     if (profile.denied) return res.status(401).json({ error: "Nieprawidłowy identyfikator urządzenia." });
 
     if (req.method === "GET") {
-      const [cards, categories, progress, history] = await Promise.all([
+      const [cards, categories, progress, history, grammarProgress] = await Promise.all([
         sql.query(`
           SELECT
             card.id, card.german, card.polish, card.article, card.plural,
@@ -251,6 +360,15 @@ export default async function handler(req, res) {
           WHERE profile_id = $1::uuid
           ORDER BY card_id, sequence_no
         `, [profile.id]),
+        sql.query(`
+          SELECT
+            topic_id, status, mastery_score, lesson_completions, review_step,
+            next_review_at, first_started_at, last_practiced_at, mastered_at,
+            successful_review_dates
+          FROM grammar_topic_progress
+          WHERE profile_id = $1::uuid
+          ORDER BY topic_id
+        `, [profile.id]),
       ]);
       if (!cards.length) return res.status(503).json({ error: "Katalog kart jest jeszcze przygotowywany." });
       const categoryById = new Map(categories.map((row) => [row.id, row.display_name]));
@@ -264,6 +382,18 @@ export default async function handler(req, res) {
           category: categoryById.get(row.category_id),
         })),
         progress: mapProgressRows(progress, history),
+        grammarProgress: grammarProgress.map((row) => ({
+          topicId: row.topic_id,
+          status: row.status,
+          masteryScore: Number(row.mastery_score),
+          lessonCompletions: row.lesson_completions,
+          reviewStep: row.review_step,
+          nextReviewAt: row.next_review_at ? new Date(row.next_review_at).toISOString() : null,
+          firstStartedAt: row.first_started_at ? new Date(row.first_started_at).toISOString() : null,
+          lastPracticedAt: row.last_practiced_at ? new Date(row.last_practiced_at).toISOString() : null,
+          masteredAt: row.mastered_at ? new Date(row.mastered_at).toISOString() : null,
+          successfulReviewDates: (row.successful_review_dates ?? []).map((date) => String(date).slice(0, 10)),
+        })),
         meta: profile.meta,
       });
     }
@@ -271,6 +401,7 @@ export default async function handler(req, res) {
     if (req.method === "PUT") {
       const body = readBody(req);
       const progress = progressPayload(body.progress);
+      const grammarProgress = grammarProgressPayload(body.grammarProgress);
       const meta = body.meta && typeof body.meta === "object" ? body.meta : {};
       await sql.transaction((txn) => [
         txn.query(
@@ -372,6 +503,42 @@ export default async function handler(req, res) {
            CROSS JOIN LATERAL jsonb_array_elements(entries.entry->'reviewHistory')
              WITH ORDINALITY AS history(event, ordinality)`,
           [profile.id, JSON.stringify(progress)],
+        ),
+        txn.query(
+          `WITH entries AS (
+             SELECT * FROM jsonb_to_recordset($2::jsonb)
+             AS entry(
+               "topicId" text, status text, "masteryScore" numeric,
+               "lessonCompletions" integer, "reviewStep" smallint,
+               "nextReviewAt" timestamptz, "firstStartedAt" timestamptz,
+               "lastPracticedAt" timestamptz, "masteredAt" timestamptz,
+               "successfulReviewDates" text[]
+             )
+           )
+           INSERT INTO grammar_topic_progress (
+             profile_id, topic_id, status, mastery_score, lesson_completions,
+             review_step, next_review_at, first_started_at, last_practiced_at,
+             mastered_at, successful_review_dates
+           )
+           SELECT
+             $1::uuid, "topicId", status, "masteryScore", "lessonCompletions",
+             "reviewStep", "nextReviewAt", "firstStartedAt", "lastPracticedAt",
+             "masteredAt", ARRAY(
+               SELECT value::date FROM unnest(COALESCE("successfulReviewDates", ARRAY[]::text[])) value
+             )
+           FROM entries
+           ON CONFLICT (profile_id, topic_id) DO UPDATE SET
+             status = EXCLUDED.status,
+             mastery_score = EXCLUDED.mastery_score,
+             lesson_completions = EXCLUDED.lesson_completions,
+             review_step = EXCLUDED.review_step,
+             next_review_at = EXCLUDED.next_review_at,
+             first_started_at = EXCLUDED.first_started_at,
+             last_practiced_at = EXCLUDED.last_practiced_at,
+             mastered_at = EXCLUDED.mastered_at,
+             successful_review_dates = EXCLUDED.successful_review_dates,
+             updated_at = NOW()`,
+          [profile.id, JSON.stringify(grammarProgress)],
         ),
         txn.query(
           `UPDATE learning_profiles

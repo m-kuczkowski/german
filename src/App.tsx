@@ -43,17 +43,28 @@ import { preloadGermanAudio, speakGerman } from "./lib/speech";
 import {
   clearDatabase,
   createBackup,
+  loadGrammarProgress,
   loadOrSeed,
   parseBackup,
   saveCards,
+  saveGrammarProgress,
   saveMeta,
 } from "./lib/storage";
 import {
+  hydrateGrammarProgress,
   hydrateRemoteState,
   isNewRemoteProfile,
   loadRemoteState,
   saveRemoteState,
 } from "./lib/remote";
+import {
+  advanceGrammarSession,
+  completeGrammarSession,
+  createGrammarLesson,
+  createGrammarReview,
+  recordGrammarAnswer,
+} from "./lib/grammar";
+import { grammarTopics } from "./data/grammarCatalog";
 import { rememberProfileName, storedProfileName } from "./lib/profile";
 import {
   advanceChallenge,
@@ -65,11 +76,15 @@ import {
 } from "./lib/challenges";
 import { ChallengesView } from "./components/ChallengesView";
 import { GettingStarted } from "./components/GettingStarted";
+import { GrammarView } from "./components/GrammarView";
 import type {
   CardContent,
   ChallengeItem,
   ChallengeType,
   Flashcard,
+  GrammarSessionAnswer,
+  GrammarTopic,
+  GrammarTopicProgress,
   LearningMeta,
   LeitnerBox,
   ReviewEvidence,
@@ -81,10 +96,10 @@ import type {
 
 const navItems: Array<{ id: TabId; icon: string; label: string }> = [
   { id: "learn", icon: "◇", label: "Nauka" },
+  { id: "grammar", icon: "Aa", label: "Gramatyka" },
   { id: "challenges", icon: "◎", label: "Wyzwania" },
   { id: "leitner", icon: "▥", label: "Przegródki" },
-  { id: "collection", icon: "▤", label: "Kolekcja" },
-  { id: "settings", icon: "⚙", label: "Ustawienia" },
+  { id: "settings", icon: "•••", label: "Więcej" },
 ];
 
 const emptyContent: Omit<CardContent, "id"> = {
@@ -150,7 +165,9 @@ function ProfileGate({ onSelect }: { onSelect: (name: string) => void }) {
 function App() {
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [meta, setMeta] = useState<LearningMeta>(defaultMeta);
+  const [grammarProgress, setGrammarProgress] = useState<GrammarTopicProgress[]>([]);
   const [tab, setTab] = useState<TabId>("learn");
+  const [moreSection, setMoreSection] = useState<"menu" | "collection" | "settings">("menu");
   const [ready, setReady] = useState(false);
   const [online, setOnline] = useState(navigator.onLine);
   const [toast, setToast] = useState<string | null>(null);
@@ -163,13 +180,18 @@ function App() {
     let active = true;
     void (async () => {
       try {
-        const local = await loadOrSeed(starterCards);
+        const [local, localGrammarProgress] = await Promise.all([
+          loadOrSeed(starterCards),
+          loadGrammarProgress(),
+        ]);
         let state = local;
+        let nextGrammarProgress = localGrammarProgress;
         let introduceProfile = false;
         try {
           const remote = await loadRemoteState(profileName);
           if (remote) {
             state = hydrateRemoteState(local.cards, local.meta, remote);
+            nextGrammarProgress = hydrateGrammarProgress(localGrammarProgress, remote.grammarProgress);
             introduceProfile = isNewRemoteProfile(remote);
           }
         } catch {
@@ -178,10 +200,12 @@ function App() {
         if (!active) return;
         setCards(state.cards);
         setMeta(state.meta);
+        setGrammarProgress(nextGrammarProgress);
         setShowGettingStarted(introduceProfile);
       } catch {
         if (!active) return;
         setCards(starterCards);
+        setGrammarProgress([]);
         setToast("Nie udało się otworzyć pamięci urządzenia. Postępy mogą nie zostać zapisane.");
       } finally {
         if (active) setReady(true);
@@ -201,11 +225,16 @@ function App() {
   }, [meta, ready]);
 
   useEffect(() => {
+    if (!ready) return;
+    void saveGrammarProgress(grammarProgress).catch(() => setToast("Nie udało się zapisać postępu gramatyki."));
+  }, [grammarProgress, ready]);
+
+  useEffect(() => {
     if (!ready || !profileName) return;
-    void saveRemoteState(cards, meta, profileName).catch(() => {
+    void saveRemoteState(cards, meta, profileName, grammarProgress).catch(() => {
       // Local persistence is the offline fallback; a later change retries syncing.
     });
-  }, [cards, meta, online, profileName, ready]);
+  }, [cards, grammarProgress, meta, online, profileName, ready]);
 
   useEffect(() => {
     const connect = () => setOnline(true);
@@ -259,6 +288,7 @@ function App() {
   const masteredCount = cards.filter((card) => card.stage === "mastered").length;
   const uncertainCount = cards.filter((card) => card.stage === "uncertain").length;
   const session = meta.activeSession;
+  const grammarSession = meta.activeGrammarSession;
   const activeItem = session?.queue[session.index];
   const activeCard = activeItem
     ? cards.find((card) => card.id === activeItem.id)
@@ -266,6 +296,7 @@ function App() {
   const complete = sessionComplete(session);
   const lessonVisible = Boolean(session && tab === "learn");
   const challengeVisible = Boolean(tab === "challenges" && meta.activeChallenge);
+  const grammarVisible = Boolean(grammarSession && tab === "grammar");
 
   useEffect(() => {
     const selected = categories.find((category) => category.id === selectedCategoryId);
@@ -345,6 +376,55 @@ function App() {
   function abortSession() {
     setMeta((current) => ({ ...current, activeSession: null }));
     setTab("learn");
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  function startGrammarLesson(topic: GrammarTopic) {
+    const sessionToStart = createGrammarLesson(topic);
+    if (!sessionToStart.queue.length) {
+      setToast("Ta lekcja jest jeszcze przygotowywana.");
+      return;
+    }
+    setMeta((current) => ({ ...current, activeGrammarSession: sessionToStart }));
+    setTab("grammar");
+  }
+
+  function startGrammarReview() {
+    const sessionToStart = createGrammarReview(grammarTopics, grammarProgress);
+    if (!sessionToStart.queue.length) {
+      setToast("Nie masz teraz gramatyki gotowej do powtórki.");
+      return;
+    }
+    setMeta((current) => ({ ...current, activeGrammarSession: sessionToStart }));
+    setTab("grammar");
+  }
+
+  function answerGrammar(answer: Omit<GrammarSessionAnswer, "answeredAt">) {
+    const answeredAt = new Date().toISOString();
+    setMeta((current) => current.activeGrammarSession
+      ? {
+        ...current,
+        activeGrammarSession: recordGrammarAnswer(current.activeGrammarSession, { ...answer, answeredAt }),
+      }
+      : current);
+  }
+
+  function advanceGrammarAnswer() {
+    setMeta((current) => current.activeGrammarSession
+      ? { ...current, activeGrammarSession: advanceGrammarSession(current.activeGrammarSession) }
+      : current);
+  }
+
+  function finishGrammarSession() {
+    const finished = meta.activeGrammarSession;
+    if (!finished) return;
+    setGrammarProgress((current) => completeGrammarSession(current, finished));
+    setMeta((current) => ({ ...current, activeGrammarSession: null }));
+  }
+
+  function abortGrammarSession() {
+    setMeta((current) => ({ ...current, activeGrammarSession: null }));
+    setTab("grammar");
     window.scrollTo({ top: 0, behavior: "auto" });
   }
 
@@ -454,7 +534,7 @@ function App() {
   }
 
   return (
-    <div className={`app-shell ${lessonVisible || challengeVisible ? "lesson-active" : ""}`}>
+    <div className={`app-shell ${lessonVisible || challengeVisible || grammarVisible ? "lesson-active" : ""}`}>
       {!online && (
         <div className="offline-banner" role="status">
           Offline · uczysz się lokalnie, synchronizacja wróci z internetem
@@ -511,11 +591,20 @@ function App() {
           />
         )}
 
-        {tab === "collection" && (
-          <CollectionView
-            cards={cards}
-            onChange={setCards}
-            onToast={setToast}
+        {tab === "grammar" && (
+          <GrammarView
+            topics={grammarTopics}
+            progress={grammarProgress}
+            session={grammarSession}
+            onStartLesson={startGrammarLesson}
+            onStartReview={startGrammarReview}
+            onAnswer={answerGrammar}
+            onNext={advanceGrammarAnswer}
+            onFinish={finishGrammarSession}
+            onAbort={abortGrammarSession}
+            onSpeak={(id, text) => {
+              if (!speakGerman(id, text)) setToast("Ta przeglądarka nie obsługuje wymowy.");
+            }}
           />
         )}
 
@@ -529,13 +618,17 @@ function App() {
         )}
 
         {tab === "settings" && (
-          <SettingsView
+          <MoreView
             cards={cards}
             meta={meta}
             profileName={profileName}
+            grammarProgress={grammarProgress}
+            section={moreSection}
             onCardsChange={setCards}
             onMetaChange={setMeta}
+            onGrammarProgressChange={setGrammarProgress}
             onToast={setToast}
+            onSectionChange={setMoreSection}
           />
         )}
       </main>
@@ -548,6 +641,7 @@ function App() {
             aria-current={tab === item.id ? "page" : undefined}
             onClick={() => {
               setTab(item.id);
+              if (item.id === "settings") setMoreSection("menu");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           >
@@ -1531,25 +1625,90 @@ function LeitnerView({
   );
 }
 
+function MoreView({
+  cards,
+  meta,
+  profileName,
+  grammarProgress,
+  section,
+  onCardsChange,
+  onMetaChange,
+  onGrammarProgressChange,
+  onToast,
+  onSectionChange,
+}: {
+  cards: Flashcard[];
+  meta: LearningMeta;
+  profileName: string;
+  grammarProgress: GrammarTopicProgress[];
+  section: "menu" | "collection" | "settings";
+  onCardsChange: (cards: Flashcard[]) => void;
+  onMetaChange: (meta: LearningMeta) => void;
+  onGrammarProgressChange: (progress: GrammarTopicProgress[]) => void;
+  onToast: (message: string) => void;
+  onSectionChange: (section: "menu" | "collection" | "settings") => void;
+}) {
+  if (section === "collection") {
+    return (
+      <>
+        <button className="back-link" type="button" onClick={() => onSectionChange("menu")}>← Więcej</button>
+        <CollectionView cards={cards} onChange={onCardsChange} onToast={onToast} />
+      </>
+    );
+  }
+  if (section === "settings") {
+    return (
+      <>
+        <button className="back-link" type="button" onClick={() => onSectionChange("menu")}>← Więcej</button>
+        <SettingsView
+          cards={cards}
+          meta={meta}
+          profileName={profileName}
+          grammarProgress={grammarProgress}
+          onCardsChange={onCardsChange}
+          onMetaChange={onMetaChange}
+          onGrammarProgressChange={onGrammarProgressChange}
+          onToast={onToast}
+        />
+      </>
+    );
+  }
+  return (
+    <section className="more-view">
+      <div className="page-heading"><p className="eyebrow">Twoja aplikacja</p><h1>Więcej</h1><p>Zarządzaj kolekcją i ustawieniami bez przeładowywania dolnej nawigacji.</p></div>
+      <button className="more-menu-row" type="button" onClick={() => onSectionChange("collection")}>
+        <span aria-hidden="true">▤</span><span><strong>Kolekcja słówek</strong><small>Przeglądaj i dodawaj własne fiszki</small></span><b aria-hidden="true">→</b>
+      </button>
+      <button className="more-menu-row" type="button" onClick={() => onSectionChange("settings")}>
+        <span aria-hidden="true">⚙</span><span><strong>Ustawienia</strong><small>Profil, motyw i kopia zapasowa</small></span><b aria-hidden="true">→</b>
+      </button>
+    </section>
+  );
+}
+
 function SettingsView({
   cards,
   meta,
   profileName,
+  grammarProgress,
   onCardsChange,
   onMetaChange,
+  onGrammarProgressChange,
   onToast,
 }: {
   cards: Flashcard[];
   meta: LearningMeta;
   profileName: string;
+  grammarProgress: GrammarTopicProgress[];
   onCardsChange: (cards: Flashcard[]) => void;
   onMetaChange: (meta: LearningMeta) => void;
+  onGrammarProgressChange: (progress: GrammarTopicProgress[]) => void;
   onToast: (message: string) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   function exportData() {
-    const blob = new Blob([JSON.stringify(createBackup(cards, meta), null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(createBackup(cards, meta, grammarProgress), null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -1566,6 +1725,7 @@ function SettingsView({
       const backup = parseBackup(JSON.parse(await file.text()));
       onCardsChange(backup.cards);
       onMetaChange(backup.meta);
+      onGrammarProgressChange(backup.grammarProgress ?? []);
       onToast(`Przywrócono ${backup.cards.length} fiszek.`);
     } catch (error) {
       onToast(error instanceof Error ? error.message : "Nie udało się odczytać pliku.");
@@ -1624,6 +1784,7 @@ function SettingsView({
           if (!window.confirm("Usunąć postępy i przywrócić zestaw startowy? Tej operacji nie można cofnąć.")) return;
           await clearDatabase();
           onCardsChange(starterCards);
+          onGrammarProgressChange([]);
           onMetaChange(defaultMeta);
           onToast("Przywrócono zestaw startowy.");
         }}

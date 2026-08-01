@@ -29,6 +29,11 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 - wybór 5, 10, 20 lub wszystkich dostępnych zadań, bez duplikowania kart;
 - osobny postęp umiejętności w wyzwaniach bez przesuwania terminów Leitnera;
 - wznowienie rozpoczętego wyzwania po odświeżeniu i na innym urządzeniu;
+- zakładka „Gramatyka” z kursem A1 → A2 → B1: krótkie wyjaśnienie po polsku,
+  przykłady z tłumaczeniem oraz wybór, uzupełnianie, układanie szyku i wpisywanie;
+- 12 gotowych lekcji pilotażowych (po 5 ćwiczeń) oraz widoczny katalog 60 tematów;
+- osobne powtórki gramatyczne po 1, 3, 7, 14, 30 i 60 dniach, bez wpływu na
+  koszyki Leitnera, terminy fiszek ani wyzwania;
 - pojedyncze kliknięcie oceny przechodzi do następnej zwykłej fiszki;
 - ręczne „Dalej” po wyborze lub wpisywaniu — wynik i kontekst nie znikają automatycznie;
 - automatyczne obniżenie stanu karty po błędzie aktywnego przypominania;
@@ -94,6 +99,8 @@ aktualizacja nie resetuje ani nie przesuwa dotychczasowych powtórek użytkownik
 - Vite, React i TypeScript po stronie klienta;
 - Vercel Function `api/learning.js` jako wąski interfejs do danych;
 - Neon Postgres dla katalogu 4937 kart i postępu oddzielonego według imienia;
+- osobne, znormalizowane tabele Neon dla tematów, zależności, przykładów,
+  ćwiczeń, odpowiedzi i postępu gramatycznego;
 - IndexedDB jako pamięć lokalna i źródło działania offline;
 - service worker z dynamicznym zakresem dla Vercel i GitHub Pages;
 - 4937 jednorazowo wygenerowanych offline nagrań, spakowanych do 64
@@ -136,7 +143,7 @@ npm run build
 
 ## Wdrożenie
 
-Produkcja działa na Vercel. Projekt wymaga `DATABASE_URL` z integracji Neon. Po zmianie katalogu kart uruchom `npm run db:push`, następnie wykonaj testy, build i wdrożenie produkcyjne.
+Produkcja działa na Vercel. Projekt wymaga `DATABASE_URL` z integracji Neon. Po zmianie katalogu kart uruchom `npm run db:push`, a po pierwszym wdrożeniu gramatyki również `npm run db:migrate:grammar`; następnie wykonaj testy, build i wdrożenie produkcyjne.
 
 Workflow GitHub Pages pozostaje statycznym podglądem awaryjnym; bez Vercel Function korzysta z katalogu osadzonego w aplikacji i lokalnego IndexedDB.
 
