@@ -110,7 +110,7 @@ export function createGrammarLesson(topic: GrammarTopic, now = new Date()): Gram
   return {
     version: 1,
     kind: "lesson",
-    queue: cycleExercises(topic, 5, `${topic.id}:${polishDateKey(now)}`),
+    queue: cycleExercises(topic, 20, `${topic.id}:${polishDateKey(now)}`),
     index: 0,
     startedAt: now.toISOString(),
     correct: 0,

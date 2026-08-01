@@ -63,8 +63,20 @@ export interface GrammarExample {
   highlight?: string;
 }
 
+export interface GrammarTheoryUseCase {
+  title: string;
+  description: string;
+}
+
+export interface GrammarPracticalTheory {
+  whenToUse: string;
+  useCases: GrammarTheoryUseCase[];
+  steps: string[];
+}
+
 export interface GrammarTheory {
   rules: string[];
+  practical: GrammarPracticalTheory;
   memoryTip: string;
   commonMistake: {
     incorrect: string;

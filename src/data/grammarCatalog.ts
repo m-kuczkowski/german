@@ -2,10 +2,22 @@ import type {
   GrammarExercise,
   GrammarExerciseType,
   GrammarLevel,
+  GrammarTheory,
   GrammarTopic,
 } from "../types";
 
 type ExerciseSeed = Omit<GrammarExercise, "id"> & { id: string };
+type TheorySeed = Omit<GrammarTheory, "practical">;
+type TopicSeed = Omit<GrammarTopic, "published" | "exercises" | "theory"> & {
+  theory?: TheorySeed;
+  exercises: ExerciseSeed[];
+};
+type SupplementalExerciseLine = readonly [prompt: string, answer: string, german: string, polish: string];
+type SupplementalExerciseSet = {
+  explanation: string;
+  targetSkill: string;
+  lines: SupplementalExerciseLine[];
+};
 
 function exercise(seed: ExerciseSeed): GrammarExercise {
   return seed;
@@ -15,10 +27,17 @@ function options(...items: string[]) {
   return items.map((text, index) => ({ id: `option-${index + 1}`, text }));
 }
 
-function topic(
-  data: Omit<GrammarTopic, "published" | "exercises"> & { exercises: ExerciseSeed[] },
-): GrammarTopic {
-  return { ...data, published: true };
+function topic(data: TopicSeed): GrammarTopic {
+  const { exercises, theory, ...topicData } = data;
+  if (!theory) return { ...topicData, published: true, exercises };
+  const practical = practicalTheoryByTopic[data.id];
+  if (!practical) throw new Error(`Brakuje praktycznej teorii dla ${data.id}.`);
+  return {
+    ...topicData,
+    published: true,
+    theory: { ...theory, practical },
+    exercises: [...exercises, ...supplementalExercises(data.id)],
+  };
 }
 
 function planned(
@@ -43,6 +62,376 @@ function planned(
     published: false,
     exercises: [],
   };
+}
+
+const practicalTheoryByTopic: Record<string, GrammarTheory["practical"]> = {
+  "A1-03": {
+    whenToUse: "To podstawowy tryb mówienia o tym, co dzieje się teraz i co robisz zwykle: w pracy, w domu, na zajęciach albo w krótkiej rozmowie.",
+    useCases: [
+      { title: "O swojej rutynie", description: "Ich arbeite heute. · Wir lernen jeden Abend." },
+      { title: "O innych osobach", description: "Meine Schwester wohnt in Bern. · Der Laden öffnet um neun." },
+    ],
+    steps: ["Znajdź osobę: ich, du, er/sie/es, wir, ihr albo sie/Sie.", "Dodaj właściwą końcówkę do tematu czasownika.", "Wstaw odmieniony czasownik na drugie miejsce zdania."],
+  },
+  "A1-05": {
+    whenToUse: "Przydaje się za każdym razem, gdy chcesz zacząć zdanie od czasu, miejsca albo innej informacji, żeby zabrzmieć naturalniej niż od samego ich.",
+    useCases: [
+      { title: "Gdy mówisz kiedy", description: "Heute arbeite ich zu Hause. · Am Montag gehe ich zum Arzt." },
+      { title: "Gdy mówisz gdzie", description: "In Zürich wohnt meine Schwester. · Im Park spielen die Kinder." },
+    ],
+    steps: ["Potraktuj wyrażenie czasu lub miejsca jako jedną pierwszą część zdania.", "Od razu po niej wstaw odmieniony czasownik.", "Dopiero potem dodaj podmiot i resztę informacji."],
+  },
+  "A1-07": {
+    whenToUse: "Rodzajnik jest potrzebny, kiedy nazywasz rzecz, pytasz o nią, kupujesz ją albo opisujesz ją w codziennej rozmowie.",
+    useCases: [
+      { title: "W sklepie i w domu", description: "Der Schlüssel liegt hier. · Ich brauche die Tasche." },
+      { title: "Gdy uczysz się słówek", description: "Zapamiętuj zawsze parę: der Tisch, die Lampe, das Bett." },
+    ],
+    steps: ["Najpierw naucz się rzeczownika razem z der, die albo das.", "Pisz rzeczownik wielką literą.", "Gdy mówisz o wielu rzeczach, zapamiętaj, że używasz die."],
+  },
+  "A1-09": {
+    whenToUse: "Używasz go wtedy, gdy czynność dotyczy konkretnej osoby lub rzeczy: coś widzisz, kupujesz, zamawiasz, szukasz albo potrzebujesz.",
+    useCases: [
+      { title: "Zakupy i restauracja", description: "Ich kaufe den Kaffee. · Sie bestellt das Wasser." },
+      { title: "Codzienne czynności", description: "Wir suchen den Bahnhof. · Ich sehe die Frau." },
+    ],
+    steps: ["Znajdź czasownik, po którym pytasz: kogo? co?", "Sprawdź rodzaj rzeczownika.", "Jeśli jest męski, zmień der na den albo ein na einen; przy die i das forma zostaje taka sama."],
+  },
+  "A1-10": {
+    whenToUse: "Dzięki temu powiesz, że czegoś nie robisz, coś nie jest prawdą albo czegoś po prostu nie masz — bez dosłownego kopiowania polskiego „nie”.",
+    useCases: [
+      { title: "Brak rzeczy", description: "Ich habe kein Auto. · Wir haben keine Zeit." },
+      { title: "Zaprzeczenie czynności lub cechy", description: "Ich komme heute nicht. · Das ist nicht teuer." },
+    ],
+    steps: ["Sprawdź, czy zaprzeczasz rzeczownikowi — wtedy wybierz kein.", "Dopasuj kein do rodzaju i przypadku rzeczownika.", "Jeśli zaprzeczasz czynność, cechę albo okolicznik, użyj nicht."],
+  },
+  "A1-12": {
+    whenToUse: "Czasowniki modalne pozwalają szybko powiedzieć, co możesz, musisz, chcesz lub wolno ci zrobić — są wszędzie w rozmowach, prośbach i planach.",
+    useCases: [
+      { title: "Plany i obowiązki", description: "Ich muss arbeiten. · Wir wollen morgen fahren." },
+      { title: "Prośby i zasady", description: "Kannst du mir helfen? · Hier darfst du nicht rauchen." },
+    ],
+    steps: ["Odmień modalny czasownik i ustaw go na drugiej pozycji.", "Zostaw drugi czasownik w bezokoliczniku.", "Przenieś bezokolicznik na sam koniec zdania."],
+  },
+  "A2-01": {
+    whenToUse: "To najczęstszy sposób mówienia o tym, co wydarzyło się wcześniej: po pracy, po weekendzie lub gdy relacjonujesz swoje doświadczenie.",
+    useCases: [
+      { title: "O minionym dniu", description: "Ich habe lange gearbeitet. · Wir haben einen Film gesehen." },
+      { title: "O zrobionej czynności", description: "Sie hat das Ticket gekauft. · Ich habe eine E-Mail geschrieben." },
+    ],
+    steps: ["Ustaw odmienione haben na drugiej pozycji.", "Dodaj informacje o czasie, miejscu lub osobie pośrodku.", "Zamknij zdanie formą Partizip II, np. gemacht albo gelernt."],
+  },
+  "A2-02": {
+    whenToUse: "Wybierasz sein, gdy opowiadasz o przemieszczaniu się albo o zmianie stanu: przyjeździe, wyjściu, zaśnięciu czy pozostaniu gdzieś.",
+    useCases: [
+      { title: "Droga i podróż", description: "Ich bin nach Hause gegangen. · Sie ist nach Wien geflogen." },
+      { title: "Zmiana lub pozostanie", description: "Er ist eingeschlafen. · Wir sind zu Hause geblieben." },
+    ],
+    steps: ["Zapytaj, czy ktoś zmienia miejsce albo stan.", "Jeśli tak, dobierz formę sein: bin, bist, ist, sind albo seid.", "Partizip II ustaw na końcu zdania."],
+  },
+  "A2-11": {
+    whenToUse: "Używaj weil, gdy wyjaśniasz powód, a dass — gdy przekazujesz, co ktoś wie, mówi, myśli lub ma nadzieję.",
+    useCases: [
+      { title: "Podawanie powodu", description: "Ich bleibe zu Hause, weil ich krank bin." },
+      { title: "Przekazywanie informacji", description: "Ich weiß, dass er heute kommt." },
+    ],
+    steps: ["Wybierz weil dla powodu albo dass dla informacji.", "Postaw przecinek przed nową częścią zdania.", "W części po weil lub dass przenieś odmieniony czasownik na sam koniec."],
+  },
+  "B1-01": {
+    whenToUse: "To zestaw, dzięki któremu opowiesz prostą historię: co było tłem, co stało się potem i co wydarzyło się na końcu.",
+    useCases: [
+      { title: "Relacja z dnia lub wyjazdu", description: "Zuerst war ich müde, dann habe ich einen Kaffee getrunken." },
+      { title: "Wyjaśnianie kolejności", description: "Danach sind wir nach Hause gefahren. Später habe ich angerufen." },
+    ],
+    steps: ["Opisz tło formą war albo hatte, gdy brzmi naturalnie.", "Dla wydarzeń użyj Perfektu.", "Dodaj zuerst, dann, danach lub später, aby słuchacz widział kolejność."],
+  },
+  "B1-05": {
+    whenToUse: "Zdania względne pomagają doprecyzować, o kim lub o czym mówisz, bez zaczynania kilku krótkich, powtarzalnych zdań.",
+    useCases: [
+      { title: "Wskazywanie osoby lub rzeczy", description: "Das ist der Mann, der hier wohnt." },
+      { title: "Dodawanie potrzebnej informacji", description: "Ich suche eine Wohnung, die nicht teuer ist." },
+    ],
+    steps: ["Nazwij rzeczownik, który chcesz doprecyzować, i postaw przecinek.", "Dobierz der, die, das lub den do rodzaju i roli w drugiej części zdania.", "W zdaniu względnym odmieniony czasownik przenieś na koniec."],
+  },
+  "B1-13": {
+    whenToUse: "Konjunktiv II sprawia, że rada, prośba albo życzenie brzmią miękko i uprzejmie, zamiast jak rozkaz czy twarde stwierdzenie.",
+    useCases: [
+      { title: "Rady", description: "Du könntest mehr schlafen. · An deiner Stelle würde ich warten." },
+      { title: "Uprzejme prośby i życzenia", description: "Ich hätte gern einen Tee. · Könnten Sie mir helfen?" },
+    ],
+    steps: ["Wybierz gotową formę: könnte, hätte, wäre lub müsste — albo würde + bezokolicznik.", "Ustaw odmienioną formę na drugiej pozycji.", "Po würde zachowaj bezokolicznik na końcu zdania."],
+  },
+};
+
+const supplementalPracticeByTopic: Record<string, SupplementalExerciseSet> = {
+  "A1-03": {
+    targetSkill: "present-practice",
+    explanation: "Dopasuj końcówkę do osoby; w odpowiedzi zwróć uwagę na odmieniony czasownik.",
+    lines: [
+      ["Ich ___ jeden Morgen Kaffee. (trinken)", "trinke", "Ich trinke jeden Morgen Kaffee.", "Piję kawę każdego ranka."],
+      ["Du ___ am Wochenende deine Eltern. (besuchen)", "besuchst", "Du besuchst am Wochenende deine Eltern.", "Odwiedzasz rodziców w weekend."],
+      ["Er ___ gern Musik. (hören)", "hört", "Er hört gern Musik.", "On chętnie słucha muzyki."],
+      ["Sie ___ in einer Bäckerei. (arbeiten)", "arbeitet", "Sie arbeitet in einer Bäckerei.", "Ona pracuje w piekarni."],
+      ["Wir ___ heute Brot. (kaufen)", "kaufen", "Wir kaufen heute Brot.", "Kupujemy dziś chleb."],
+      ["Ihr ___ jeden Abend Deutsch. (lernen)", "lernt", "Ihr lernt jeden Abend Deutsch.", "Uczycie się niemieckiego każdego wieczoru."],
+      ["Meine Freunde ___ in Basel. (wohnen)", "wohnen", "Meine Freunde wohnen in Basel.", "Moi przyjaciele mieszkają w Bazylei."],
+      ["Ich ___ meine Hausaufgaben am Abend. (machen)", "mache", "Ich mache meine Hausaufgaben am Abend.", "Odrabiam lekcje wieczorem."],
+      ["Du ___ oft im Park. (joggen)", "joggst", "Du joggst oft im Park.", "Często biegasz w parku."],
+      ["Er ___ das Fenster. (öffnen)", "öffnet", "Er öffnet das Fenster.", "On otwiera okno."],
+      ["Sie ___ Klavier. (spielen)", "spielt", "Sie spielt Klavier.", "Ona gra na pianinie."],
+      ["Wir ___ zusammen das Abendessen. (kochen)", "kochen", "Wir kochen zusammen das Abendessen.", "Gotujemy razem kolację."],
+      ["Ihr ___ immer pünktlich. (kommen)", "kommt", "Ihr kommt immer pünktlich.", "Zawsze przychodzicie punktualnie."],
+      ["Die Kinder ___ im Garten. (spielen)", "spielen", "Die Kinder spielen im Garten.", "Dzieci bawią się w ogrodzie."],
+      ["Ich ___ nach der Arbeit nach Hause. (gehen)", "gehe", "Ich gehe nach der Arbeit nach Hause.", "Idę do domu po pracy."],
+    ],
+  },
+  "A1-05": {
+    targetSkill: "verb-second-practice",
+    explanation: "Po pierwszej części zdania odmieniony czasownik zajmuje drugą pozycję.",
+    lines: [
+      ["Heute ___ ich länger. (arbeiten)", "arbeite", "Heute arbeite ich länger.", "Dziś pracuję dłużej."],
+      ["Morgen ___ wir den Zug. (nehmen)", "nehmen", "Morgen nehmen wir den Zug.", "Jutro jedziemy pociągiem."],
+      ["Am Wochenende ___ meine Freunde zu Besuch. (kommen)", "kommen", "Am Wochenende kommen meine Freunde zu Besuch.", "W weekend przychodzą do mnie przyjaciele."],
+      ["In der Küche ___ meine Mutter. (kochen)", "kocht", "In der Küche kocht meine Mutter.", "W kuchni gotuje moja mama."],
+      ["Nach der Arbeit ___ ich nach Hause. (gehen)", "gehe", "Nach der Arbeit gehe ich nach Hause.", "Po pracy idę do domu."],
+      ["Jeden Montag ___ sie Yoga. (machen)", "macht", "Jeden Montag macht sie Yoga.", "W każdy poniedziałek ona ćwiczy jogę."],
+      ["In der Stadt ___ es viele Cafés. (geben)", "gibt", "In der Stadt gibt es viele Cafés.", "W mieście jest wiele kawiarni."],
+      ["Am Abend ___ wir einen Film. (sehen)", "sehen", "Am Abend sehen wir einen Film.", "Wieczorem oglądamy film."],
+      ["Nach dem Kurs ___ du noch hier. (bleiben)", "bleibst", "Nach dem Kurs bleibst du noch hier.", "Po kursie zostajesz jeszcze tutaj."],
+      ["Im Sommer ___ ich gern ans Meer. (fahren)", "fahre", "Im Sommer fahre ich gern ans Meer.", "Latem chętnie jadę nad morze."],
+      ["Heute ___ mein Bruder nicht. (arbeiten)", "arbeitet", "Heute arbeitet mein Bruder nicht.", "Dziś mój brat nie pracuje."],
+      ["Vor dem Haus ___ ein Taxi. (warten)", "wartet", "Vor dem Haus wartet ein Taxi.", "Przed domem czeka taksówka."],
+      ["Dann ___ ich meine E-Mails. (lesen)", "lese", "Dann lese ich meine E-Mails.", "Potem czytam e-maile."],
+      ["In Zürich ___ meine Schwester. (wohnen)", "wohnt", "In Zürich wohnt meine Schwester.", "W Zurychu mieszka moja siostra."],
+      ["Später ___ wir im Restaurant. (essen)", "essen", "Später essen wir im Restaurant.", "Później jemy w restauracji."],
+    ],
+  },
+  "A1-07": {
+    targetSkill: "article-practice",
+    explanation: "Rodzajnik jest częścią rzeczownika: zapamiętaj go razem ze słowem.",
+    lines: [
+      ["___ Schlüssel liegt auf dem Tisch.", "Der", "Der Schlüssel liegt auf dem Tisch.", "Klucz leży na stole."],
+      ["___ Tasche ist sehr schwer.", "Die", "Die Tasche ist sehr schwer.", "Torba jest bardzo ciężka."],
+      ["___ Fenster ist offen.", "Das", "Das Fenster ist offen.", "Okno jest otwarte."],
+      ["___ Arzt kommt gleich.", "Der", "Der Arzt kommt gleich.", "Lekarz zaraz przyjdzie."],
+      ["___ Zeitung liegt im Briefkasten.", "Die", "Die Zeitung liegt im Briefkasten.", "Gazeta leży w skrzynce na listy."],
+      ["___ Foto ist schön.", "Das", "Das Foto ist schön.", "Zdjęcie jest ładne."],
+      ["___ Computer ist neu.", "Der", "Der Computer ist neu.", "Komputer jest nowy."],
+      ["___ Küche ist klein.", "Die", "Die Küche ist klein.", "Kuchnia jest mała."],
+      ["___ Handy klingelt.", "Das", "Das Handy klingelt.", "Telefon dzwoni."],
+      ["___ Apfel ist rot.", "Der", "Der Apfel ist rot.", "Jabłko jest czerwone."],
+      ["___ Schule ist nah.", "Die", "Die Schule ist nah.", "Szkoła jest blisko."],
+      ["___ Problem ist klein.", "Das", "Das Problem ist klein.", "Problem jest mały."],
+      ["___ Bahnhof ist weit weg.", "Der", "Der Bahnhof ist weit weg.", "Dworzec jest daleko."],
+      ["___ Antwort ist richtig.", "Die", "Die Antwort ist richtig.", "Odpowiedź jest poprawna."],
+      ["___ Geschenk ist für dich.", "Das", "Das Geschenk ist für dich.", "Prezent jest dla ciebie."],
+    ],
+  },
+  "A1-09": {
+    targetSkill: "accusative-practice",
+    explanation: "Po tym czasowniku odpowiedz na pytanie kogo? co? i dobierz formę Akkusativu.",
+    lines: [
+      ["Ich suche ___ Schlüssel. (der)", "den", "Ich suche den Schlüssel.", "Szukam klucza."],
+      ["Sie kauft ___ Tasche. (die)", "die", "Sie kauft die Tasche.", "Ona kupuje torbę."],
+      ["Wir brauchen ___ Hotel. (das)", "das", "Wir brauchen das Hotel.", "Potrzebujemy hotelu."],
+      ["Er trinkt ___ Kaffee. (der)", "den", "Er trinkt den Kaffee.", "On pije kawę."],
+      ["Ich sehe ___ Frau. (die)", "die", "Ich sehe die Frau.", "Widzę kobietę."],
+      ["Du hast ___ Problem. (das)", "das", "Du hast das Problem.", "Masz problem."],
+      ["Wir besuchen ___ Arzt. (der)", "den", "Wir besuchen den Arzt.", "Odwiedzamy lekarza."],
+      ["Sie nimmt ___ U-Bahn. (die)", "die", "Sie nimmt die U-Bahn.", "Ona jedzie metrem."],
+      ["Ich finde ___ Handy. (das)", "das", "Ich finde das Handy.", "Znajduję telefon."],
+      ["Er liest ___ Brief. (der)", "den", "Er liest den Brief.", "On czyta list."],
+      ["Wir kochen ___ Suppe. (die)", "die", "Wir kochen die Suppe.", "Gotujemy zupę."],
+      ["Sie bestellt ___ Wasser. (das)", "das", "Sie bestellt das Wasser.", "Ona zamawia wodę."],
+      ["Ich kenne ___ Nachbarn. (der)", "den", "Ich kenne den Nachbarn.", "Znam sąsiada."],
+      ["Du kaufst ___ Zeitung. (die)", "die", "Du kaufst die Zeitung.", "Kupujesz gazetę."],
+      ["Er braucht ___ Ticket. (das)", "das", "Er braucht das Ticket.", "On potrzebuje biletu."],
+    ],
+  },
+  "A1-10": {
+    targetSkill: "negation-practice",
+    explanation: "Najpierw zdecyduj, czy przeczenie dotyczy rzeczownika (kein), czy reszty zdania (nicht).",
+    lines: [
+      ["Ich habe ___ Hunger.", "keinen", "Ich habe keinen Hunger.", "Nie jestem głodny."],
+      ["Wir wohnen ___ in Berlin.", "nicht", "Wir wohnen nicht in Berlin.", "Nie mieszkamy w Berlinie."],
+      ["Sie trinkt ___ Kaffee.", "keinen", "Sie trinkt keinen Kaffee.", "Ona nie pije kawy."],
+      ["Das Wetter ist heute ___ gut.", "nicht", "Das Wetter ist heute nicht gut.", "Pogoda dziś nie jest dobra."],
+      ["Er hat ___ Geschwister.", "keine", "Er hat keine Geschwister.", "On nie ma rodzeństwa."],
+      ["Ich komme morgen ___.", "nicht", "Ich komme morgen nicht.", "Nie przychodzę jutro."],
+      ["Wir haben ___ Auto.", "kein", "Wir haben kein Auto.", "Nie mamy samochodu."],
+      ["Sie arbeitet heute ___.", "nicht", "Sie arbeitet heute nicht.", "Ona dziś nie pracuje."],
+      ["Du brauchst ___ Geld.", "kein", "Du brauchst kein Geld.", "Nie potrzebujesz pieniędzy."],
+      ["Das ist ___ mein Problem.", "nicht", "Das ist nicht mein Problem.", "To nie jest mój problem."],
+      ["Er hat ___ Zeit.", "keine", "Er hat keine Zeit.", "On nie ma czasu."],
+      ["Ich esse ___ Fleisch.", "kein", "Ich esse kein Fleisch.", "Nie jem mięsa."],
+      ["Wir fahren heute ___ nach Bern.", "nicht", "Wir fahren heute nicht nach Bern.", "Nie jedziemy dziś do Berna."],
+      ["Sie kennt ___ Leute hier.", "keine", "Sie kennt keine Leute hier.", "Ona nie zna tu nikogo."],
+      ["Der Film ist ___ langweilig.", "nicht", "Der Film ist nicht langweilig.", "Film nie jest nudny."],
+    ],
+  },
+  "A1-12": {
+    targetSkill: "modal-practice",
+    explanation: "Odmieniony czasownik modalny stoi przy początku zdania, a bezokolicznik zostaje na końcu.",
+    lines: [
+      ["Ich ___ heute früher gehen. (müssen)", "muss", "Ich muss heute früher gehen.", "Muszę dziś wyjść wcześniej."],
+      ["Du ___ hier parken. (dürfen)", "darfst", "Du darfst hier parken.", "Wolno ci tu parkować."],
+      ["Wir ___ am Samstag wandern gehen. (wollen)", "wollen", "Wir wollen am Samstag wandern gehen.", "Chcemy iść na wycieczkę w sobotę."],
+      ["Ihr ___ leiser sprechen. (sollen)", "sollt", "Ihr sollt leiser sprechen.", "Powinniście mówić ciszej."],
+      ["Sie ___ gut schwimmen. (können)", "kann", "Sie kann gut schwimmen.", "Ona potrafi dobrze pływać."],
+      ["Ich ___ gern einen Tee trinken. (möchten)", "möchte", "Ich möchte gern einen Tee trinken.", "Chciałbym napić się herbaty."],
+      ["Du ___ deine Hausaufgaben machen. (müssen)", "musst", "Du musst deine Hausaufgaben machen.", "Musisz odrobić pracę domową."],
+      ["Wir ___ jetzt losfahren. (müssen)", "müssen", "Wir müssen jetzt losfahren.", "Musimy teraz ruszać."],
+      ["Er ___ das Fenster öffnen. (können)", "kann", "Er kann das Fenster öffnen.", "On może otworzyć okno."],
+      ["Ihr ___ heute nicht arbeiten. (müssen)", "müsst", "Ihr müsst heute nicht arbeiten.", "Nie musicie dziś pracować."],
+      ["Sie ___ einen Termin vereinbaren. (wollen)", "will", "Sie will einen Termin vereinbaren.", "Ona chce umówić termin."],
+      ["Ich ___ dir helfen. (können)", "kann", "Ich kann dir helfen.", "Mogę ci pomóc."],
+      ["Du ___ im Zug nicht rauchen. (dürfen)", "darfst", "Du darfst im Zug nicht rauchen.", "Nie wolno ci palić w pociągu."],
+      ["Wir ___ morgen länger schlafen. (können)", "können", "Wir können morgen länger schlafen.", "Możemy jutro spać dłużej."],
+      ["Er ___ einen Kaffee bestellen. (möchten)", "möchte", "Er möchte einen Kaffee bestellen.", "On chciałby zamówić kawę."],
+    ],
+  },
+  "A2-01": {
+    targetSkill: "perfect-haben-practice",
+    explanation: "W Perfekcie z haben wybierz właściwą formę haben, a Partizip II zostaw na końcu zdania.",
+    lines: [
+      ["Ich ___ gestern lange gearbeitet.", "habe", "Ich habe gestern lange gearbeitet.", "Wczoraj długo pracowałem."],
+      ["Du ___ den Film gesehen.", "hast", "Du hast den Film gesehen.", "Oglądałeś film."],
+      ["Er ___ seine Mutter angerufen.", "hat", "Er hat seine Mutter angerufen.", "On zadzwonił do swojej mamy."],
+      ["Wir ___ Pizza bestellt.", "haben", "Wir haben Pizza bestellt.", "Zamówiliśmy pizzę."],
+      ["Ihr ___ viel Deutsch gelernt.", "habt", "Ihr habt viel Deutsch gelernt.", "Nauczyliście się dużo niemieckiego."],
+      ["Sie ___ die Tür geöffnet.", "hat", "Sie hat die Tür geöffnet.", "Ona otworzyła drzwi."],
+      ["Ich ___ mein Handy verloren.", "habe", "Ich habe mein Handy verloren.", "Zgubiłem telefon."],
+      ["Du ___ ein Foto gemacht.", "hast", "Du hast ein Foto gemacht.", "Zrobiłeś zdjęcie."],
+      ["Er ___ den Bus verpasst.", "hat", "Er hat den Bus verpasst.", "On spóźnił się na autobus."],
+      ["Wir ___ im Restaurant gegessen.", "haben", "Wir haben im Restaurant gegessen.", "Jedliśmy w restauracji."],
+      ["Ihr ___ die Rechnung bezahlt.", "habt", "Ihr habt die Rechnung bezahlt.", "Zapłaciliście rachunek."],
+      ["Sie ___ ihren Freund besucht.", "hat", "Sie hat ihren Freund besucht.", "Ona odwiedziła swojego przyjaciela."],
+      ["Ich ___ eine E-Mail geschrieben.", "habe", "Ich habe eine E-Mail geschrieben.", "Napisałem e-mail."],
+      ["Du ___ den Schlüssel gefunden.", "hast", "Du hast den Schlüssel gefunden.", "Znalazłeś klucz."],
+      ["Wir ___ den Termin abgesagt.", "haben", "Wir haben den Termin abgesagt.", "Odwołaliśmy spotkanie."],
+    ],
+  },
+  "A2-02": {
+    targetSkill: "perfect-sein-practice",
+    explanation: "Przy ruchu i zmianie stanu wybierz właściwą formę sein; Partizip II pozostaje na końcu.",
+    lines: [
+      ["Ich ___ früh aufgestanden.", "bin", "Ich bin früh aufgestanden.", "Wstałem wcześnie."],
+      ["Du ___ nach München gefahren.", "bist", "Du bist nach München gefahren.", "Pojechałeś do Monachium."],
+      ["Er ___ spät nach Hause gekommen.", "ist", "Er ist spät nach Hause gekommen.", "On wrócił późno do domu."],
+      ["Wir ___ lange geblieben.", "sind", "Wir sind lange geblieben.", "Zostaliśmy długo."],
+      ["Ihr ___ schnell eingeschlafen.", "seid", "Ihr seid schnell eingeschlafen.", "Szybko zasnęliście."],
+      ["Sie ___ mit dem Zug gereist.", "ist", "Sie ist mit dem Zug gereist.", "Ona podróżowała pociągiem."],
+      ["Ich ___ gestern sehr müde geworden.", "bin", "Ich bin gestern sehr müde geworden.", "Wczoraj bardzo się zmęczyłem."],
+      ["Du ___ pünktlich angekommen.", "bist", "Du bist pünktlich angekommen.", "Przyjechałeś punktualnie."],
+      ["Er ___ in den Park gelaufen.", "ist", "Er ist in den Park gelaufen.", "On pobiegł do parku."],
+      ["Wir ___ um sechs Uhr losgegangen.", "sind", "Wir sind um sechs Uhr losgegangen.", "Wyszliśmy o szóstej."],
+      ["Ihr ___ zu spät gekommen.", "seid", "Ihr seid zu spät gekommen.", "Przyszliście za późno."],
+      ["Sie ___ nach Wien geflogen.", "ist", "Sie ist nach Wien geflogen.", "Ona poleciała do Wiednia."],
+      ["Ich ___ auf dem Sofa eingeschlafen.", "bin", "Ich bin auf dem Sofa eingeschlafen.", "Zasnąłem na kanapie."],
+      ["Du ___ bei deiner Schwester geblieben.", "bist", "Du bist bei deiner Schwester geblieben.", "Zostałeś u swojej siostry."],
+      ["Wir ___ zusammen nach Hause gegangen.", "sind", "Wir sind zusammen nach Hause gegangen.", "Poszliśmy razem do domu."],
+    ],
+  },
+  "A2-11": {
+    targetSkill: "subordinate-practice",
+    explanation: "Po weil i dass odmieniony czasownik kończy część zdania podrzędnego.",
+    lines: [
+      ["Ich bleibe zu Hause, weil ich müde ___. (sein)", "bin", "Ich bleibe zu Hause, weil ich müde bin.", "Zostaję w domu, ponieważ jestem zmęczony."],
+      ["Sie sagt, dass sie morgen ___. (kommen)", "kommt", "Sie sagt, dass sie morgen kommt.", "Ona mówi, że przyjdzie jutro."],
+      ["Wir lernen viel, weil wir die Prüfung bestehen ___. (wollen)", "wollen", "Wir lernen viel, weil wir die Prüfung bestehen wollen.", "Dużo się uczymy, ponieważ chcemy zdać egzamin."],
+      ["Er weiß, dass der Laden heute geschlossen ___. (sein)", "ist", "Er weiß, dass der Laden heute geschlossen ist.", "On wie, że sklep jest dziś zamknięty."],
+      ["Ich rufe dich an, weil ich etwas fragen ___. (wollen)", "will", "Ich rufe dich an, weil ich etwas fragen will.", "Dzwonię do ciebie, ponieważ chcę o coś zapytać."],
+      ["Sie freut sich, weil du ihr ___. (helfen)", "hilfst", "Sie freut sich, weil du ihr hilfst.", "Ona się cieszy, ponieważ jej pomagasz."],
+      ["Wir hoffen, dass das Wetter besser ___. (werden)", "wird", "Wir hoffen, dass das Wetter besser wird.", "Mamy nadzieję, że pogoda się poprawi."],
+      ["Du bleibst hier, weil du noch arbeiten ___. (müssen)", "musst", "Du bleibst hier, weil du noch arbeiten musst.", "Zostajesz tutaj, ponieważ musisz jeszcze pracować."],
+      ["Er sagt, dass er keine Zeit ___. (haben)", "hat", "Er sagt, dass er keine Zeit hat.", "On mówi, że nie ma czasu."],
+      ["Ich gehe früh ins Bett, weil ich morgen früh ___. (aufstehen)", "aufstehe", "Ich gehe früh ins Bett, weil ich morgen früh aufstehe.", "Kładę się wcześnie, ponieważ jutro wcześnie wstaję."],
+      ["Wir wissen, dass der Zug um acht Uhr ___. (abfahren)", "abfährt", "Wir wissen, dass der Zug um acht Uhr abfährt.", "Wiemy, że pociąg odjeżdża o ósmej."],
+      ["Sie kommt nicht, weil sie krank ___. (sein)", "ist", "Sie kommt nicht, weil sie krank ist.", "Ona nie przychodzi, ponieważ jest chora."],
+      ["Ich glaube, dass du das gut ___. (machen)", "machst", "Ich glaube, dass du das gut machst.", "Myślę, że dobrze to robisz."],
+      ["Du lernst Deutsch, weil du in Deutschland arbeiten ___. (wollen)", "willst", "Du lernst Deutsch, weil du in Deutschland arbeiten willst.", "Uczysz się niemieckiego, ponieważ chcesz pracować w Niemczech."],
+      ["Er erzählt, dass seine Familie in Polen ___. (leben)", "lebt", "Er erzählt, dass seine Familie in Polen lebt.", "On opowiada, że jego rodzina mieszka w Polsce."],
+    ],
+  },
+  "B1-01": {
+    targetSkill: "narrative-practice",
+    explanation: "W opowiadaniu użyj war lub hatte dla tła, a Perfektu dla kolejnych wydarzeń.",
+    lines: [
+      ["Gestern ___ ich sehr müde. (sein)", "war", "Gestern war ich sehr müde.", "Wczoraj byłem bardzo zmęczony."],
+      ["Zuerst ___ wir keine Zeit. (haben)", "hatten", "Zuerst hatten wir keine Zeit.", "Najpierw nie mieliśmy czasu."],
+      ["Dann ___ ich meine Freundin angerufen.", "habe", "Dann habe ich meine Freundin angerufen.", "Potem zadzwoniłem do przyjaciółki."],
+      ["Danach ___ wir mit dem Bus nach Hause gefahren.", "sind", "Danach sind wir mit dem Bus nach Hause gefahren.", "Potem pojechaliśmy autobusem do domu."],
+      ["Später ___ er einen Kaffee getrunken.", "hat", "Später hat er einen Kaffee getrunken.", "Później wypił kawę."],
+      ["Am Morgen ___ das Wetter schlecht. (sein)", "war", "Am Morgen war das Wetter schlecht.", "Rano pogoda była zła."],
+      ["Zuerst ___ ich meine Tasche gesucht.", "habe", "Zuerst habe ich meine Tasche gesucht.", "Najpierw szukałem torby."],
+      ["Dann ___ ich zum Bahnhof gelaufen.", "bin", "Dann bin ich zum Bahnhof gelaufen.", "Potem pobiegłem na dworzec."],
+      ["Wir ___ großen Hunger. (haben)", "hatten", "Wir hatten großen Hunger.", "Byliśmy bardzo głodni."],
+      ["Danach ___ wir etwas gegessen.", "haben", "Danach haben wir etwas gegessen.", "Potem coś zjedliśmy."],
+      ["Später ___ sie nach Hause gegangen.", "ist", "Später ist sie nach Hause gegangen.", "Później poszła do domu."],
+      ["Am Anfang ___ ich nervös. (sein)", "war", "Am Anfang war ich nervös.", "Na początku byłem zdenerwowany."],
+      ["Zuerst ___ wir den Plan besprochen.", "haben", "Zuerst haben wir den Plan besprochen.", "Najpierw omówiliśmy plan."],
+      ["Dann ___ das Treffen begonnen.", "hat", "Dann hat das Treffen begonnen.", "Potem spotkanie się zaczęło."],
+      ["Später ___ ich noch lange gearbeitet.", "habe", "Später habe ich noch lange gearbeitet.", "Później jeszcze długo pracowałem."],
+    ],
+  },
+  "B1-05": {
+    targetSkill: "relative-practice",
+    explanation: "Dobierz zaimek względny do rzeczownika i pamiętaj, że czasownik kończy zdanie względne.",
+    lines: [
+      ["Das ist die Frau, ___ nebenan wohnt.", "die", "Das ist die Frau, die nebenan wohnt.", "To kobieta, która mieszka obok."],
+      ["Ich kenne den Mann, ___ du suchst.", "den", "Ich kenne den Mann, den du suchst.", "Znam mężczyznę, którego szukasz."],
+      ["Das ist das Café, ___ wir mögen.", "das", "Das ist das Café, das wir mögen.", "To kawiarnia, którą lubimy."],
+      ["Die Kinder, ___ im Garten spielen, sind laut.", "die", "Die Kinder, die im Garten spielen, sind laut.", "Dzieci, które bawią się w ogrodzie, są głośne."],
+      ["Der Film, ___ ich gestern gesehen habe, war spannend.", "den", "Der Film, den ich gestern gesehen habe, war spannend.", "Film, który oglądałem wczoraj, był ciekawy."],
+      ["Ich suche ein Hotel, ___ nah am Bahnhof ist.", "das", "Ich suche ein Hotel, das nah am Bahnhof ist.", "Szukam hotelu, który jest blisko dworca."],
+      ["Der Kollege, ___ mir hilft, ist sehr freundlich.", "der", "Der Kollege, der mir hilft, ist sehr freundlich.", "Kolega, który mi pomaga, jest bardzo miły."],
+      ["Die Tasche, ___ du gekauft hast, ist teuer.", "die", "Die Tasche, die du gekauft hast, ist teuer.", "Torba, którą kupiłeś, jest droga."],
+      ["Das ist der Hund, ___ jeden Morgen bellt.", "der", "Das ist der Hund, der jeden Morgen bellt.", "To pies, który szczeka każdego ranka."],
+      ["Das Buch, ___ ich lese, ist interessant.", "das", "Das Buch, das ich lese, ist interessant.", "Książka, którą czytam, jest interesująca."],
+      ["Die Leute, ___ wir gestern getroffen haben, sind nett.", "die", "Die Leute, die wir gestern getroffen haben, sind nett.", "Ludzie, których spotkaliśmy wczoraj, są mili."],
+      ["Der Computer, ___ nicht funktioniert, ist alt.", "der", "Der Computer, der nicht funktioniert, ist alt.", "Komputer, który nie działa, jest stary."],
+      ["Das Mädchen, ___ ich kenne, wohnt in Bern.", "das", "Das Mädchen, das ich kenne, wohnt in Bern.", "Dziewczyna, którą znam, mieszka w Bernie."],
+      ["Die Wohnung, ___ wir besichtigen, hat einen Balkon.", "die", "Die Wohnung, die wir besichtigen, hat einen Balkon.", "Mieszkanie, które oglądamy, ma balkon."],
+      ["Der Arzt, ___ ich heute sehe, ist sehr freundlich.", "den", "Der Arzt, den ich heute sehe, ist sehr freundlich.", "Lekarz, którego dziś widzę, jest bardzo miły."],
+    ],
+  },
+  "B1-13": {
+    targetSkill: "konjunktiv-practice",
+    explanation: "Konjunktiv II łagodzi radę, prośbę albo życzenie; po würde bezokolicznik zostaje na końcu.",
+    lines: [
+      ["An deiner Stelle ___ ich früher schlafen gehen. (würden)", "würde", "An deiner Stelle würde ich früher schlafen gehen.", "Na twoim miejscu chodziłbym spać wcześniej."],
+      ["Du ___ mehr Wasser trinken. (können)", "könntest", "Du könntest mehr Wasser trinken.", "Mógłbyś pić więcej wody."],
+      ["Ich ___ gern einen Tisch reservieren. (würden)", "würde", "Ich würde gern einen Tisch reservieren.", "Chciałbym zarezerwować stolik."],
+      ["Wir ___ heute zu Hause bleiben. (können)", "könnten", "Wir könnten heute zu Hause bleiben.", "Moglibyśmy dziś zostać w domu."],
+      ["Er ___ mehr Sport machen. (sollen)", "sollte", "Er sollte mehr Sport machen.", "On powinien uprawiać więcej sportu."],
+      ["Ihr ___ etwas langsamer sprechen. (können)", "könntet", "Ihr könntet etwas langsamer sprechen.", "Moglibyście mówić trochę wolniej."],
+      ["Sie ___ gern ein Glas Wasser. (haben)", "hätte", "Sie hätte gern ein Glas Wasser.", "Ona chciałaby szklankę wody."],
+      ["Ich ___ dir gern helfen. (können)", "könnte", "Ich könnte dir gern helfen.", "Mógłbym ci pomóc."],
+      ["Du ___ mit dem Chef sprechen. (sollen)", "solltest", "Du solltest mit dem Chef sprechen.", "Powinieneś porozmawiać z szefem."],
+      ["Wir ___ früher losfahren. (müssen)", "müssten", "Wir müssten früher losfahren.", "Musielibyśmy wyjechać wcześniej."],
+      ["Er ___ gern in Berlin wohnen. (würden)", "würde", "Er würde gern in Berlin wohnen.", "On chciałby mieszkać w Berlinie."],
+      ["Ihr ___ das noch einmal erklären. (können)", "könntet", "Ihr könntet das noch einmal erklären.", "Moglibyście wyjaśnić to jeszcze raz."],
+      ["Ich ___ lieber einen Tee. (haben)", "hätte", "Ich hätte lieber einen Tee.", "Wolałbym herbatę."],
+      ["Du ___ dich ein wenig ausruhen. (sollen)", "solltest", "Du solltest dich ein wenig ausruhen.", "Powinieneś trochę odpocząć."],
+      ["Sie ___ gern länger bleiben. (würden)", "würde", "Sie würde gern länger bleiben.", "Ona chciałaby zostać dłużej."],
+    ],
+  },
+};
+
+function supplementalExercises(topicId: string): ExerciseSeed[] {
+  const set = supplementalPracticeByTopic[topicId];
+  if (!set) return [];
+  return set.lines.map(([prompt, answer, contextGerman, contextPolish], index) => exercise({
+    id: `${topicId.toLowerCase()}-${index + 6}`,
+    type: "gap-fill",
+    instruction: "Uzupełnij zdanie.",
+    prompt,
+    answer,
+    explanation: set.explanation,
+    targetSkill: set.targetSkill,
+    contextGerman,
+    contextPolish,
+  }));
 }
 
 const pilotTopics: GrammarTopic[] = [

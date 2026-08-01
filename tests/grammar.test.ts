@@ -26,9 +26,11 @@ describe("lekcje gramatyki", () => {
     expect(evaluateGrammarAnswer(exercise, "konnte").correct).toBe(false);
   });
 
-  it("tworzy krótką lekcję z ćwiczeniami danego tematu", () => {
+  it("tworzy lekcję z 20 różnymi ćwiczeniami danego tematu", () => {
     const session = createGrammarLesson(present, new Date("2026-08-01T09:00:00.000Z"));
-    expect(session.queue).toHaveLength(5);
+    expect(present.exercises).toHaveLength(20);
+    expect(session.queue).toHaveLength(20);
+    expect(new Set(session.queue.map((item) => item.exerciseId))).toHaveLength(20);
     expect(new Set(session.queue.map((item) => item.topicId))).toEqual(new Set(["A1-03"]));
   });
 
@@ -45,7 +47,7 @@ describe("lekcje gramatyki", () => {
     });
     const advanced = advanceGrammarSession(recorded);
     expect(advanced.index).toBe(1);
-    expect(advanced.queue).toHaveLength(6);
+    expect(advanced.queue).toHaveLength(21);
     expect(advanced.queue.some((item) => item.retry)).toBe(true);
   });
 

@@ -7,10 +7,16 @@ import { createGrammarLesson } from "../src/lib/grammar";
 describe("teoria gramatyki", () => {
   const published = grammarTopics.filter((topic) => topic.published);
 
-  it("każda opublikowana lekcja ma zasady, sposób zapamiętania i typowy błąd", () => {
+  it("każda opublikowana lekcja ma 20 ćwiczeń oraz praktyczną teorię", () => {
     expect(published).toHaveLength(12);
     for (const topic of published) {
+      expect(topic.exercises).toHaveLength(20);
+      expect(new Set(topic.exercises.map((exercise) => exercise.id))).toHaveLength(20);
+      expect(topic.exercises.every((exercise) => exercise.contextGerman.length > 0 && exercise.contextPolish.length > 0)).toBe(true);
       expect(topic.theory?.rules).toHaveLength(3);
+      expect(topic.theory?.practical.useCases).toHaveLength(2);
+      expect(topic.theory?.practical.steps).toHaveLength(3);
+      expect(topic.theory?.practical.whenToUse.length).toBeGreaterThan(40);
       expect(topic.theory?.memoryTip.length).toBeGreaterThan(20);
       expect(topic.theory?.commonMistake.incorrect).not.toBe(topic.theory?.commonMistake.correct);
       expect(topic.examples.length).toBeGreaterThanOrEqual(3);
@@ -28,6 +34,8 @@ describe("teoria gramatyki", () => {
       />,
     );
     expect(html).toContain("O co tutaj chodzi?");
+    expect(html).toContain("Kiedy to naprawdę się przydaje?");
+    expect(html).toContain("Jak to zrobić krok po kroku?");
     expect(html).toContain("Zapamiętaj te trzy rzeczy");
     expect(html).toContain("Zobacz regułę w zdaniu");
     expect(html).toContain("Typowy błąd");

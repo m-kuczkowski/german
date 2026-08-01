@@ -270,6 +270,30 @@ export function GrammarTheoryView({
         )}
       </section>
 
+      <section className="theory-section theory-practical-section">
+        <p className="eyebrow">W codziennym niemieckim</p>
+        <h2>Kiedy to naprawdę się przydaje?</h2>
+        <p>{theory.practical.whenToUse}</p>
+        <ul className="theory-use-cases">
+          {theory.practical.useCases.map((useCase) => (
+            <li key={useCase.title}>
+              <strong>{useCase.title}</strong>
+              <span>{useCase.description}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="theory-section theory-practical-section">
+        <p className="eyebrow">Prosta procedura</p>
+        <h2>Jak to zrobić krok po kroku?</h2>
+        <ol className="theory-steps">
+          {theory.practical.steps.map((step, index) => (
+            <li key={step}><span>{index + 1}</span><p>{step}</p></li>
+          ))}
+        </ol>
+      </section>
+
       <section className="theory-section">
         <p className="eyebrow">Najważniejsze zasady</p>
         <h2>Zapamiętaj te trzy rzeczy</h2>

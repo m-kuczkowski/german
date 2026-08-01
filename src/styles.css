@@ -830,6 +830,72 @@ h1 em {
   line-height: 1.5;
 }
 
+.theory-practical-section {
+  background: color-mix(in srgb, var(--mint) 28%, var(--surface));
+}
+
+.theory-use-cases {
+  display: grid;
+  gap: 9px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.theory-use-cases li {
+  display: grid;
+  gap: 4px;
+  padding: 13px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--green) 16%, transparent);
+  border-radius: 13px 13px 5px 13px;
+}
+
+.theory-use-cases strong {
+  color: var(--green);
+  font-size: 13px;
+}
+
+.theory-use-cases span {
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.48;
+}
+
+.theory-steps {
+  display: grid;
+  gap: 11px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.theory-steps li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: start;
+  gap: 11px;
+}
+
+.theory-steps li > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: var(--orange);
+  background: var(--cream);
+  border-radius: 11px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.theory-steps p {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .theory-examples {
   display: grid;
   gap: 9px;
