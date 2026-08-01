@@ -53,6 +53,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "ich lern-e · du lern-st · er/sie/es lern-t · wir lern-en",
     prerequisites: ["A1-01"],
     explanation: "W czasie teraźniejszym końcówka czasownika zależy od osoby. Najpierw odetnij końcówkę -en, a potem dodaj właściwą końcówkę. W niemieckim zaimek zwykle stoi przed odmienionym czasownikiem.",
+    theory: {
+      rules: [
+        "Usuń końcówkę -en z bezokolicznika, aby otrzymać temat: lernen → lern-.",
+        "Dodaj końcówkę osoby: ich -e, du -st, er/sie/es -t, wir/sie/Sie -en, ihr -t.",
+        "W zwykłym zdaniu odmieniony czasownik zajmuje drugą pozycję.",
+      ],
+      memoryTip: "Najpierw znajdź osobę, dopiero potem wybierz końcówkę czasownika.",
+      commonMistake: { incorrect: "Du lernen Deutsch.", correct: "Du lernst Deutsch.", explanation: "Po du czasownik regularny potrzebuje końcówki -st." },
+    },
     examples: [
       { german: "Ich lerne jeden Tag Deutsch.", polish: "Uczę się niemieckiego każdego dnia.", highlight: "lerne" },
       { german: "Du wohnst in Zürich.", polish: "Mieszkasz w Zurychu.", highlight: "wohnst" },
@@ -73,6 +82,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "Heute | lerne | ich Deutsch.",
     prerequisites: ["A1-03"],
     explanation: "W zdaniu głównym odmieniony czasownik zajmuje drugą pozycję. Gdy na początku stawiasz czas lub miejsce, podmiot przechodzi za czasownik. Liczą się części zdania, nie liczba pojedynczych słów.",
+    theory: {
+      rules: [
+        "Odmieniony czasownik jest drugą częścią zdania głównego.",
+        "Czas, miejsce lub inna informacja może wejść na pierwszą pozycję.",
+        "Gdy coś innego jest pierwsze, podmiot zwykle stoi bezpośrednio po czasowniku.",
+      ],
+      memoryTip: "Wyobraź sobie czasownik przyklejony do miejsca numer 2.",
+      commonMistake: { incorrect: "Heute ich arbeite zu Hause.", correct: "Heute arbeite ich zu Hause.", explanation: "Heute zajmuje pierwszą pozycję, więc arbeite musi być drugie." },
+    },
     examples: [
       { german: "Heute lerne ich Deutsch.", polish: "Dziś uczę się niemieckiego.", highlight: "lerne" },
       { german: "In Berlin wohnt meine Schwester.", polish: "W Berlinie mieszka moja siostra.", highlight: "wohnt" },
@@ -93,6 +111,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "der Tisch · die Lampe · das Bett",
     prerequisites: [],
     explanation: "Każdy niemiecki rzeczownik ma rodzaj: der, die albo das. Ucz się rzeczownika od razu z rodzajnikiem. W liczbie mnogiej używamy die niezależnie od rodzaju w liczbie pojedynczej.",
+    theory: {
+      rules: [
+        "Ucz się rzeczownika jako jednej całości z rodzajnikiem: der Tisch, die Lampe, das Bett.",
+        "Niemieckie rzeczowniki zapisujemy wielką literą.",
+        "W liczbie mnogiej rodzajnik określony ma zawsze formę die.",
+      ],
+      memoryTip: "Kolor lub obraz przypisany do der, die i das pomaga zapamiętać rodzaj razem ze słowem.",
+      commonMistake: { incorrect: "der Wohnung", correct: "die Wohnung", explanation: "Wohnung jest rodzaju żeńskiego i trzeba zapamiętać ją razem z die." },
+    },
     examples: [
       { german: "Der Tisch ist neu.", polish: "Stół jest nowy.", highlight: "Der Tisch" },
       { german: "Die Lampe ist klein.", polish: "Lampa jest mała.", highlight: "Die Lampe" },
@@ -113,6 +140,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "der → den · die → die · das → das",
     prerequisites: ["A1-07"],
     explanation: "Biernik często odpowiada na pytanie kogo? co? Po wielu czasownikach, np. sehen, kaufen i brauchen, rzeczownik jest w Akkusativie. Zmienia się głównie rodzaj męski: der staje się den.",
+    theory: {
+      rules: [
+        "Akkusativ oznacza najczęściej osobę lub rzecz, na którą skierowana jest czynność.",
+        "Rodzaj męski zmienia der → den oraz ein → einen.",
+        "Formy die, eine, das i ein pozostają w bierniku bez zmiany.",
+      ],
+      memoryTip: "Szukaj czasownika i zapytaj: widzę, kupuję lub potrzebuję kogo albo co?",
+      commonMistake: { incorrect: "Ich sehe der Hund.", correct: "Ich sehe den Hund.", explanation: "Hund jest męski i po sehen występuje w Akkusativie: den Hund." },
+    },
     examples: [
       { german: "Ich kaufe den Kaffee.", polish: "Kupuję kawę.", highlight: "den Kaffee" },
       { german: "Sie sieht die Lampe.", polish: "Ona widzi lampę.", highlight: "die Lampe" },
@@ -133,6 +169,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "Ich komme nicht. · Ich habe kein Auto.",
     prerequisites: ["A1-03", "A1-07"],
     explanation: "Używaj nicht, gdy zaprzeczasz czynność, cechę lub całe zdanie. Używaj kein, gdy zaprzeczasz rzeczownik z ein albo bez rodzajnika. Kein odmienia się podobnie jak ein.",
+    theory: {
+      rules: [
+        "kein zaprzecza rzeczownikowi, przed którym normalnie byłoby ein/eine albo nie byłoby rodzajnika.",
+        "nicht zaprzecza czasownikowi, przymiotnikowi, określeniu lub całemu zdaniu.",
+        "kein odmienia się jak ein: kein Auto, keine Zeit, keinen Bruder.",
+      ],
+      memoryTip: "Jeśli po polskim „nie” od razu stoi rzecz, najpierw sprawdź, czy potrzebujesz kein.",
+      commonMistake: { incorrect: "Ich habe nicht Auto.", correct: "Ich habe kein Auto.", explanation: "Zaprzeczamy rzeczownik Auto, dlatego używamy kein." },
+    },
     examples: [
       { german: "Ich arbeite heute nicht.", polish: "Nie pracuję dziś.", highlight: "nicht" },
       { german: "Er hat kein Auto.", polish: "On nie ma samochodu.", highlight: "kein Auto" },
@@ -153,6 +198,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "Ich muss heute arbeiten.",
     prerequisites: ["A1-03"],
     explanation: "Czasownik modalny stoi odmieniony na drugim miejscu. Drugi czasownik pozostaje w bezokoliczniku i idzie na koniec zdania. To tworzy niemiecką klamrę zdaniową.",
+    theory: {
+      rules: [
+        "Odmień czasownik modalny zgodnie z osobą i ustaw go na drugiej pozycji.",
+        "Czasownik opisujący czynność pozostaje w bezokoliczniku na końcu.",
+        "W pytaniu tak/nie czasownik modalny przechodzi na początek.",
+      ],
+      memoryTip: "Modalny otwiera klamrę, a bezokolicznik zamyka zdanie.",
+      commonMistake: { incorrect: "Ich muss heute arbeite.", correct: "Ich muss heute arbeiten.", explanation: "Po czasowniku modalnym drugi czasownik pozostaje w bezokoliczniku." },
+    },
     examples: [
       { german: "Ich kann heute kommen.", polish: "Mogę dziś przyjść.", highlight: "kann ... kommen" },
       { german: "Wir müssen arbeiten.", polish: "Musimy pracować.", highlight: "müssen ... arbeiten" },
@@ -173,6 +227,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "Ich habe Deutsch gelernt.",
     prerequisites: ["A1-03", "A1-12"],
     explanation: "Perfekt tworzymy z odmienionym haben na drugim miejscu oraz Partizip II na końcu. W rozmowie o przeszłości Perfekt jest bardzo częsty.",
+    theory: {
+      rules: [
+        "Odmień haben zgodnie z osobą i ustaw je na drugiej pozycji.",
+        "Partizip II opisujący wykonaną czynność trafia na koniec zdania.",
+        "Regularne czasowniki często tworzą Partizip II jako ge- + temat + -t: machen → gemacht.",
+      ],
+      memoryTip: "haben i Partizip II tworzą klamrę wokół reszty zdania.",
+      commonMistake: { incorrect: "Ich habe gelernt Deutsch.", correct: "Ich habe Deutsch gelernt.", explanation: "Partizip II gelernt musi zamknąć zdanie." },
+    },
     examples: [
       { german: "Ich habe gestern gearbeitet.", polish: "Wczoraj pracowałem.", highlight: "habe ... gearbeitet" },
       { german: "Wir haben einen Film gesehen.", polish: "Oglądaliśmy film.", highlight: "haben ... gesehen" },
@@ -193,6 +256,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "Ich bin nach Berlin gefahren.",
     prerequisites: ["A2-01"],
     explanation: "Czasowniki wyrażające ruch z miejsca do miejsca albo zmianę stanu często tworzą Perfekt z sein. Odmienione sein jest na drugim miejscu, a Partizip II na końcu.",
+    theory: {
+      rules: [
+        "Używaj sein przy ruchu z miejsca do miejsca, np. gehen, kommen i fahren.",
+        "sein występuje też przy zmianie stanu oraz z bleiben, sein i werden.",
+        "Odmienione sein jest drugie, a Partizip II pozostaje na końcu.",
+      ],
+      memoryTip: "Jeśli podmiot zmienia miejsce lub stan, sprawdź najpierw sein.",
+      commonMistake: { incorrect: "Ich habe nach Hause gegangen.", correct: "Ich bin nach Hause gegangen.", explanation: "gehen opisuje ruch i tworzy Perfekt z sein." },
+    },
     examples: [
       { german: "Ich bin nach Berlin gefahren.", polish: "Pojechałem do Berlina.", highlight: "bin ... gefahren" },
       { german: "Sie ist früh angekommen.", polish: "Ona przyjechała wcześnie.", highlight: "ist ... angekommen" },
@@ -213,6 +285,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "..., weil ich heute arbeiten muss.",
     prerequisites: ["A1-05", "A1-12"],
     explanation: "weil i dass wprowadzają zdanie podrzędne. W takim zdaniu odmieniony czasownik idzie na koniec. Gdy jest czasownik modalny, bezokolicznik stoi przed nim.",
+    theory: {
+      rules: [
+        "weil podaje powód, a dass wprowadza przekazywaną informację.",
+        "Przed weil lub dass stawiamy przecinek.",
+        "W zdaniu podrzędnym odmieniony czasownik idzie na koniec; przy czasowniku modalnym bezokolicznik stoi tuż przed nim.",
+      ],
+      memoryTip: "weil i dass odsyłają odmieniony czasownik na sam koniec swojej części zdania.",
+      commonMistake: { incorrect: "..., weil ich bin krank.", correct: "..., weil ich krank bin.", explanation: "Po weil odmienione bin musi znaleźć się na końcu." },
+    },
     examples: [
       { german: "Ich bleibe zu Hause, weil ich krank bin.", polish: "Zostaję w domu, ponieważ jestem chory.", highlight: "weil ich krank bin" },
       { german: "Ich weiß, dass er heute kommt.", polish: "Wiem, że on dziś przychodzi.", highlight: "dass er heute kommt" },
@@ -233,6 +314,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "Zuerst war ich müde, dann habe ich einen Kaffee getrunken.",
     prerequisites: ["A2-01", "A2-02"],
     explanation: "W rozmowie Perfekt pozostaje podstawowym czasem przeszłym. Formy war i hatte są jednak bardzo częste, gdy opisujesz tło lub stan. Łącz zdania wyrazami zuerst, dann i später, aby historia była jasna.",
+    theory: {
+      rules: [
+        "Używaj Perfekt do kolejnych wydarzeń i czynności w rozmowie.",
+        "Formy war i hatte naturalnie opisują wcześniejszy stan, sytuację lub tło.",
+        "Porządkuj historię wyrazami zuerst, dann, danach i später; po nich czasownik nadal jest drugi.",
+      ],
+      memoryTip: "Najpierw ustaw oś czasu, potem dobierz Perfekt do zdarzeń oraz war/hatte do tła.",
+      commonMistake: { incorrect: "Dann ich habe angerufen.", correct: "Dann habe ich angerufen.", explanation: "Dann zajmuje pierwszą pozycję, więc habe musi być drugie." },
+    },
     examples: [
       { german: "Zuerst war ich müde, dann habe ich einen Kaffee getrunken.", polish: "Najpierw byłem zmęczony, potem wypiłem kawę.", highlight: "war ... habe ... getrunken" },
       { german: "Wir hatten wenig Zeit, deshalb sind wir mit dem Taxi gefahren.", polish: "Mieliśmy mało czasu, dlatego pojechaliśmy taksówką.", highlight: "hatten ... sind ... gefahren" },
@@ -253,6 +343,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "Das ist der Mann, der hier wohnt.",
     prerequisites: ["A1-09", "A2-11"],
     explanation: "Zdanie względne dodaje informację o osobie lub rzeczy. Zaczyna się od der, die albo das i oddzielamy je przecinkiem. W zdaniu względnym odmieniony czasownik idzie na koniec.",
+    theory: {
+      rules: [
+        "Rodzaj zaimka względnego wynika z opisywanego rzeczownika.",
+        "Przypadek zaimka wynika z jego funkcji wewnątrz zdania względnego: der jako podmiot, den jako dopełnienie męskie.",
+        "Zdanie względne oddzielamy przecinkiem, a odmieniony czasownik ustawiamy na końcu.",
+      ],
+      memoryTip: "Najpierw sprawdź rodzaj rzeczownika, potem zapytaj, co zaimek robi w drugiej części zdania.",
+      commonMistake: { incorrect: "Das ist der Film, den ich sehe heute.", correct: "Das ist der Film, den ich heute sehe.", explanation: "W zdaniu względnym sehe musi stać na końcu." },
+    },
     examples: [
       { german: "Das ist der Mann, der hier wohnt.", polish: "To jest mężczyzna, który tu mieszka.", highlight: "der hier wohnt" },
       { german: "Ich suche eine Wohnung, die nicht teuer ist.", polish: "Szukam mieszkania, które nie jest drogie.", highlight: "die nicht teuer ist" },
@@ -273,6 +372,15 @@ const pilotTopics: GrammarTopic[] = [
     pattern: "Ich würde mehr schlafen. · Du könntest früher kommen.",
     prerequisites: ["A2-10", "A2-11"],
     explanation: "Konjunktiv II łagodzi wypowiedź. Użyj würde + bezokolicznik, aby mówić o życzeniu lub hipotetycznej sytuacji. Formy könnte i hätte są bardzo przydatne w radach oraz uprzejmych prośbach.",
+    theory: {
+      rules: [
+        "würde + bezokolicznik opisuje hipotetyczną czynność lub łagodną radę.",
+        "Częste krótkie formy to hätte, wäre, könnte i müsste.",
+        "W konstrukcji z würde bezokolicznik trafia na koniec zdania.",
+      ],
+      memoryTip: "Konjunktiv II tworzy językowy dystans — wypowiedź brzmi jak możliwość, rada lub uprzejme życzenie.",
+      commonMistake: { incorrect: "Ich würde mehr schlafe.", correct: "Ich würde mehr schlafen.", explanation: "Po würde używamy pełnego bezokolicznika schlafen." },
+    },
     examples: [
       { german: "An deiner Stelle würde ich mehr schlafen.", polish: "Na twoim miejscu spałbym więcej.", highlight: "würde ich mehr schlafen" },
       { german: "Du könntest früher kommen.", polish: "Mógłbyś przyjść wcześniej.", highlight: "könntest" },

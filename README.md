@@ -31,6 +31,8 @@ Podstawa badawcza i uzasadnienie harmonogramu są opisane w
 - wznowienie rozpoczętego wyzwania po odświeżeniu i na innym urządzeniu;
 - zakładka „Gramatyka” z kursem A1 → A2 → B1: krótkie wyjaśnienie po polsku,
   przykłady z tłumaczeniem oraz wybór, uzupełnianie, układanie szyku i wpisywanie;
+- osobny ekran „Teoria” przy każdej dostępnej lekcji: wzór, trzy zasady,
+  przykłady z odsłuchem, sposób zapamiętania i typowy błąd;
 - 12 gotowych lekcji pilotażowych (po 5 ćwiczeń) oraz widoczny katalog 60 tematów;
 - osobne powtórki gramatyczne po 1, 3, 7, 14, 30 i 60 dniach, bez wpływu na
   koszyki Leitnera, terminy fiszek ani wyzwania;

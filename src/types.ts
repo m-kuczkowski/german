@@ -63,6 +63,16 @@ export interface GrammarExample {
   highlight?: string;
 }
 
+export interface GrammarTheory {
+  rules: string[];
+  memoryTip: string;
+  commonMistake: {
+    incorrect: string;
+    correct: string;
+    explanation: string;
+  };
+}
+
 export interface GrammarExerciseOption {
   id: string;
   text: string;
@@ -93,6 +103,7 @@ export interface GrammarTopic {
   goalPl: string;
   explanation: string;
   pattern?: string;
+  theory?: GrammarTheory;
   examples: GrammarExample[];
   prerequisites: string[];
   published: boolean;

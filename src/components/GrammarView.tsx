@@ -230,7 +230,99 @@ function GrammarSummary({
   );
 }
 
-function TopicCard({ topic, progress, onStart }: { topic: GrammarTopic; progress: GrammarTopicProgress; onStart: () => void }) {
+export function GrammarTheoryView({
+  topic,
+  onBack,
+  onStart,
+  onSpeak,
+}: {
+  topic: GrammarTopic;
+  onBack: () => void;
+  onStart: () => void;
+  onSpeak: (id: string, text: string) => void;
+}) {
+  const theory = topic.theory;
+  if (!theory) return null;
+  return (
+    <section className="grammar-theory-page">
+      <button className="back-link" type="button" onClick={onBack}>← Gramatyka</button>
+      <header className="grammar-theory-header">
+        <div className="grammar-card-meta"><span>{topic.level} · Teoria</span><span>{topic.titleDe}</span></div>
+        <h1>{topic.titlePl}</h1>
+        <p>{topic.goalPl}</p>
+      </header>
+
+      <section className="theory-section">
+        <p className="eyebrow">Najpierw zrozum</p>
+        <h2>O co tutaj chodzi?</h2>
+        <p>{topic.explanation}</p>
+        {topic.pattern && (
+          <div className="theory-pattern">
+            <span>Wzór</span>
+            <strong>{topic.pattern}</strong>
+          </div>
+        )}
+      </section>
+
+      <section className="theory-section">
+        <p className="eyebrow">Najważniejsze zasady</p>
+        <h2>Zapamiętaj te trzy rzeczy</h2>
+        <ol className="theory-rules">
+          {theory.rules.map((rule, index) => (
+            <li key={rule}><span>{index + 1}</span><p>{rule}</p></li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="theory-section">
+        <p className="eyebrow">Przykłady</p>
+        <h2>Zobacz regułę w zdaniu</h2>
+        <div className="theory-examples">
+          {topic.examples.map((example, index) => (
+            <article key={example.german}>
+              <div>
+                <strong>{example.german}</strong>
+                <small>{example.polish}</small>
+              </div>
+              <button type="button" aria-label={`Odsłuchaj przykład ${index + 1}`} onClick={() => onSpeak(`grammar-theory-${topic.id}-${index}`, example.german)}>◖</button>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="theory-memory-card">
+        <span aria-hidden="true">✦</span>
+        <div><strong>Jak to zapamiętać?</strong><p>{theory.memoryTip}</p></div>
+      </section>
+
+      <section className="theory-section theory-mistake">
+        <p className="eyebrow">Typowy błąd</p>
+        <div className="mistake-comparison">
+          <p><span aria-hidden="true">×</span><del>{theory.commonMistake.incorrect}</del></p>
+          <p><span aria-hidden="true">✓</span><strong>{theory.commonMistake.correct}</strong></p>
+        </div>
+        <p>{theory.commonMistake.explanation}</p>
+      </section>
+
+      <div className="theory-footer-actions">
+        <button className="secondary-button" type="button" onClick={onBack}>Wróć</button>
+        <button className="primary-button" type="button" onClick={onStart}>Przejdź do ćwiczeń →</button>
+      </div>
+    </section>
+  );
+}
+
+function TopicCard({
+  topic,
+  progress,
+  onStart,
+  onTheory,
+}: {
+  topic: GrammarTopic;
+  progress: GrammarTopicProgress;
+  onStart: () => void;
+  onTheory: () => void;
+}) {
   return (
     <article className={`grammar-topic-card ${topic.published ? "" : "is-planned"}`}>
       <div className="grammar-card-meta"><span>{topic.level} · {statusLabel(progress)}</span><span>{topic.published ? `${topic.exercises.length} ćwiczeń` : "W przygotowaniu"}</span></div>
@@ -240,9 +332,12 @@ function TopicCard({ topic, progress, onStart }: { topic: GrammarTopic; progress
       {topic.published ? (
         <>
           <small>{reviewLabel(progress.nextReviewAt)}</small>
-          <button className="secondary-button" type="button" onClick={onStart}>
-            {progress.status === "new" ? "Rozpocznij" : "Otwórz lekcję"}
-          </button>
+          <div className="grammar-topic-actions">
+            <button className="secondary-button" type="button" onClick={onTheory}>Teoria</button>
+            <button className="primary-button" type="button" onClick={onStart}>
+              {progress.status === "new" ? "Rozpocznij" : "Ćwicz"}
+            </button>
+          </div>
         </>
       ) : <small>Publikujemy dopiero kompletne lekcje z wyjaśnieniem, przykładami i sprawdzonymi odpowiedziami.</small>}
     </article>
@@ -254,11 +349,13 @@ function GrammarDashboard({
   progress,
   onStartLesson,
   onStartReview,
+  onOpenTheory,
 }: {
   topics: GrammarTopic[];
   progress: GrammarTopicProgress[];
   onStartLesson: (topic: GrammarTopic) => void;
   onStartReview: () => void;
+  onOpenTheory: (topic: GrammarTopic) => void;
 }) {
   const due = dueGrammarTopics(topics, progress);
   const recommended = recommendedGrammarTopic(topics, progress);
@@ -282,7 +379,10 @@ function GrammarDashboard({
           <p className="eyebrow">Polecany następny krok</p>
           <h2>{recommended.titlePl}</h2>
           <p>{recommended.goalPl}</p>
-          <button className="primary-button" type="button" onClick={() => onStartLesson(recommended)}>Rozpocznij krótką lekcję</button>
+          <div className="grammar-recommendation-actions">
+            <button className="secondary-button" type="button" onClick={() => onOpenTheory(recommended)}>Teoria</button>
+            <button className="primary-button" type="button" onClick={() => onStartLesson(recommended)}>Rozpocznij lekcję</button>
+          </div>
         </section>
       )}
       <section className="grammar-method-note">
@@ -295,7 +395,7 @@ function GrammarDashboard({
           <section key={level} className="grammar-level-section">
             <div className="section-heading"><h2>{level}</h2><span>{level === "A2" ? "Pomost do B1" : level === "A1" ? "Fundamenty" : "Komunikacja B1"}</span></div>
             <div className="grammar-topic-grid">
-              {levelTopics.map((topic) => <TopicCard key={topic.id} topic={topic} progress={grammarProgressFor(progress, topic.id)} onStart={() => onStartLesson(topic)} />)}
+              {levelTopics.map((topic) => <TopicCard key={topic.id} topic={topic} progress={grammarProgressFor(progress, topic.id)} onStart={() => onStartLesson(topic)} onTheory={() => onOpenTheory(topic)} />)}
             </div>
           </section>
         );
@@ -328,7 +428,21 @@ export function GrammarView({
   onAbort: () => void;
   onSpeak: (id: string, text: string) => void;
 }) {
+  const [theoryTopic, setTheoryTopic] = useState<GrammarTopic | null>(null);
   if (session && grammarSessionComplete(session)) return <GrammarSummary session={session} onFinish={onFinish} />;
   if (session) return <GrammarExerciseCard session={session} onAnswer={onAnswer} onNext={onNext} onAbort={onAbort} onSpeak={onSpeak} />;
-  return <GrammarDashboard topics={topics} progress={progress} onStartLesson={onStartLesson} onStartReview={onStartReview} />;
+  if (theoryTopic) {
+    return (
+      <GrammarTheoryView
+        topic={theoryTopic}
+        onBack={() => setTheoryTopic(null)}
+        onStart={() => {
+          setTheoryTopic(null);
+          onStartLesson(theoryTopic);
+        }}
+        onSpeak={onSpeak}
+      />
+    );
+  }
+  return <GrammarDashboard topics={topics} progress={progress} onStartLesson={onStartLesson} onStartReview={onStartReview} onOpenTheory={setTheoryTopic} />;
 }
