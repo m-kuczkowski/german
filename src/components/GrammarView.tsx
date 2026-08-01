@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { grammarLevels, grammarSourceNote, grammarTopicsById } from "../data/grammarCatalog";
 import {
   dueGrammarTopics,
@@ -435,6 +435,23 @@ export function GrammarView({
   onSpeak: (id: string, text: string) => void;
 }) {
   const [theoryTopic, setTheoryTopic] = useState<GrammarTopic | null>(null);
+  const theoryScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!theoryTopic) return;
+
+    const scrollToTheoryStart = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      theoryScrollRef.current?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    };
+
+    scrollToTheoryStart();
+    const animationFrame = window.requestAnimationFrame(scrollToTheoryStart);
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [theoryTopic?.id]);
   if (session && grammarSessionComplete(session)) return <GrammarSummary session={session} onFinish={onFinish} />;
   if (session) {
     return (
@@ -443,7 +460,7 @@ export function GrammarView({
           <GrammarExerciseCard session={session} onAnswer={onAnswer} onNext={onNext} onAbort={onAbort} onTheory={setTheoryTopic} onSpeak={onSpeak} />
         </div>
         {theoryTopic && (
-          <div className="grammar-theory-during-session">
+          <div ref={theoryScrollRef} className="grammar-theory-during-session">
             <GrammarTheoryView
               topic={theoryTopic}
               mode="during-lesson"
