@@ -96,7 +96,7 @@ const translationCorrections = new Map([
     "nicos-a2-7ecd4eacc8a5",
     {
       german: "zuhören (jemandem)",
-      polish: "słuchać kogoś uważnie; przysłuchiwać się komuś",
+      polish: "słuchać kogoś uważnie",
       examplePolish: "Posłuchaj mnie przez chwilę.",
     },
   ],

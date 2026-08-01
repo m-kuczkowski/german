@@ -709,6 +709,11 @@ function FlashcardSession(props: SessionProps) {
   const submittedRef = useRef(Boolean(persistedOutcome));
   const isChoice = exercise.mode.startsWith("choice");
   const isListening = exercise.mode === "type-listen-de";
+  const promptLengthClass = exercise.prompt.length > 56
+    ? "extra-long-exercise-prompt"
+    : exercise.prompt.length > 32
+      ? "long-exercise-prompt"
+      : "";
   const selectedOption = exercise.options.find((option) => option.cardId === selectedCardId);
   const correct = outcome?.evidence.correct ?? false;
   const germanLabel = card.article ? `${card.article} ${card.german}` : card.german;
@@ -955,7 +960,7 @@ function FlashcardSession(props: SessionProps) {
         ) : (
           <>
             <p className="exercise-instruction">{exercise.instruction}</p>
-            <div className={`exercise-prompt ${isListening ? "listening-exercise-prompt" : ""}`}>
+            <div className={`exercise-prompt ${isListening ? "listening-exercise-prompt" : ""} ${promptLengthClass}`}>
               {isListening ? (
                 <button
                   type="button"

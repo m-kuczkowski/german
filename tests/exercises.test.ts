@@ -142,6 +142,7 @@ describe("ćwiczenia językowe", () => {
       .toMatchObject({ correct: true, score: 1 });
     expect(evaluateTypedAnswer("zuhören", zuhoerenExercise.acceptedAnswers))
       .toMatchObject({ correct: true, score: 1 });
+    expect(zuhoerenExercise.prompt).toBe("słuchać kogoś uważnie");
   });
 
   it("ćwiczy rodzajnik osobno dla poznanego rzeczownika", () => {
