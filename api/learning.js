@@ -166,6 +166,14 @@ async function ensureSchema(sql) {
         ON grammar_topic_progress (profile_id, next_review_at)`;
       await sql`CREATE INDEX IF NOT EXISTS grammar_attempts_profile_topic_idx
         ON grammar_attempts (profile_id, topic_id, answered_at DESC)`;
+      await sql`ALTER TABLE card_review_history
+        DROP CONSTRAINT IF EXISTS card_review_history_mode_check`;
+      await sql`ALTER TABLE card_review_history
+        ADD CONSTRAINT card_review_history_mode_check
+        CHECK (mode IN (
+          'introduction', 'choice-de-pl', 'choice-pl-de', 'choice-article',
+          'type-de-pl', 'type-pl-de', 'type-listen-de', 'type-context-de'
+        )) NOT VALID`;
       await sql.query(
         `WITH topics AS (
            SELECT * FROM jsonb_to_recordset($1::jsonb)

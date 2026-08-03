@@ -100,25 +100,39 @@ try {
     lapses: 0,
     stage: "learning",
     correctStreak: 1,
-    successfulModes: ["choice-de-pl"],
+    successfulModes: ["choice-de-pl", "type-context-de"],
     firstActiveRecallAt: reviewedAt,
     lastActiveRecallAt: reviewedAt,
     lastReviewedAt: reviewedAt,
     typedAttempts: 0,
     typedSuccesses: 0,
     leitnerBox: 1,
-    reviewHistory: [{
-      id: `smoke-${cardId}`,
-      reviewedAt,
-      mode: "choice-de-pl",
-      rating: "good",
-      correct: true,
-      score: 100,
-      fromBox: 1,
-      toBox: 1,
-      scheduledFor: dueAt,
-      reason: "Test integracyjny.",
-    }],
+    reviewHistory: [
+      {
+        id: `smoke-${cardId}`,
+        reviewedAt,
+        mode: "choice-de-pl",
+        rating: "good",
+        correct: true,
+        score: 100,
+        fromBox: 1,
+        toBox: 1,
+        scheduledFor: dueAt,
+        reason: "Test integracyjny.",
+      },
+      {
+        id: `smoke-context-${cardId}`,
+        reviewedAt,
+        mode: "type-context-de",
+        rating: "good",
+        correct: true,
+        score: 100,
+        fromBox: 1,
+        toBox: 1,
+        scheduledFor: dueAt,
+        reason: "Test ćwiczenia kontekstowego.",
+      },
+    ],
     lastSchedulingReason: "Test integracyjny.",
     successfulReviewDays: ["2026-07-27"],
   };
@@ -147,7 +161,7 @@ try {
   await request("PUT", testName, { progress: [progress], meta }, device);
   const secondDevice = await request("GET", testName);
   if (secondDevice.payload.progress.length !== 1) throw new Error("Drugi odczyt nie zwrócił postępu.");
-  if (secondDevice.payload.progress[0].reviewHistory.length !== 1) {
+  if (secondDevice.payload.progress[0].reviewHistory.length !== 2) {
     throw new Error("Historia nie została odtworzona.");
   }
   if (secondDevice.payload.meta.activeChallenge?.index !== 2) {

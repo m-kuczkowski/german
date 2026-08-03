@@ -213,5 +213,9 @@ export async function saveRemoteState(
     headers: headers(identity, profileName, true),
     body: JSON.stringify({ progress, meta, grammarProgress }),
   });
-  if (!response.ok) throw new Error("Nie udało się zapisać postępów w bazie.");
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null) as { error?: unknown } | null;
+    const detail = typeof payload?.error === "string" ? `: ${payload.error}` : "";
+    throw new Error(`Nie udało się zapisać postępów w bazie (HTTP ${response.status})${detail}`);
+  }
 }

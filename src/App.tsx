@@ -175,6 +175,7 @@ function App() {
   const [profileName, setProfileName] = useState<string | null>(storedProfileName);
   const [showGettingStarted, setShowGettingStarted] = useState(false);
   const remoteSaveQueue = useRef<Promise<void>>(Promise.resolve());
+  const remoteSyncErrorShown = useRef(false);
 
   useEffect(() => {
     if (!profileName) return;
@@ -238,16 +239,22 @@ function App() {
 
   useEffect(() => {
     if (!ready || !profileName || !online) return;
-    remoteSaveQueue.current = remoteSaveQueue.current
-      .catch(() => undefined)
-      .then(async () => {
-        if (!navigator.onLine) return;
-        await saveRemoteState(cards, meta, profileName, grammarProgress);
-      })
-      .catch((error) => {
-        console.error("Nie udało się zsynchronizować postępu z bazą.", error);
-        setToast("Postęp nie został jeszcze zsynchronizowany. Spróbujemy ponownie przy kolejnej zmianie.");
-      });
+    const syncTimer = window.setTimeout(() => {
+      remoteSaveQueue.current = remoteSaveQueue.current
+        .catch(() => undefined)
+        .then(async () => {
+          if (!navigator.onLine) return;
+          await saveRemoteState(cards, meta, profileName, grammarProgress);
+          remoteSyncErrorShown.current = false;
+        })
+        .catch((error) => {
+          console.error("Nie udało się zsynchronizować postępu z bazą.", error);
+          if (remoteSyncErrorShown.current) return;
+          remoteSyncErrorShown.current = true;
+          setToast("Postęp nie został jeszcze zsynchronizowany. Spróbujemy ponownie przy kolejnej zmianie.");
+        });
+    }, 600);
+    return () => window.clearTimeout(syncTimer);
   }, [cards, grammarProgress, meta, online, profileName, ready]);
 
   useEffect(() => {
