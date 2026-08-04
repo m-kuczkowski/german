@@ -933,6 +933,21 @@ function FlashcardSession(props: SessionProps) {
                   <span className="flip-face flip-back">
                     <small>POLSKI I KONTEKST</small>
                     <strong>{card.polish}</strong>
+                    {card.article && (
+                      <span className="noun-forms" aria-label="Liczba pojedyncza i mnoga">
+                        <small>LICZBA POJEDYNCZA I MNOGA</small>
+                        <span>
+                          <b>L. poj.</b>
+                          <em lang="de">{germanLabel}</em>
+                        </span>
+                        <span>
+                          <b>L. mn.</b>
+                          <em lang="de">
+                            {card.plural && card.plural !== "-" ? `die ${card.plural}` : "kein Plural"}
+                          </em>
+                        </span>
+                      </span>
+                    )}
                     {card.wordParts && card.wordParts.length > 0 && (
                       <span className="word-breakdown">
                         <small>BUDOWA SŁOWA</small>

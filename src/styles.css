@@ -2534,6 +2534,44 @@ h1 em {
   font-weight: 750;
 }
 
+.flip-back > .noun-forms {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 9px;
+  width: min(100%, 330px);
+  padding: 7px 10px;
+  color: var(--muted);
+  background: var(--cream);
+  border-radius: 11px;
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.noun-forms > small {
+  grid-column: 1 / -1;
+  color: var(--green);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.noun-forms > span {
+  display: contents;
+}
+
+.noun-forms b {
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.noun-forms em {
+  color: var(--ink);
+  font-style: normal;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
 .flip-back > .word-breakdown {
   display: grid;
   gap: 3px;
