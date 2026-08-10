@@ -106,6 +106,29 @@ describe("kolekcja fiszek", () => {
       });
   });
 
+  it("koryguje nieprecyzyjne tłumaczenia i przykłady w katalogu", () => {
+    expect(starterCards.find((card) => card.id === "goethe-9914224f0ff2"))
+      .toMatchObject({
+        german: "Uhr",
+        polish: "godzina; zegar",
+        exampleGerman: "Wie viel Uhr ist es?",
+        examplePolish: "Która jest godzina?",
+      });
+    expect(starterCards.find((card) => card.id === "nicos-a2-512bcae78c7a"))
+      .toMatchObject({ polish: "towarzyszyć" });
+    expect(starterCards.find((card) => card.id === "nicos-a2-6bb92bd44805"))
+      .toMatchObject({
+        german: "das heißt",
+        article: null,
+        polish: "to znaczy",
+      });
+    expect(starterCards.find((card) => card.id === "nicos-b1-991664309dc3"))
+      .toMatchObject({
+        polish: "zlecić wykonanie czegoś",
+        examplePolish: "Jutro zlecę naprawę mojego roweru.",
+      });
+  });
+
   it("wykrywa duplikat niezależnie od wielkości liter i rodzajnika", () => {
     expect(isDuplicate({ german: "das ABITUR" }, starterCards)).toBe(true);
   });

@@ -411,6 +411,11 @@ export default async function handler(req, res) {
       const progress = progressPayload(body.progress);
       const grammarProgress = grammarProgressPayload(body.grammarProgress);
       const meta = body.meta && typeof body.meta === "object" ? body.meta : {};
+      console.info("learning-api: sync-start", {
+        profileId: profile.id,
+        progressCards: progress.length,
+        grammarTopics: grammarProgress.length,
+      });
       await sql.transaction((txn) => [
         txn.query(
           "DELETE FROM card_review_history WHERE profile_id = $1::uuid",
@@ -571,12 +576,16 @@ export default async function handler(req, res) {
           [profile.id, JSON.stringify(meta)],
         ),
       ]);
+      console.info("learning-api: sync-complete", { profileId: profile.id });
       return res.status(204).end();
     }
 
     return res.status(405).json({ error: "Metoda niedozwolona." });
   } catch (error) {
-    console.error("learning-api", error);
+    console.error("learning-api", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return res.status(500).json({ error: "Nie udało się połączyć z bazą." });
   }
 }

@@ -1,3 +1,5 @@
+import cardCorrections from "../data/card-corrections.json" with { type: "json" };
+
 function present(value, fallback) {
   return value === null || value === undefined ? fallback : value;
 }
@@ -9,7 +11,7 @@ function dateKey(value) {
 }
 
 export function mapCatalogRow(row) {
-  return {
+  const card = {
     id: row.id,
     german: row.german,
     polish: row.polish,
@@ -34,6 +36,7 @@ export function mapCatalogRow(row) {
     sourceGloss: row.source_gloss,
     sourceLanguage: row.source_language,
   };
+  return { ...card, ...(cardCorrections[row.id] ?? {}) };
 }
 
 export function mapProgressRows(rows, historyRows) {

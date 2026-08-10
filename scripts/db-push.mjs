@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { neon } from "@neondatabase/serverless";
+import cardCorrections from "../data/card-corrections.json" with { type: "json" };
 import {
   MIGRATION_ID,
   migrationStatements,
@@ -22,7 +23,10 @@ if (!databaseUrl) throw new Error("Brakuje DATABASE_URL_UNPOOLED w pliku środow
 const generated = readFileSync(resolve("src/data/goetheCards.ts"), "utf8");
 const match = generated.match(/JSON\.parse\((.*)\) as CardContent\[\];/);
 if (!match) throw new Error("Nie udało się odczytać wygenerowanych kart.");
-const cards = JSON.parse(JSON.parse(match[1]));
+const cards = JSON.parse(JSON.parse(match[1])).map((card) => ({
+  ...card,
+  ...(cardCorrections[card.id] ?? {}),
+}));
 const sql = neon(databaseUrl);
 
 await sql`CREATE TABLE IF NOT EXISTS catalog_cards (

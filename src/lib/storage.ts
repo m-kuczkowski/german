@@ -13,7 +13,7 @@ const CARD_STORE = "cards";
 const META_STORE = "meta";
 const GRAMMAR_STORE = "grammar-progress";
 const META_KEY = "learning";
-const CURRENT_CONTENT_VERSION = 12;
+const CURRENT_CONTENT_VERSION = 13;
 
 function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {

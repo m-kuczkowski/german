@@ -76,6 +76,14 @@ describe("ćwiczenia językowe", () => {
     expect(evaluateTypedAnswer("zona", ["żona"], "pl").correct).toBe(false);
   });
 
+  it("nie wymaga wielokropka w odpowiedzi wpisywanej", () => {
+    expect(evaluateTypedAnswer("das heißt", ["das heißt …"])).toMatchObject({
+      correct: true,
+      score: 1,
+    });
+    expect(normalizeAnswer("Das heißt...")).toBe(normalizeAnswer("Das heißt …"));
+  });
+
   it("odrzuca błędną odpowiedź", () => {
     const exercise = createExercise(starterCards[0], starterCards, 3);
     expect(isTypedAnswerCorrect("zupełnie inne słowo", exercise.acceptedAnswers)).toBe(false);

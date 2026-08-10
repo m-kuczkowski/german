@@ -175,7 +175,13 @@ function App() {
   const [profileName, setProfileName] = useState<string | null>(storedProfileName);
   const [showGettingStarted, setShowGettingStarted] = useState(false);
   const remoteSaveQueue = useRef<Promise<void>>(Promise.resolve());
-  const remoteSyncErrorShown = useRef(false);
+  const remoteRetryTimer = useRef<number | null>(null);
+  const remoteRetryAttempts = useRef(0);
+  const [remoteRetryVersion, setRemoteRetryVersion] = useState(0);
+
+  useEffect(() => () => {
+    if (remoteRetryTimer.current !== null) window.clearTimeout(remoteRetryTimer.current);
+  }, []);
 
   useEffect(() => {
     if (!profileName) return;
@@ -239,23 +245,31 @@ function App() {
 
   useEffect(() => {
     if (!ready || !profileName || !online) return;
+    if (remoteRetryTimer.current !== null) {
+      window.clearTimeout(remoteRetryTimer.current);
+      remoteRetryTimer.current = null;
+    }
     const syncTimer = window.setTimeout(() => {
       remoteSaveQueue.current = remoteSaveQueue.current
         .catch(() => undefined)
         .then(async () => {
           if (!navigator.onLine) return;
           await saveRemoteState(cards, meta, profileName, grammarProgress);
-          remoteSyncErrorShown.current = false;
+          remoteRetryAttempts.current = 0;
         })
         .catch((error) => {
           console.error("Nie udało się zsynchronizować postępu z bazą.", error);
-          if (remoteSyncErrorShown.current) return;
-          remoteSyncErrorShown.current = true;
-          setToast("Postęp nie został jeszcze zsynchronizowany. Spróbujemy ponownie przy kolejnej zmianie.");
+          if (!navigator.onLine || remoteRetryTimer.current !== null) return;
+          const delay = Math.min(30_000, 2_000 * 2 ** remoteRetryAttempts.current);
+          remoteRetryAttempts.current = Math.min(remoteRetryAttempts.current + 1, 4);
+          remoteRetryTimer.current = window.setTimeout(() => {
+            remoteRetryTimer.current = null;
+            setRemoteRetryVersion((version) => version + 1);
+          }, delay);
         });
     }, 600);
     return () => window.clearTimeout(syncTimer);
-  }, [cards, grammarProgress, meta, online, profileName, ready]);
+  }, [cards, grammarProgress, meta, online, profileName, ready, remoteRetryVersion]);
 
   useEffect(() => {
     const connect = () => setOnline(true);

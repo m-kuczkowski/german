@@ -42,7 +42,8 @@ export function normalizeAnswer(value: string): string {
     .trim()
     .toLocaleLowerCase("de-DE")
     .replace(/[|·]/g, "")
-    .replace(/[„“”"'.!?;:()[\]]/g, "")
+    .replace(/[„“”…"'.!?;:()[\]]/g, "")
+    .trim()
     .replace(/\s+/g, " ");
 }
 

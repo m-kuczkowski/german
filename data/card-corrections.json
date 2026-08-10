@@ -1,0 +1,20 @@
+{
+  "goethe-9914224f0ff2": {
+    "polish": "godzina; zegar",
+    "examplePolish": "Która jest godzina?"
+  },
+  "nicos-a2-512bcae78c7a": {
+    "polish": "towarzyszyć"
+  },
+  "nicos-a2-6bb92bd44805": {
+    "german": "das heißt",
+    "polish": "to znaczy",
+    "article": null,
+    "exampleGerman": "Das heißt: Wir treffen uns später.",
+    "examplePolish": "To znaczy: spotkamy się później."
+  },
+  "nicos-b1-991664309dc3": {
+    "polish": "zlecić wykonanie czegoś",
+    "examplePolish": "Jutro zlecę naprawę mojego roweru."
+  }
+}
