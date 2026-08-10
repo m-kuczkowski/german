@@ -171,8 +171,13 @@ export function learningSessionPlan(
       prerequisitesReady(card, cardsById),
     )
     .sort((left, right) => newCardOrder(left) - newCardOrder(right));
-  const newLimit = Math.min(recommendedNewCardLimit(globalDueCount), availableNew.length);
-  const due = allDue.slice(0, Math.max(0, limit - newLimit));
+  const sessionLimit = Math.max(1, limit);
+  const newLimit = Math.min(
+    recommendedNewCardLimit(globalDueCount),
+    availableNew.length,
+    sessionLimit,
+  );
+  const due = allDue.slice(0, Math.max(0, sessionLimit - newLimit));
   const newCards = availableNew.slice(0, newLimit);
   return {
     due,

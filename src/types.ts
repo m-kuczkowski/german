@@ -293,11 +293,14 @@ export interface ChallengeSession {
   retryOf: string | null;
 }
 
+export type LessonSize = 5 | 10 | 15 | 20;
+
 export interface LearningMeta {
   streak: number;
   lastStudyDate: string | null;
   completedToday: number;
   totalReviews: number;
+  lessonSize: LessonSize;
   theme: "system" | "light" | "dark";
   contentVersion: number;
   activeSession: LearningSession | null;

@@ -177,11 +177,12 @@ Tłumaczenia i pary zdań kontekstowych są przygotowywane jednorazowo przez mod
 Audio nie jest generowane podczas używania aplikacji. Skrypt
 `scripts/piper-audio-source.mjs` przygotowuje wszystkie 4937 tekstów katalogu
 (lub sam rdzeń/opcjonalnie bibliotekę Nicos przez `--scope`), a `scripts/generate-kokoro-audio.py` jednorazowo syntezuje je lokalnie
-przez Kokoro Martin i kompresuje kodekiem Opus w kontenerze WebM. Tekst do
-wymowy upraszcza techniczne znaki kart (`|`, `/`, nawiasy), a każde nagranie ma
-krótką ciszę przed i po słowie, aby początek nie był ucinany przy odtwarzaniu
-segmentu. Paczki mają stabilne nazwy, dzięki czemu mogą być długo buforowane
-przez CDN.
+przez Kokoro Martin i kompresuje kodekiem Opus w kontenerze WebM. Parametr
+`--field word` tworzy wymowę hasła, a `--field example` — osobne nagranie
+całego zdania przykładowego. Tekst do wymowy upraszcza techniczne znaki kart
+(`|`, `/`, nawiasy), a każde nagranie ma krótką ciszę przed i po słowie, aby
+początek nie był ucinany przy odtwarzaniu segmentu. Paczki mają stabilne nazwy,
+dzięki czemu mogą być długo buforowane przez CDN.
 
 ```bash
 python -m pip install -r scripts/requirements-audio-kokoro.txt
@@ -194,9 +195,28 @@ python scripts/generate-kokoro-audio.py \
 npm run audio:upload -- --audio-dir /tmp/german-kokoro-audio
 ```
 
+Nagrania zdań są budowane i publikowane osobno, ale pod tymi samymi
+identyfikatorami kart:
+
+```bash
+npm run audio:source -- --field example --scope all --output /tmp/german-kokoro-sentences.json
+python scripts/generate-kokoro-audio.py \
+  --source /tmp/german-kokoro-sentences.json \
+  --model /path/to/kokoro-martin.onnx \
+  --voices /path/to/voices-martin.npz \
+  --output /tmp/german-kokoro-sentences
+npm run audio:upload -- \
+  --audio-dir /tmp/german-kokoro-sentences \
+  --destination wortschatz/kokoro-martin-sentences-v1 \
+  --output src/data/piperSentenceAudioManifest.ts \
+  --expected-cards 4937 \
+  --manifest-prefix PIPER_SENTENCE_AUDIO \
+  --clips-export piperSentenceAudioClips
+```
+
 Ostatni krok wysyła 64 paczki i manifest do publicznego Vercel Blob oraz
-generuje `src/data/piperAudioManifest.ts`. Wymaga lokalnego
-`BLOB_READ_WRITE_TOKEN`; sekret nigdy nie trafia do kodu klienta.
+generuje właściwy manifest TypeScript. Wymaga lokalnego `BLOB_READ_WRITE_TOKEN`;
+sekret nigdy nie trafia do kodu klienta.
 
 Użyty model to [Kokoro German Martin](https://huggingface.co/Godelaune/Kokoro-82M-ONNX-German-Martin),
 niemiecki model ONNX działający w pełni offline i objęty licencją Apache 2.0.

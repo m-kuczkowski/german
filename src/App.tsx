@@ -39,7 +39,12 @@ import {
   sessionFollowUpLabel,
   sessionComplete,
 } from "./lib/session";
-import { preloadGermanAudio, speakGerman } from "./lib/speech";
+import {
+  preloadGermanAudio,
+  preloadGermanSentenceAudio,
+  speakGerman,
+  speakGermanSentence,
+} from "./lib/speech";
 import {
   clearDatabase,
   createBackup,
@@ -343,8 +348,8 @@ function App() {
   function startSession(mode: "learn" | "hard", categoryId: string | null) {
     if (mode !== "hard" && !categoryId) return;
     const pool = mode === "hard"
-      ? difficultCards(cards)
-      : learningSessionPlan(cards, categoryId!).cards;
+      ? difficultCards(cards, new Date(), meta.lessonSize)
+      : learningSessionPlan(cards, categoryId!, new Date(), meta.lessonSize).cards;
     setMeta((current) => ({
       ...current,
       activeSession: createLearningSession(pool, mode, categoryId),
@@ -607,6 +612,11 @@ function App() {
             onSpeak={(cardId, text) => {
               if (!speakGerman(cardId, text)) setToast("Ta przeglądarka nie obsługuje wymowy.");
             }}
+            onSpeakSentence={(cardId, text) => {
+              if (!speakGermanSentence(cardId, text)) {
+                setToast("Ta przeglądarka nie obsługuje wymowy.");
+              }
+            }}
           />
         )}
 
@@ -707,6 +717,7 @@ interface SessionProps {
   onFinish: () => void;
   onAbort: () => void;
   onSpeak: (cardId: string, text: string) => void;
+  onSpeakSentence: (cardId: string, text: string) => void;
 }
 
 function FlashcardSession(props: SessionProps) {
@@ -758,6 +769,10 @@ function FlashcardSession(props: SessionProps) {
   useEffect(() => {
     preloadGermanAudio(card.id);
   }, [card.id]);
+
+  useEffect(() => {
+    if (flipped) preloadGermanSentenceAudio(card.id);
+  }, [card.id, flipped]);
 
   function submitAnswer(
     rating: ReviewRating,
@@ -989,6 +1004,17 @@ function FlashcardSession(props: SessionProps) {
                 <span aria-hidden="true">◖))</span>
               </button>
             </div>
+            {flipped && (
+              <button
+                type="button"
+                className="sentence-audio-button"
+                onClick={() => props.onSpeakSentence(card.id, card.exampleGerman)}
+                aria-label={`Odtwórz całe zdanie: ${card.exampleGerman}`}
+              >
+                <span aria-hidden="true">◖))</span>
+                Odsłuchaj całe zdanie
+              </button>
+            )}
             <button className="flip-toggle" onClick={() => setFlipped((current) => !current)}>
               {flipped ? "Schowaj znaczenie" : "Pokaż znaczenie"}
             </button>
@@ -1215,7 +1241,7 @@ function LearnView(props: SessionProps & {
   const category = props.selectedCategory;
   const specialistCount = category?.specialist ?? 0;
   const sessionPlan = category
-    ? learningSessionPlan(props.cards, category.id)
+    ? learningSessionPlan(props.cards, category.id, new Date(), props.meta.lessonSize)
     : null;
   const completedToday = props.meta.lastStudyDate === localDateKey()
     ? props.meta.completedToday
@@ -1801,6 +1827,27 @@ function SettingsView({
           </span>
           <span aria-hidden="true">●</span>
         </div>
+      </section>
+      <section className="settings-group">
+        <h2>Nauka</h2>
+        <label className="settings-row">
+          <span>
+            <strong>Słówka w lekcji</strong>
+            <small>Ile nowych i powtarzanych słówek ma trafić do jednej lekcji.</small>
+          </span>
+          <select
+            value={meta.lessonSize}
+            onChange={(event) => onMetaChange({
+              ...meta,
+              lessonSize: Number(event.target.value) as LearningMeta["lessonSize"],
+            })}
+          >
+            <option value={5}>5 słówek</option>
+            <option value={10}>10 słówek</option>
+            <option value={15}>15 słówek</option>
+            <option value={20}>20 słówek</option>
+          </select>
+        </label>
       </section>
       <section className="settings-group">
         <h2>Wygląd</h2>

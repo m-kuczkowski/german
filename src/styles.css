@@ -2633,6 +2633,31 @@ h1 em {
   font-weight: 850;
 }
 
+.sentence-audio-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 34px;
+  margin-top: 6px;
+  color: var(--green);
+  background: color-mix(in srgb, var(--mint) 68%, transparent);
+  border: 1px solid color-mix(in srgb, var(--green) 32%, var(--line));
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.sentence-audio-button span {
+  font-size: 15px;
+}
+
+.lesson-active .sentence-audio-button {
+  min-height: 31px;
+  margin-top: 4px;
+}
+
 .flip-toggle {
   width: 100%;
   margin-top: 8px;
@@ -4279,6 +4304,12 @@ h1 em {
   .lesson-active .flip-toggle {
     min-height: 38px;
     margin-top: 3px;
+  }
+
+  .lesson-active .sentence-audio-button {
+    min-height: 28px;
+    margin-top: 2px;
+    font-size: 11px;
   }
 
   .lesson-active .rating-actions button {

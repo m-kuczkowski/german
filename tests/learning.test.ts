@@ -164,6 +164,31 @@ describe("nauka kategoriami", () => {
     expect(canStartLearningSession(plan)).toBe(true);
   });
 
+  it("respektuje wybraną przez użytkownika krótszą liczbę kart w lekcji", () => {
+    const now = new Date("2026-07-26T10:00:00.000Z");
+    const category = "Dom";
+    const fresh = starterCards.slice(0, 6).map((card, index) => ({
+      ...card,
+      id: `fresh-${index}`,
+      category,
+      stage: "new" as const,
+      curriculumTier: "core" as const,
+    }));
+    const due = starterCards.slice(6, 12).map((card, index) => ({
+      ...card,
+      id: `due-${index}`,
+      category,
+      stage: "learning" as const,
+      dueAt: "2026-07-25T10:00:00.000Z",
+    }));
+
+    const plan = learningSessionPlan([...fresh, ...due], category, now, 5);
+
+    expect(plan.cards).toHaveLength(5);
+    expect(plan.newCards).toHaveLength(3);
+    expect(plan.due).toHaveLength(2);
+  });
+
   it("wprowadza tylko oficjalny rdzeń, a rozszerzenia pozostawia w bibliotece", () => {
     const category = "Nicos Weg A2 · Zdrowie";
     const [template] = starterCards;

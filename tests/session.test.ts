@@ -11,6 +11,23 @@ import {
 import { reviewCard } from "../src/lib/srs";
 
 describe("adaptacyjna kolejka w lekcji", () => {
+  it("uzupełnia bezpieczną domyślną wielkość lekcji dla starszego postępu", () => {
+    const restored = withMetaDefaults({
+      streak: 0,
+      lastStudyDate: null,
+      completedToday: 0,
+      totalReviews: 0,
+      theme: "system",
+      contentVersion: 0,
+      activeSession: null,
+      activeChallenge: null,
+      challengeUpdatedAt: null,
+      activeGrammarSession: null,
+    });
+
+    expect(restored.lessonSize).toBe(10);
+  });
+
   it("otwiera starszą zapisaną sesję bez liczby zadań bazowych", () => {
     const session = createLearningSession(starterCards.slice(0, 3), "learn", starterCards[0].category);
     const { plannedCount: _plannedCount, ...legacySession } = session;

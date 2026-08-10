@@ -6,7 +6,7 @@ import {
   PIPER_AUDIO_SPRITE_PREFIX,
   piperAudioClips,
 } from "../src/data/piperAudioManifest";
-import { spokenGerman } from "../scripts/piper-audio-source.mjs";
+import { spokenExampleGerman, spokenGerman } from "../scripts/piper-audio-source.mjs";
 
 describe("nagrania niemieckiego lektora", () => {
   it("przygotowuje naturalny tekst do wymowy dla zapisu technicznego kart", () => {
@@ -14,6 +14,9 @@ describe("nagrania niemieckiego lektora", () => {
     expect(spokenGerman({ german: "Interesse (an etwas) haben" })).toBe("Interesse an etwas haben");
     expect(spokenGerman({ german: "etwas/jemanden vergessen" })).toBe("etwas oder jemanden vergessen");
     expect(spokenGerman({ german: "zuhören (jemandem)" })).toBe("jemandem zuhören");
+    expect(spokenExampleGerman({
+      exampleGerman: "Er sagt: Das heißt … / Das ist klar.",
+    })).toBe("Er sagt: Das heißt oder Das ist klar.");
   });
 
   it("posiada nagranie dla każdej zachowanej karty Nicos Weg i używa fallbacku dla Goethe", () => {

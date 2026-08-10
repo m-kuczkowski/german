@@ -1,4 +1,4 @@
-import type { LearningMeta } from "../types";
+import type { LearningMeta, LessonSize } from "../types";
 import { localDateKey, updateStreak } from "./srs";
 
 export const defaultMeta: LearningMeta = {
@@ -6,6 +6,7 @@ export const defaultMeta: LearningMeta = {
   lastStudyDate: null,
   completedToday: 0,
   totalReviews: 0,
+  lessonSize: 10,
   theme: "system",
   contentVersion: 0,
   activeSession: null,
@@ -16,6 +17,10 @@ export const defaultMeta: LearningMeta = {
 
 export function withMetaDefaults(meta: Partial<LearningMeta> | null | undefined): LearningMeta {
   const merged = { ...defaultMeta, ...(meta ?? {}) };
+  const allowedLessonSizes: LessonSize[] = [5, 10, 15, 20];
+  const lessonSize = allowedLessonSizes.includes(merged.lessonSize as LessonSize)
+    ? merged.lessonSize as LessonSize
+    : defaultMeta.lessonSize;
   const challenge = merged.activeChallenge;
   const validChallenge = Boolean(
     challenge &&
@@ -26,6 +31,7 @@ export function withMetaDefaults(meta: Partial<LearningMeta> | null | undefined)
   );
   return {
     ...merged,
+    lessonSize,
     activeSession: merged.activeSession
       ? {
           ...merged.activeSession,

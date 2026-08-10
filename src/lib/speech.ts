@@ -4,8 +4,37 @@ import {
   PIPER_AUDIO_SPRITE_PREFIX,
   piperAudioClips,
 } from "../data/piperAudioManifest";
+import {
+  PIPER_SENTENCE_AUDIO_BASE_URL,
+  PIPER_SENTENCE_AUDIO_MIME_TYPE,
+  PIPER_SENTENCE_AUDIO_SPRITE_PREFIX,
+  piperSentenceAudioClips,
+} from "../data/piperSentenceAudioManifest";
 
-const audioCache = new Map<number, HTMLAudioElement>();
+type AudioClip = readonly [number, number, number];
+
+interface AudioLibrary {
+  baseUrl: string;
+  mimeType: string;
+  spritePrefix: string;
+  clips: Record<string, AudioClip>;
+}
+
+const wordAudioLibrary: AudioLibrary = {
+  baseUrl: PIPER_AUDIO_BASE_URL,
+  mimeType: PIPER_AUDIO_MIME_TYPE,
+  spritePrefix: PIPER_AUDIO_SPRITE_PREFIX,
+  clips: piperAudioClips,
+};
+
+const sentenceAudioLibrary: AudioLibrary = {
+  baseUrl: PIPER_SENTENCE_AUDIO_BASE_URL,
+  mimeType: PIPER_SENTENCE_AUDIO_MIME_TYPE,
+  spritePrefix: PIPER_SENTENCE_AUDIO_SPRITE_PREFIX,
+  clips: piperSentenceAudioClips,
+};
+
+const audioCache = new Map<string, HTMLAudioElement>();
 let activeAudio: HTMLAudioElement | null = null;
 let activeTimeout: number | null = null;
 let activeCleanup: (() => void) | null = null;
@@ -87,33 +116,38 @@ function speakWithSystemVoice(text: string): boolean {
   return true;
 }
 
-function supportsPiperAudio(): boolean {
-  if (!PIPER_AUDIO_BASE_URL || typeof Audio === "undefined") return false;
+function supportsPiperAudio(library: AudioLibrary): boolean {
+  if (!library.baseUrl || typeof Audio === "undefined") return false;
   const probe = document.createElement("audio");
-  return Boolean(probe.canPlayType(PIPER_AUDIO_MIME_TYPE));
+  return Boolean(probe.canPlayType(library.mimeType));
 }
 
-function shardUrl(shard: number): string {
-  return `${PIPER_AUDIO_BASE_URL}/${PIPER_AUDIO_SPRITE_PREFIX}-${String(shard).padStart(2, "0")}.webm`;
+function cacheKey(library: AudioLibrary, shard: number): string {
+  return `${library.baseUrl}:${library.spritePrefix}:${shard}`;
 }
 
-function getAudio(shard: number): HTMLAudioElement {
-  const cached = audioCache.get(shard);
+function shardUrl(library: AudioLibrary, shard: number): string {
+  return `${library.baseUrl}/${library.spritePrefix}-${String(shard).padStart(2, "0")}.webm`;
+}
+
+function getAudio(library: AudioLibrary, shard: number): HTMLAudioElement {
+  const key = cacheKey(library, shard);
+  const cached = audioCache.get(key);
   if (cached) return cached;
 
-  const audio = new Audio(shardUrl(shard));
+  const audio = new Audio(shardUrl(library, shard));
   audio.preload = "metadata";
-  audioCache.set(shard, audio);
+  audioCache.set(key, audio);
   if (audioCache.size > 8) {
     const removable = [...audioCache.entries()].find(
-      ([cachedShard, candidate]) => cachedShard !== shard && candidate !== activeAudio,
+      ([cachedKey, candidate]) => cachedKey !== key && candidate !== activeAudio,
     );
     if (removable) {
-      const [oldest, removed] = removable;
-      removed?.pause();
-      removed?.removeAttribute("src");
-      removed?.load();
-      audioCache.delete(oldest);
+      const [oldestKey, removed] = removable;
+      removed.pause();
+      removed.removeAttribute("src");
+      removed.load();
+      audioCache.delete(oldestKey);
     }
   }
   return audio;
@@ -133,15 +167,23 @@ function stopCurrentAudio() {
   clearMediaSession();
 }
 
-export function preloadGermanAudio(cardId: string): void {
-  const clip = piperAudioClips[cardId];
-  if (!clip || !supportsPiperAudio()) return;
-  getAudio(clip[0]).load();
+function preloadAudio(library: AudioLibrary, cardId: string): void {
+  const clip = library.clips[cardId];
+  if (!clip || !supportsPiperAudio(library)) return;
+  getAudio(library, clip[0]).load();
 }
 
-export function speakGerman(cardId: string, text: string): boolean {
-  const clip = piperAudioClips[cardId];
-  if (!clip || !supportsPiperAudio()) return speakWithSystemVoice(text);
+export function preloadGermanAudio(cardId: string): void {
+  preloadAudio(wordAudioLibrary, cardId);
+}
+
+export function preloadGermanSentenceAudio(cardId: string): void {
+  preloadAudio(sentenceAudioLibrary, cardId);
+}
+
+function speakFromLibrary(library: AudioLibrary, cardId: string, text: string): boolean {
+  const clip = library.clips[cardId];
+  if (!clip || !supportsPiperAudio(library)) return speakWithSystemVoice(text);
 
   bindLifecycleListeners();
   configureMediaSession();
@@ -150,7 +192,8 @@ export function speakGerman(cardId: string, text: string): boolean {
   const generation = playbackGeneration;
   const [shard, start, duration] = clip;
   const segmentEnd = start + duration + 0.12;
-  const audio = getAudio(shard);
+  const audio = getAudio(library, shard);
+  const key = cacheKey(library, shard);
   activeAudio = audio;
   let finished = false;
 
@@ -169,7 +212,7 @@ export function speakGerman(cardId: string, text: string): boolean {
     audio.pause();
     audio.removeAttribute("src");
     audio.load();
-    if (audioCache.get(shard) === audio) audioCache.delete(shard);
+    if (audioCache.get(key) === audio) audioCache.delete(key);
     if (activeAudio === audio) activeAudio = null;
     if (activeCleanup === finishSegment) activeCleanup = null;
     clearMediaSession();
@@ -240,4 +283,12 @@ export function speakGerman(cardId: string, text: string): boolean {
     audio.load();
   }
   return true;
+}
+
+export function speakGerman(cardId: string, text: string): boolean {
+  return speakFromLibrary(wordAudioLibrary, cardId, text);
+}
+
+export function speakGermanSentence(cardId: string, text: string): boolean {
+  return speakFromLibrary(sentenceAudioLibrary, cardId, text);
 }
