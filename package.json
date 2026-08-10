@@ -19,10 +19,11 @@
     "db:validate:grammar": "node scripts/db-migrate-grammar.mjs --validate",
     "test:api-integration": "node scripts/api-integration-smoke.mjs",
     "db:push": "node scripts/db-push.mjs",
+    "cards:audit": "node scripts/audit-card-quality.mjs",
     "curriculum:build": "python3 scripts/build-learning-priority.py && node scripts/build-goethe-catalog.mjs",
     "audio:source": "node scripts/piper-audio-source.mjs",
     "audio:upload": "node scripts/upload-piper-audio.mjs",
-    "test": "vitest run",
+    "test": "vitest run && node scripts/audit-card-quality.mjs",
     "test:watch": "vitest",
     "typecheck": "tsc -b --pretty false"
   },

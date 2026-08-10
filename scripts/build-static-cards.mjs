@@ -100,6 +100,18 @@ function parseGerman(rawValue) {
   let article = null;
   let plural = null;
 
+  // Some source notes are complete expressions beginning with a demonstrative
+  // pronoun (for example: "Das reicht nicht."). They are not nouns with an
+  // article, so stripping "Das" would make the card and typed answer wrong.
+  const hasDictionaryGenderSuffix = /\((m|f|n)\.[^)]*\)\s*$/i.test(value);
+  if (
+    /^(der|die|das)\s+/i.test(value) &&
+    /[.!?…]$/.test(value) &&
+    !hasDictionaryGenderSuffix
+  ) {
+    return { german: value, article: null, plural: null };
+  }
+
   const articleMatch = value.match(/^(der|die|das)\s+/i);
   if (articleMatch) {
     article = articleMatch[1].toLowerCase();
