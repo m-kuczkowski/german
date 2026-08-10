@@ -136,7 +136,7 @@ function getAudio(library: AudioLibrary, shard: number): HTMLAudioElement {
   if (cached) return cached;
 
   const audio = new Audio(shardUrl(library, shard));
-  audio.preload = "metadata";
+  audio.preload = "auto";
   audioCache.set(key, audio);
   if (audioCache.size > 8) {
     const removable = [...audioCache.entries()].find(
@@ -196,6 +196,7 @@ function speakFromLibrary(library: AudioLibrary, cardId: string, text: string): 
   const key = cacheKey(library, shard);
   activeAudio = audio;
   let finished = false;
+  let startWhenReady: () => void = () => undefined;
 
   function finishSegment() {
     if (finished) return;
@@ -207,6 +208,8 @@ function speakFromLibrary(library: AudioLibrary, cardId: string, text: string): 
     }
     audio.removeEventListener("loadedmetadata", playSegment);
     audio.removeEventListener("error", fallback);
+    audio.removeEventListener("canplay", startWhenReady);
+    audio.removeEventListener("seeked", startWhenReady);
     audio.removeEventListener("timeupdate", enforceSegmentBoundary);
     audio.removeEventListener("seeking", keepSeekInsideSegment);
     audio.pause();
@@ -247,8 +250,28 @@ function speakFromLibrary(library: AudioLibrary, cardId: string, text: string): 
 
   function playSegment() {
     if (generation !== playbackGeneration) return;
+
+    startWhenReady = () => {
+      if (generation !== playbackGeneration) return;
+      if (audio.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) return;
+      audio.removeEventListener("canplay", startWhenReady);
+      audio.removeEventListener("seeked", startWhenReady);
+      beginPlayback();
+    };
+
     try {
+      audio.addEventListener("canplay", startWhenReady);
+      audio.addEventListener("seeked", startWhenReady);
       audio.currentTime = start;
+      startWhenReady();
+    } catch {
+      fallback();
+    }
+  }
+
+  function beginPlayback() {
+    if (generation !== playbackGeneration) return;
+    try {
       audio.addEventListener("timeupdate", enforceSegmentBoundary);
       audio.addEventListener("seeking", keepSeekInsideSegment);
       const playback = audio.play();

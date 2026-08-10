@@ -12,7 +12,7 @@ describe("odtwarzanie pojedynczego słowa", () => {
 
     class FakeAudio {
       static instances: FakeAudio[] = [];
-      currentTime = 0;
+      private position = 0;
       readyState = 1;
       paused = true;
       playCalls = 0;
@@ -21,6 +21,20 @@ describe("odtwarzanie pojedynczego słowa", () => {
 
       constructor(public src: string) {
         FakeAudio.instances.push(this);
+      }
+
+      get currentTime() {
+        return this.position;
+      }
+
+      set currentTime(value: number) {
+        this.position = value;
+      }
+
+      emit(type: string) {
+        for (const listener of this.listeners.get(type) ?? []) {
+          listener(new Event(type));
+        }
       }
 
       play() {
@@ -64,7 +78,7 @@ describe("odtwarzanie pojedynczego słowa", () => {
     const visibilityListeners: EventListener[] = [];
 
     vi.stubGlobal("Audio", FakeAudio);
-    vi.stubGlobal("HTMLMediaElement", { HAVE_METADATA: 1 });
+    vi.stubGlobal("HTMLMediaElement", { HAVE_METADATA: 1, HAVE_FUTURE_DATA: 3 });
     vi.stubGlobal("navigator", { mediaSession });
     vi.stubGlobal("document", {
       hidden: false,
@@ -85,6 +99,10 @@ describe("odtwarzanie pojedynczego słowa", () => {
     await Promise.resolve();
 
     const audio = FakeAudio.instances[0];
+    expect(audio.playCalls).toBe(0);
+    audio.readyState = 3;
+    audio.emit("canplay");
+    await Promise.resolve();
     expect(audio.playCalls).toBe(1);
 
     await vi.advanceTimersByTimeAsync(4_000);
