@@ -17,7 +17,7 @@ export const defaultMeta: LearningMeta = {
 
 export function withMetaDefaults(meta: Partial<LearningMeta> | null | undefined): LearningMeta {
   const merged = { ...defaultMeta, ...(meta ?? {}) };
-  const allowedLessonSizes: LessonSize[] = [5, 10, 15, 20];
+  const allowedLessonSizes: LessonSize[] = [5, 10, 15, 20, 30, 40];
   const lessonSize = allowedLessonSizes.includes(merged.lessonSize as LessonSize)
     ? merged.lessonSize as LessonSize
     : defaultMeta.lessonSize;

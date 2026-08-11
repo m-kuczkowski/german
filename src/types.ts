@@ -293,7 +293,7 @@ export interface ChallengeSession {
   retryOf: string | null;
 }
 
-export type LessonSize = 5 | 10 | 15 | 20;
+export type LessonSize = 5 | 10 | 15 | 20 | 30 | 40;
 
 export interface LearningMeta {
   streak: number;

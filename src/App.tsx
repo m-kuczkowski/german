@@ -1846,6 +1846,8 @@ function SettingsView({
             <option value={10}>10 słówek</option>
             <option value={15}>15 słówek</option>
             <option value={20}>20 słówek</option>
+            <option value={30}>30 słówek</option>
+            <option value={40}>40 słówek</option>
           </select>
         </label>
       </section>

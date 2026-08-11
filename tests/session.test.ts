@@ -28,6 +28,11 @@ describe("adaptacyjna kolejka w lekcji", () => {
     expect(restored.lessonSize).toBe(10);
   });
 
+  it("zachowuje większy wybrany rozmiar lekcji", () => {
+    expect(withMetaDefaults({ lessonSize: 30 }).lessonSize).toBe(30);
+    expect(withMetaDefaults({ lessonSize: 40 }).lessonSize).toBe(40);
+  });
+
   it("otwiera starszą zapisaną sesję bez liczby zadań bazowych", () => {
     const session = createLearningSession(starterCards.slice(0, 3), "learn", starterCards[0].category);
     const { plannedCount: _plannedCount, ...legacySession } = session;
